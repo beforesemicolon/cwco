@@ -1006,28 +1006,33 @@ describe('WebComponent', () => {
 
 			it('should handle boolean attribute', () => {
 				class AttrD extends WebComponent {
-					check1 = true;
-					check2 = true;
+					static observedAttributes = ['disabled', 'hidden']
 
 					get template() {
-						return '<button attr.disabled="check1" attr.hidden="check2"></button>'
+						return '<button attr.disabled="disabled" attr.hidden="hidden"></button>'
 					}
 				}
 
 				AttrD.register();
-				const s = new AttrD();
+				document.body.innerHTML = '<attr-d></attr-d>';
 
-				document.body.appendChild(s);
+				const s = document.body.children[0] as WebComponent;
 
-				expect(s.root?.innerHTML).toBe('<button disabled="" hidden=""></button>');
+				expect(s.root?.innerHTML).toBe('<button></button>');
 
-				s.check1 = false;
+				s.setAttribute('disabled', '');
+
+				expect(s.root?.innerHTML).toBe('<button disabled=""></button>');
+
+				// @ts-ignore
+				s.disabled = false;
+
+				expect(s.root?.innerHTML).toBe('<button></button>');
+
+				// @ts-ignore
+				s.hidden = true;
 
 				expect(s.root?.innerHTML).toBe('<button hidden=""></button>');
-
-				s.check1 = true;
-
-				expect(s.root?.innerHTML).toBe('<button hidden="" disabled=""></button>');
 			});
 
 			it('should handle other attributes', () => {
