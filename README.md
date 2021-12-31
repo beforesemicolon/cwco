@@ -1,4 +1,4 @@
-#CWCO
+# CWCO
 
 A lightweight and powerful web component framework intended to remove the tedious aspect of building reactive Web Components.
 
