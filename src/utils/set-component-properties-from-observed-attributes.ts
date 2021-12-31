@@ -26,7 +26,7 @@ export function setComponentPropertiesFromObservedAttributes(
 			});
 			
 			if ((boolAttr).hasOwnProperty(prop)) {
-				value = (boolAttr as booleanAttributes)[prop].value;
+				value = comp.hasAttribute(attr);
 				prop = (boolAttr as booleanAttributes)[prop].name;
 			}
 
