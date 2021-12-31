@@ -1,103 +1,32 @@
 # CWCO
 
-A lightweight and powerful web component framework intended to remove the tedious aspect of building reactive Web Components.
+Contextful Web Component Framework created to improve native web component APIs user experience with:
+- ✅ Event and Data Binding in HTML and CSS
+- ✅ Simple API
+- ✅ Truly Reactive Template
+- ✅ Lightweight package
+- ✅ Fast rendering
+- ✅ In HTML file component template
+- ✅ Built-in Context
+- ✅ Powerful built-in Directives(including ability to create your own)
+- ✅ Client and Server Side Rendering
+- 🚫 No JSX!
+- 🚫 No Virtual DOM!
+- 🚫 No Weird HTML or Javascript Syntax!
+- 🚫 No Decorators Hell!
+- 🚫 No Robust Data Store and Context Setup needed!
+- 🚫 No Tedious State Management or DOM Manipulation!
 
-<p align="center"><strong>Web Component API As It Should Have Been</strong></p>
+### Learn with Examples
 
-🥇 Build **✅ Flexible, ✅ Extensible, and ✅ Contextful Components** with **✅ Reactive Template**, **✅ Powerful Directives**, **✅ Event and Data Binding**, **✅ Simple API** in a **✅ Lightweight package** right in Your Browser.
-
-🚫 No Tedious State Management and DOM Manipulation! 
-
-🚫 No Robust Data Store and Context Setup! 
-
-🚫 No Verbose API! 
-
-🚫 No JSX! 
-
-🚫 No Virtual DOM! 
-
-🚫 No Weird HTML or Javascript Syntax! 
-
-🚫 No Decorators Hell!
-
-**Learn More From The [Documentation](https://github.com/beforesemicolon/cwco#documentation)**
-
-
-### Example
-Declare a simple action button component
-```js
-class ActionButton extends WebComponent {
-  static observedAttributes = ['type', 'disabled', 'autofocus', 'name'];
-  
-  get stylesheet() {
-    return `
-      <style>
-        :host {
-          display: inline-block;
-        }
-        
-        :host .my-button {
-          background: #222;
-          color: #fff;
-        }
-      </style>
-    `;
-  }
-  
-  get template() {
-    return `
-      <button 
-        class="my-button" 
-        type="{type || 'button'}"
-        attr.disabled="disabled"
-        attr.autofocus="autofocus"
-        attr.name="name"
-        >
-        <slot></slot>
-      </button>
-    `;
-  }
-}
-
-ActionButton.register();
-```
-Create a simple list data renderer that uses a action button to request more data
-```js
-class PaginatedList extends WebComponent {
-  static observedAttributes = ['tag-name', 'loading', 'items'];
-  
-  get template() {
-    return `
-      <p if="loading">
-        <slot name="loading">loading...</slot>
-      </p>
-      <p if="!loading && !items.length">
-        <slot name="empty">List is Empty</slot>
-      </p>
-      <div if="!loading && items.length" class="paginated-list">
-        <${this.tagName || 'div'} repeat="items" details="{$item}">{$item}</${this.tagName || 'div'}>
-        <action-button onclick="loadMore()">load more</action-button>
-      </div>
-    `;
-  }
-  
-  loadMore() {
-    this.dispatchEvent(new Event('loadmore'));
-  }
-}
-
-PaginatedList.register();
-```
-
-In your HTML you can simply use the tag normally.
-
-```html
-<paginated-list items="['one', 'two', 'three']" tag-name="p"></paginated-list>
-```
+**Learn More From The [Documentation](https://github.com/beforesemicolon/cwco#documentation)** or 
+visit **[Examples Playground Page](https://beforesemicolon.github.io/cwco/?example=create-component.html&theme=neo&file=app.js)** for
+an extensive list of examples of everything this framework can do 
+**[including some components and small apps examples](https://beforesemicolon.github.io/cwco/?example=app-calculator.html&theme=neo&file=app.js)**.
 
 ### Install
 
-This module can be used directly in the browsers as well in Node environment
+This module can be used directly in the browser as well in Node environment
 
 #### Browser
 ```html 
@@ -108,7 +37,7 @@ This module can be used directly in the browsers as well in Node environment
 <!-- use a specific version -->
 <script src="https://unpkg.com/cwco@1.0.0/dist/cwco.min.js"></script>
 
-<!-- link you app script after -->
+<!-- link your app script after -->
 <script src"app.js"></script>
 ```
 
