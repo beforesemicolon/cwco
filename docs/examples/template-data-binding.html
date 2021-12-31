@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<data-binding></data-binding>
+</main>
+
+<script id="app-js">
+class DataBinding extends WebComponent {
+	bfs = "Before Semicolon";
+	disabled = true;
+	cls = 'inactive sample';
+	
+	onMount() {
+		setInterval(() => {
+			if (this.cls === 'active sample') {
+				this.cls = "inactive sample";
+			} else {
+				this.cls = "active sample";
+			}
+			
+			this.disabled = !this.disabled;
+		}, 2000)
+	}
+	
+	
+	// everything inside curly braces will be executed
+	// and stringified for the template
+	get template() {
+		return `
+			<!--
+			anything inside the curly braces are executed
+			in the component context -->
+			
+			  Total of 2 times 40 is: {2 * 40}
+			
+			<!--
+			use it to refer to public properties of the class -->
+			
+			  <h2>{bfs}</h2>
+			
+			<!--
+			directives do not need curly braces for things
+			  that needs to be executed.
+			  (check directives usages) -->
+			
+			  <button attr.disabled="disabled">
+			
+				<!-- execute small logic inside curly braces -->
+			      I am {disabled ? 'disabled' : 'enabled'}
+			
+			  </button>
+			
+			<!--
+			It works in attribute values -->
+			
+			  <p class="desc {cls}">My class is "desc {cls}"</p>
+			
+			  <!--
+			\${} is different than {}
+			
+			P tag class will NOT update once the "cls" changes
+			\${} is javascript way to inject values into template string
+			and has no additional meaning for this framework
+			  -->
+			  <p class="desc ${this.cls}">My class is ALWAYS "desc ${this.cls}"</p>
+			
+			   <!--
+			you can reference the "this" keyword as well just fine
+			,but it is not required for public properties
+			  -->
+			  <p class="desc {this.cls}">My class is "desc {cls}"</p>
+			`;
+	}
+}
+
+DataBinding.register();
+
+</script>
+</body>
+</html>

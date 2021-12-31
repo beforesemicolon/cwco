@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<accordion-container>
+	<accordion-content heading="Title" heading-tag="h2">
+		Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa iusto porro tempora? Aperiam,
+		at deleniti itaque maiores minima officiis qui rem repellendus repudiandae rerum, tenetur!
+	</accordion-content>
+	<accordion-content heading="Title" heading-tag="h2">
+		Lorem ipsum dolor sit amet, consectetur adipisicing elit. Commodi, cum dolores. Doloremque
+		doloribus exercitationem natus pariatur reprehenderit sapiente? Accusamus aliquam asperiores
+		autem cumque laboriosam libero.
+		
+		Molestiae nihil nulla quae, rerum sit soluta tempora temporibus
+		tenetur unde vero vitae! Alias corporis dolores eius! Corporis earum inventore, iure perspiciatis
+		ratione saepe vel?
+	</accordion-content>
+	<accordion-content heading="Title" heading-tag="h2">
+		Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa iusto porro tempora? Aperiam,
+		at deleniti itaque maiores minima officiis qui rem repellendus repudiandae rerum, tenetur!
+	</accordion-content>
+</accordion-container>
+</main>
+
+<script id="app-js">
+class AccordionContainer extends WebComponent {
+	onMount() {
+		let activeContentIndex = 0;
+		let activeContent = null;
+		
+		const contents = [...this.children]
+			.filter(el => el.nodeName.toLowerCase() === 'accordion-content');
+		
+		contents
+			.forEach((content, index) => {
+				if (content.hasAttribute('active')) {
+					activeContentIndex = index;
+					activeContent = content;
+				}
+				
+				content.addEventListener('click', () => {
+					if (activeContent !== content) {
+						activeContent.setAttribute('active', 'false');
+						content.setAttribute('active', 'true');
+						activeContentIndex = index;
+						activeContent = content;
+					}
+				})
+			});
+		
+		if (!activeContent) {
+			activeContentIndex = 0;
+			activeContent = contents[0];
+			contents[0].setAttribute('active', 'true');
+		}
+	}
+	
+	get template() {
+		return '<slot></slot>'
+	}
+	
+	get stylesheet() {
+		return ':host { display: block; }'
+	}
+}
+
+class AccordionContent extends WebComponent {
+	static observedAttributes = [
+		'active',
+		'heading',
+		'heading-tag'
+	];
+	contentHeight = '0px';
+	
+	onMount() {
+		requestAnimationFrame(() => {
+			this.contentHeight = this.$refs.content.scrollHeight + 'px';
+		})
+	}
+	
+	onUpdate(name, oldValue, newValue) {
+		if (name === 'active' && newValue) {
+			this.$refs.content.focus();
+		}
+	}
+	
+	get template() {
+		const id = `content-${Math.floor(Math.random() * 100000)}`;
+		this.headingTag = this.headingTag || 'h3';
+		
+		return `
+			<${this.headingTag} class="accordion-head">
+				<button
+					id="${id}"
+					aria-controls="${id}b"
+					aria-expanded="{active}"
+					aria-disabled="{active}"
+					onclick="activate($event)"
+					>
+					{heading}
+				</button>
+			</${this.headingTag}>
+			<div class="accordion-content"
+				ref="content"
+				id="${id}b"
+				role="region"
+				aria-labelledby="${id}"
+				attr.style.height="{contentHeight}, active"
+				attr.style.margin="10px 0, active"
+				>
+				<slot></slot>
+			</div>
+		`;
+	}
+	
+	get stylesheet() {
+		return `
+			<style>
+				:host {
+					display: block;
+				}
+				
+				:host * {
+					box-sizing: border-box;
+				}
+				
+				:host .accordion-head {
+					margin: 0 0 5px;
+				}
+				
+				:host .accordion-head button {
+					background: #eaeaea;
+					color: #222;
+					padding: 10px 40px 10px 15px;
+					border-radius: 2px;
+					cursor: pointer;
+					position: relative;
+					margin: 0;
+					font-family: sans-serif;
+					letter-spacing: 0.08rem;
+					display: block;
+					width: 100%;
+					text-align: left;
+					-moz-appearance: none;
+					-webkit-appearance: none;
+					appearance: none;
+					border: none;
+				}
+				
+				:host .accordion-head button::after {
+					content: "";
+					display: inline-block;
+					width: 0;
+					height: 0;
+					border: 5px solid #222;
+					border-left-color: transparent;
+					border-top-color: transparent;
+					position: absolute;
+					right: 15px;
+					top: 10px;
+					transform: rotate(45deg);
+					border-radius: 2px;
+					transition: transform 0.3s ease, top 0.3s ease;
+				}
+				
+				:host .accordion-head button[aria-expanded*="true"]::after {
+					transform: rotate(-135deg);
+					top: 15px;
+				}
+				
+				:host .accordion-content {
+					height: 0;
+					padding: 0 10px;
+					margin: 0;
+					overflow: hidden;
+					transition: height 0.3s ease, padding 0.3s ease;
+				}
+				
+			</style>`;
+	}
+	
+	activate(event) {
+		event.stopPropagation();
+		this.dispatchEvent(new Event('click'));
+		this.contentHeight = this.$refs.content.scrollHeight + 'px';
+	}
+}
+
+AccordionContainer.register();
+AccordionContent.register();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<action-button></action-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	/**
+	* The static "observedAttributes" array is a way
+	* for you to communicate to the component about
+	* the attributes you want the component to react to
+	* when they change, are set or removed from the tag.
+	*
+	* It must contain name of the attributes as they
+	* would look when set on the tag
+	*/
+	static observedAttributes = [
+		"disabled",
+		"type",
+		"readonly",
+		"sub-type"
+	];
+
+	get template() {
+	  return `
+			<button type="button">
+				Do Something
+			</button>`
+	}
+}
+
+ActionButton.register();
+</script>
+</body>
+</html>

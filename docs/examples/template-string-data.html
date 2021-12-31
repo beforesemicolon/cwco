@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<heading-title></heading-title>
+<heading-title size="xlg"></heading-title>
+<heading-title size="lg"></heading-title>
+<heading-title size="md"></heading-title>
+<heading-title size="sm"></heading-title>
+<heading-title size="xsm"></heading-title>
+</main>
+
+<script id="app-js">
+class HeadingTitle extends WebComponent {
+	static observedAttributes = ['size'];
+
+	/**
+	* You can dynamically create your template string to return based on
+	* initial data but you have to remember that this does not mean that
+	* when data changes this template will change.
+	*
+	* You are simply creating the template for the component and it
+	* will remain like that for the rest of rendering
+	*/
+	get template() {
+	  let heading = 'h1';
+
+	  switch (this.size) {
+	    case 'xsm':
+	      heading = 'h6';
+	      break;
+	    case 'sm':
+	      heading = 'h5';
+	      break;
+	    case 'md':
+	      heading = 'h4';
+	      break;
+	    case 'lg':
+	      heading = 'h3';
+	      break;
+	    case 'xlg':
+	      heading = 'h2';
+	      break;
+	    default:
+	      heading = 'h1';
+	  }
+
+      /** ${} is a special Javascript syntax to add data to a string.
+	  /*
+	  /* It does not have any additional meaning for this framework.
+	  /* It is not how this framework does data binding that changes
+	  /* the DOM when data changes
+	  */
+	  return `<${heading}>Heading Title</${heading}>`
+	}
+}
+
+HeadingTitle.register();
+
+</script>
+</body>
+</html>

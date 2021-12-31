@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<action-button></action-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	
+	// you can define your component template with
+	// the "template" getter as it is a read-only value.
+	// This is a recommendation but you can also define it
+	// as a normal property as well
+	get template() {
+		return `<button type="button">Do Something</button>`
+	}
+}
+
+ActionButton.register();
+
+/**
+ * Templates are only read ONCE when the component is first rendered
+ * then it is parsed to HTML DOM which is what renders.
+ *
+ * When there is an update, the changes are done directly on the DOM
+ * based on where the value changed.
+ *
+ * The template is powerful alone and you should not do any data manipulation
+ * and insertion that will require the template to update based on changes
+ * inside this getter
+ */
+
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+	<action-button></action-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	truthy = false;
+	
+	get template() {
+		// the "if" directive will remove and set the element
+		// to the DOM based on the value
+		//
+		// It is not to be used for the "hidden" attribute
+		// or "display: none" effect which maintains the
+		// element in the DOM
+		//
+		// When placed on an element, it will be the first
+		// directive to make effect before others
+		return `
+			<button
+				type="button"
+				onclick="{this.truthy = !this.truthy}"
+				>
+				<span if="truthy">true</span>
+				<span if="!truthy">false</span>
+			</button>`;
+	}
+}
+
+ActionButton.register();
+
+</script>
+</body>
+</html>

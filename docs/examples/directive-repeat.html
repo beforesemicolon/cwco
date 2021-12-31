@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js" type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<menu-items
+	items='["Home", "Projects", "About", "Contact"]'></menu-items>
+</main>
+
+<script id="app-js">
+class MenuItems extends WebComponent {
+	static observedAttributes = ['items'];
+	
+	get template() {
+		/**
+		 * The "repeat" can take as value:
+		 *    - iterable objects (Set, Map, Array, String);
+		 *    - iterators (including custom ones)
+		 *    - Object literal
+		 *    - number (number of times to repeat)
+		 *
+		 * It also creates a node context properties
+		 *    - $item: containing the item in the list
+		 *    - $key: containing the index or key of
+		 *    the item in the list
+		 *
+		 * When placed on an element, it is the first
+		 * directive to be processed if the "if" directive
+		 * is not present
+		 */
+		return `
+			<ul>
+				<li
+					repeat="items"
+					class="item {$key % 2 ? 'even' : 'odd'}-item"
+					onclick="dispatchClickEvent($event, $item, $key)"
+					>
+					{$item}
+				</li>
+			</ul>`;
+	}
+	
+	get stylesheet() {
+		return `
+		<style>
+			:host ul {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			
+			:host .item {
+				padding: 5px 8px;
+				font-family: sans-serif;
+				font-size: 0.8rem;
+				letter-spacing: 0.03rem;
+			}
+			
+			:host .odd-item {
+				background: #eee;
+			}
+			
+			:host .even-item {
+				background: #fafafa;
+			}
+		</style>`;
+	}
+	
+	dispatchClickEvent(event, item, index) {
+		event.stopPropagation();
+		this.dispatchEvent(new CustomEvent({detail: {item, index}}))
+	}
+}
+
+MenuItems.register();
+
+</script>
+</body>
+</html>

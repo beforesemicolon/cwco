@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js" type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<menu-items
+	items='[
+		{"label": "Home", "items": []},
+		{"label": "Projects", "items": [
+				{"label": "Calculator App", "items": []},
+				{"label": "Todo App", "items": []}
+			]
+		}]'></menu-items>
+</main>
+
+<script id="app-js">
+class MenuItems extends WebComponent {
+	static observedAttributes = ['items'];
+	
+	get template() {
+		/**
+		 * You can rename the default $item and $key when
+		 * repeating to whatever you like by following some
+		 * pattern:
+		 *    - x as $name: will allow you to reference
+		 *      each item in "x" as "$name"
+		 *    - ;$key as $idx: will allow you to reference
+		 *      each item key or index in "x" as "$idx".
+		 *      The $key is a constant and if you say something
+		 *      else like ;$other as $idx it will not change
+		 *      $key to $idx
+		 *
+		 * The name you pick does not have to start with
+		 * a dollar sign but it is convention to do so
+		 * as it helps distinguish things in the template
+		 */
+		return `
+			<ul>
+				<li
+					repeat="items as $page"
+					class="page"
+					>
+					<span>{$page.label}</span>
+					<ul if="$page.items.length">
+						<li
+							repeat="$page.items"
+							class="sub-page"
+							>
+							<span>{$item.label}</span>
+						</li>
+					</ul>
+				</li>
+			</ul>`;
+	}
+	
+	get stylesheet() {
+		return `
+		<style>
+			:host ul {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			
+			:host .page,
+			:host .sub-page {
+				padding: 5px 8px;
+				font-family: sans-serif;
+				font-size: 0.8rem;
+				letter-spacing: 0.03rem;
+				background: #eee;
+			}
+			
+			:host .page:nth-child(even) {
+				background: #fafafa;
+			}
+			
+			:host .sub-page {
+				background: #cfd5d5;
+				margin: 2px 0;
+			}
+			
+			:host .page ul {
+				margin: 10px 0;
+			}
+		</style>`;
+	}
+	
+	dispatchClickEvent(event, page, id) {
+		event.stopPropagation();
+		this.dispatchEvent(new CustomEvent({detail: {page, id}}))
+	}
+}
+
+MenuItems.register();
+
+</script>
+</body>
+</html>

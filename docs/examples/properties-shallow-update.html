@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+	<action-button></action-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	label = "Do Something";
+	
+	onMount() {
+		// a shallow update happens when you re-assign
+		// a property with a new value and that will
+		// trigger the DOM to update and the onUpdate
+		// to be called soon after
+		this.label = "click me"
+	}
+	
+	get template() {
+		return `<button type="button">{label}</button>`
+	}
+}
+
+ActionButton.register();
+
+</script>
+</body>
+</html>

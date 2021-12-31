@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html"></main>
+
+<script id="app-js">
+class SiteName extends WebComponent {
+	get template() {
+	  return `<h1>Before Semicolon</h1>`
+	}
+}
+
+// you must register before you start using otherwise
+// you will get illegal constructor error from the browser which
+// indicates that the element is not yet registered
+SiteName.register();
+
+// you can create the element simply by initializing the class
+// manipulating and attaching it to the DOM like any other element
+const logo = new SiteName();
+
+document.body.appendChild(logo)
+</script>
+</body>
+</html>

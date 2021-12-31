@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<search-field placeholder="Search..." style="width: 300px"></search-field>
+</main>
+
+<script id="app-js">
+class SearchField extends WebComponent {
+	static observedAttributes = [
+		'placeholder',
+		'value',
+		'disabled',
+		'readonly',
+	];
+	static delegatesFocus = true;
+	
+	get template() {
+		return `
+			<label aria-label="search field">
+				<input
+					type="text"
+					value="{value}"
+					attr.placeholder="{placeholder}, placeholder"
+					attr.disabled="disabled"
+					attr.readonly="readonly"
+					oninput="{this.value = $event.target.value}"
+					onchange="{this.dispatchEvent(new Event('change'))}"
+					>
+				<button
+					class="clear-button"
+					if="value.length"
+					type="button"
+					onclick="clear()"
+					>x</button>
+			</label>`;
+	}
+	
+	get stylesheet() {
+		return `
+			<style>
+				:host {
+					display: inline-block;
+				}
+				
+				:host * {
+					box-sizing: border-box;
+				}
+				
+				:host label {
+					border: 1px solid #ddd;
+					border-radius: 3px;
+					background: #fff;
+					overflow: hidden;
+					display: inline-flex;
+					width: 100%;
+					background: url("https://cdn2.iconfinder.com/data/icons/minimal-set-five/32/minimal-48-512.png")
+						calc(100% - 10px) center/20px 20px no-repeat;
+				}
+				
+				:host input {
+					border: none;
+					height: 35px;
+					padding: 10px 12px;
+					background: none;
+					outline: none;
+					-moz-appearance: none;
+					-webkit-appearance: none;
+					appearance: none;
+					font-family: sans-serif;
+					letter-spacing: 0.03rem;
+					font-size: 0.9rem;
+					flex: 1;
+				}
+				
+				:host .clear-button {
+					height: 35px;
+					width: 35px;
+					min-width: 35px;
+					-moz-appearance: none;
+					-webkit-appearance: none;
+					appearance: none;
+					border: none;
+					background: #f4f4f4;
+					outline: none;
+					cursor: pointer;
+					position: relative;
+					overflow: hidden;
+					text-indent: -999999px;
+				}
+				
+				:host .clear-button::before,
+				:host .clear-button::after {
+					content: "";
+					display: inline-block;
+					width: 15px;
+					height: 1px;
+					background: #222;
+					position: absolute;
+					left: 50%;
+					top: 50%;
+					transform: translate(-50%, -50%) rotate(45deg);
+				}
+				
+				:host .clear-button::after {
+					transform: translate(-50%, -50%) rotate(-45deg);
+				}
+			</style>
+		`;
+	}
+	
+	onUpdate(name, oldValue, newValue) {
+		if (name === 'value') {
+		    this.dispatchEvent(new Event('input'))
+		}
+	}
+	
+	clear() {
+		this.value = '';
+	}
+}
+
+SearchField.register();
+
+</script>
+</body>
+</html>

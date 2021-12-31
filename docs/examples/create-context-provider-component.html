@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+<style id="app-css">
+body {
+	font-family: sans-serif;
+}
+
+/* Because the context provided mode is none by default
+the following style has effect on the template when placed
+inside the HTML file
+*/
+count-app h2 {
+	background: #d1dbdb;
+	color: #222;
+	padding: 10px;
+}
+</style>
+</head>
+<body>
+
+<main id="app-html">
+<count-app>
+	<h2>{app.title}</h2>
+	<p>{app.description}</p>
+	<p id="count"><strong>Count:</strong> {count}</p>
+	<button onclick="updateCount(1)">increase</button>
+	<button onclick="updateCount(-1)">decrease</button>
+</count-app>
+</main>
+
+<script id="app-js">
+
+/**
+* context provider components have the advantage that
+* its template can be defined right in the HTML file(check index.html).
+*/
+class CountApp extends ContextProviderComponent {
+	// By default, the mode is "none"
+
+    // any data, context or method of the class is available
+    // in the HTML template
+    app = {
+      title: "Count App",
+      description: "Click the buttons to manipulate count.",
+    }
+
+    count = 0;
+
+    updateCount(incrementValue) {
+      this.count += incrementValue;
+    }
+
+	// You may still define the style for the template as normal
+    get stylesheet() {
+      return `
+        <style>
+			<!--
+             it is recommended that you always refer to :host
+             as the style will be placed in the head tag of the document
+             when mode is "none" and may affect things outside of the template
+
+             By using :host, the framework will replace it with the name
+             of the tag when placing the style in the head of the document
+            -->
+            :host button {
+                appearance: none;
+                padding: 5px 8px;
+                text-transform: capitalize;
+                border: none;
+                background: #2ea152;
+                border-radius: 5px;
+                color: #fff;
+                cursor: pointer;
+            }
+
+            :host p:not(#count) {
+                font-size: 0.8rem;
+            }
+		</style>
+      `
+    }
+
+	/**
+	* You don't have to declare the template inside but if you do
+	* know that slot tags are treated differently and that
+	* slot tag work independently of the mode of the component.
+	*
+	* By default, the provider template is a single slot tag
+	*/
+}
+
+// it is still a component so it must be registered
+CountApp.register();
+</script>
+</body>
+</html>

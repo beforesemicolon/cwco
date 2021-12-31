@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html"></main>
+
+<script id="app-js">
+class Mode extends WebComponent {
+	get stylesheet() {
+	  return `
+		<style>
+			p {
+				color: #fff;
+				padding: 5px;
+			}
+		</style>`;
+	}
+}
+
+class DefaultMode extends Mode {
+	/**
+	 * By default, all components are created in "open" mode
+	 * which means the content will be automatically added to
+	 * the shadow root in "open" mode
+	 */
+
+	get template() {
+	  return `<p style="background: #d4ac0e">Default Mode(open)</p>`
+	}
+}
+
+class ClosedMode extends Mode {
+	// closed mode simply puts shadow root in closed mode
+	// which means that its content cannot be accessed from
+	// the component element object reference
+	// https://developer.mozilla.org/en-US/docs/Web/API/ShadowRoot/mode
+	static mode = "closed";
+
+	get template() {
+	  return `<p style="background: #d40e0e">Closed Mode</p>`
+	}
+}
+
+class NoneMode extends Mode {
+	// "none" is specific to the framework and
+	// it simply means that your content will not be rendered
+	// inside the shadow root
+	//
+	// What this does it put your <style> in the <head> tag
+	// so it is best to prefix all your style with :host
+    // which is first changed to the name of the tag
+    // so it does not affect other elements
+	static mode = "none";
+	
+	get template() {
+		return `<p style="background: #2ea152">None Mode</p>`
+	}
+
+	get stylesheet() {
+		return `
+		<style>
+			:host p { /* <=== use :host in "none" mode */
+				color: #fff;
+				padding: 5px;
+			}
+		</style>`;
+	}
+}
+
+DefaultMode.register();
+ClosedMode.register();
+NoneMode.register();
+
+const openMode = new DefaultMode();
+const closedMode = new ClosedMode();
+const noneMode = new NoneMode();
+
+document.body.appendChild(openMode);
+document.body.appendChild(closedMode);
+document.body.appendChild(noneMode);
+
+// You can access the shadow root of the components via shadowRoot
+console.log(openMode.shadowRoot) // #shadow-root(open)
+console.log(closedMode.shadowRoot) // null
+console.log(noneMode.shadowRoot) // null
+
+</script>
+</body>
+</html>

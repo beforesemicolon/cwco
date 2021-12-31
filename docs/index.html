@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>BFS Web Component</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<!-- codemirror -->
+	<script src="./examples/editor/codemirror.js"></script>
+	<!-- modes -->
+	<script src="./examples/editor/modes/javascript.js"></script>
+	<script src="./examples/editor/modes/xml.js"></script>
+	<script src="./examples/editor/modes/htmlmixed.js"></script>
+	<script src="./examples/editor/modes/css.js"></script>
+	<!-- addons -->
+	<style>
+		html {
+			width: 100%;
+			height: 100%;
+		}
+
+		body {
+			background: #fff;
+			font-family: sans-serif;
+			font-size: 16px;
+			margin: 0;
+			padding: 0;
+			font-weight: 300;
+			width: 100vw;
+			height: 100vh;
+			overflow: hidden;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+	</style>
+</head>
+<body>
+
+	<code-editor-app>
+		<view-loading-indicator attr.style.display="none, !loading"></view-loading-indicator>
+		<header>
+			<h1>BFS Web Components</h1>
+			<div class="controls">
+				<list-selector
+					id="theme-selector"
+					items="{themes}"
+					value="{currentTheme.value}"
+					label="Theme:"
+					onchange="onThemeChange($event)"></list-selector>
+			</div>
+		</header>
+		<main>
+			<code-examples-menu
+				id="examples-menu"
+				list="{examples}"
+				active-item="{currentExample}"
+				onselection="onExampleSelection($event)"
+				oncollapse="onPreviewCollapse($event)">
+				>
+			</code-examples-menu>
+			<div class="wrapper">
+				<tabs-container id="code-view" ontabchange="onEditorChange($event)">
+					<tab-head
+						slot="head"
+						repeat="editors as $editor"
+						id="{$editor.type}-tab"
+						content-id="{$editor.type}-content"
+						active="{currentEditor.type === $editor.type}">
+						{$editor.value}
+					</tab-head>
+					<tab-content
+						slot="content"
+						repeat="editors as $editor"
+						id="{$editor.type}-content"
+						tab-id="{$editor.type}-tab">
+						<code-editor
+							example-path="./examples/{currentExample.value}"
+							type="{$editor.type}"
+							content-id="{$editor.contentId}"
+							active="{currentEditor.type === $editor.type}"
+							theme="{currentTheme.value}"
+							onloading="onEditorLoading($event)"
+							oncontent="onCodeLoaded($event)">
+						</code-editor>
+					</tab-content>
+				</tabs-container>
+				<flex-resizer direction="horizontal" reset="{previewCollapsed || menuCollapsed}"></flex-resizer>
+				<code-preview id="code-preview" code="{currentCode}"
+				              oncollapse="onPreviewCollapse($event)"></code-preview>
+			</div>
+		</main>
+		<footer>
+			<p><small>Copyright &copy; Before Semicolon Web Components 2021. All rights reserved</small></p>
+			<div class="social-media-links">
+				<a href="https://beforesemicolon.com/">Website</a>
+				<a href="https://medium.com/before-semicolon">Blog</a>
+				<a href="https://github.com/beforesemicolon/cwco">GitHub</a>
+			</div>
+		</footer>
+	</code-editor-app>
+
+	<script id="tabs">
+      const {WebComponent, ContextProviderComponent} = window;
+
+      class TabsContainer extends WebComponent {
+        currentTabInfo = {
+          node: null,
+          index: 0,
+          width: 0,
+          left: 0,
+        }
+        #contents = []
+
+        get template() {
+          return `
+			<div class="tabs-header" role="tablist">
+				<slot name="tab-head"></slot>
+				<span class="current-tab-indicator"></span>
+			</div>
+			<div class="tabs-content-container">
+				<slot name="tab-content"></slot>
+			</div>
+		`;
+        }
+
+        get stylesheet() {
+          return `
+			<style>
+				:host {
+					display: flex;
+					flex-direction: column;
+					width: 100%;
+					height: 100%;
+				}
+
+				:host * {
+					box-sizing: border-box;
+				}
+
+				:host .tabs-header {
+					position: relative;
+					display: flex;
+					gap: 5px;
+					border-bottom: 1px solid #e5e5e5;
+				}
+
+				:host .tabs-content-container {
+					flex: 1;
+					overflow: hidden;
+				}
+
+				:host .current-tab-indicator {
+					display: inline-block;
+					height: 2px;
+					width: [currentTabInfo.width];
+					background: #222;
+					position: absolute;
+					bottom: 0;
+					left: [currentTabInfo.left];
+					transition: left 0.3s ease, width 0.3s ease;
+				}
+			</style>
+		`;
+        }
+
+        onMount() {
+          const heads = this.querySelectorAll('[slot="tab-head"]');
+          this.#contents = this.querySelectorAll('[slot="tab-content"]');
+
+          heads.forEach((el, index) => {
+            if (el.getAttribute('active') === 'true') {
+              this.currentTabInfo = {
+                node: el,
+                contentNode: this.#contents[index],
+                index: index,
+                width: el.offsetWidth + 'px',
+                left: el.offsetLeft + 'px',
+              }
+            }
+
+            el.addEventListener('click', () => this.activateTab(el, index));
+          })
+
+          this.#contents.forEach(el => {
+            el.setAttribute('active', 'false');
+          })
+
+          const {node, index} = this.currentTabInfo;
+
+          if (node) {
+            this.activateTab(node, index)
+          } else {
+            this.activateTab(heads[0], 0)
+          }
+        }
+
+        activateTab(el, index) {
+          if (this.currentTabInfo.node) {
+            this.currentTabInfo.node.setAttribute('active', 'false');
+            this.currentTabInfo.contentNode.setAttribute('active', 'false');
+          }
+
+          this.currentTabInfo = {
+            node: el,
+            contentNode: this.#contents[index],
+            index: index,
+            width: el.offsetWidth + 'px',
+            left: el.offsetLeft + 'px',
+          }
+
+          this.currentTabInfo.node.setAttribute('active', 'true');
+          this.currentTabInfo.contentNode.setAttribute('active', 'true');
+
+          this.dispatchEvent(new CustomEvent('tabchange', {
+            detail: {
+              index: this.currentTabInfo.index,
+            }
+          }));
+        }
+      }
+
+      class TabHead extends WebComponent {
+        static observedAttributes = [
+          'active',
+          'id',
+          'content-id'
+        ];
+
+        constructor() {
+          super();
+
+          this.setAttribute('slot', 'tab-head');
+        }
+
+        get template() {
+          return `<button
+			class="tab-head"
+			role="tab"
+			aria-selected="{active}"
+			aria-controls="{contentId}"
+			attr.tabindex="-1, !active"
+			><slot></slot></button>`
+        }
+
+        get stylesheet() {
+          return `
+			<style>
+				:host {
+					display: inline-block;
+				}
+
+				:host .tab-head {
+					padding: 5px 18px;
+					background: #e8e8e8;
+					color: #666;
+					border-top-left-radius: 3px;
+					border-top-right-radius: 3px;
+					cursor: pointer;
+					font-size: 0.9rem;
+					font-family: sans-serif;
+					letter-spacing: 0.03rem;
+					font-weight: 300;
+					transition: color 0.3s ease, font-weight 0.3s ease;
+					-moz-appearance: none;
+					-webkit-appearance: none;
+					appearance: none;
+					border: none;
+				}
+
+				:host .tab-head[aria-selected="true"] {
+					font-weight: 500;
+					color: #111;
+				}
+			</style>
+		`;
+        }
+      }
+
+      class TabContent extends WebComponent {
+        static observedAttributes = [
+          'active',
+          'id',
+          'tab-id',
+        ];
+
+        constructor() {
+          super();
+
+          this.setAttribute('slot', 'tab-content');
+        }
+
+        get template() {
+          return `<div
+			class="tab-content"
+			tabindex="0"
+			role="tabpanel"
+			id="{id}"
+			aria-labelledby="{tabId}"><slot></slot></div>`
+        }
+
+        get stylesheet() {
+          return `
+			<style>
+				:host {
+					display: none;
+					width: 100%;
+					height: 100%;
+					overflow: auto;
+					position: relative;
+				}
+
+				:host([active="true"]) {
+					display: block;
+				}
+
+				:host .tab-content {
+					padding: 10px 0;
+				}
+			</style>
+		`;
+        }
+      }
+
+	</script>
+
+	<script id="global">
+      class ViewLoadingIndicator extends WebComponent {
+        static observedAttributes = ['loading'];
+
+        get template() {
+          return `<div id="loading-indicator">loading...</div>`
+        }
+
+        get stylesheet() {
+          return `
+			<style>
+				:host {
+					display: flex;
+					z-index: 10000000;
+					justify-content: center;
+					align-items: center;
+					width: 100vw;
+					height: 100vh;
+					position: fixed;
+					top: 0;
+					left: 0;
+					color: #fff;
+					background: rgba(0, 0, 0, 0.8);
+					font-size: 2rem;
+				}
+			</style>`
+        }
+
+        onDestroy() {
+          console.log('destroy', this);
+        }
+      }
+
+      class ListSelector extends WebComponent {
+        static observedAttributes = ['items', 'groups', 'value', 'name', 'label', 'aria-label'];
+
+        get template() {
+          this.groups = this.groups || [];
+          this.items = this.items || [];
+
+          return `
+			<label aria-label="{ariaLabel}">
+				<span>{label}</span>
+				<select name="{name}" onchange="onChange($event)">
+					<optgroup if="groups.length" repeat="groups; $key as $g" label="{$item.title}">
+						<option
+							repeat="$item.items as $opt"
+							value="{$g}~{$key}"
+							attr.selected="$opt.value === value">{$opt.label}</option>
+					</optgroup>
+					<option if="items.length"
+						repeat="items as $opt"
+						value="{$key}"
+						attr.selected="$opt.value === value">{$opt.label}</option>
+				</select>
+			</label>
+
+		 `;
+        }
+
+        get stylesheet() {
+          return `
+			<style>
+				:host {
+					display: block;
+				}
+
+				select {
+					height: 35px;
+					background: #c6effd;
+					color: #222;
+					padding: 0 10px;
+					border: none;
+					border-right: 10px solid #c6effd;
+					border-radius: 5px;
+					min-width: 200px;
+					cursor: pointer;
+					font-weight: 700;
+				}
+			</style>
+          `;
+        }
+
+        onChange(event) {
+          const parts = event.target.value.split('~');
+
+          if (parts.length === 2) {
+            this.dispatchEvent(new CustomEvent('change', {
+              detail: {
+                group: this.groups[parts[0]],
+                item: this.groups[parts[0]].items[parts[1]]
+              }
+            }));
+          } else {
+            this.dispatchEvent(new CustomEvent('change', {
+              detail: {
+                group: null,
+                item: this.items[parts[0]]
+              }
+            }));
+          }
+        }
+      }
+
+      class FlexResizer extends WebComponent {
+        static observedAttributes = ['direction', 'reset'];
+        resizing = false;
+        #prevPos = 0;
+        #prevBox;
+        #nextBox;
+        #prop;
+
+        get template() {
+          this.#prop = !this.direction || this.direction === 'horizontal' ? 'width' : 'height';
+
+          return `<button type="button" class="resize-button"
+			onmousedown="onResizeStart($event)"
+			onmouseup="onResizeEnd()"
+			>||</button>`
+        }
+
+        get stylesheet() {
+          return `
+            <style>
+                :host {
+                    display: block;
+					width: 10px;
+					min-width: 10px;
+					max-width: 10px;
+					height: 100%;
+					position: relative;
+					background: #f2f2f2;
+					box-sizing: border-box;
+					z-index: 1000;
+                }
+
+                :host * {
+                    box-sizing: border-box;
+                }
+
+                .resize-button {
+					border-radius: 3px;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					appearance: none;
+					background: #ddd;
+					border: none;
+					cursor: pointer;
+					position: absolute;
+					left: 0;
+					top: 50%;
+					padding: 1px;
+					transform: translate(0, -50%);
+					width: 10px;
+					height: 100px;
+				}
+
+				.resize-button::after {
+					content: '';
+					display: [resizing ? 'block' : 'none'];
+					position: absolute;
+					left: 50%;
+					top: 50%;
+					transform: translate(-50%, -50%);
+					width: 500px;
+					height: 100%;
+				}
+
+			</style>
+		 `;
+        }
+
+        onMount() {
+          requestAnimationFrame(() => {
+            this.#prevBox = this.previousElementSibling;
+            this.#prevBox.style.flex = `${this.#prevBox.offsetWidth}px 0 0`;
+            this.#nextBox = this.nextElementSibling;
+            this.#nextBox.style.flex = `${this.#nextBox.offsetWidth}px 0 0`;
+
+            window.addEventListener("mousemove", this.onResize.bind(this), false);
+            window.addEventListener("resize", this.onResize.bind(this), true);
+          })
+        }
+
+        onUpdate(name, oldValue, newValue) {
+          if (name === 'direction') {
+            this.#prop = !this.direction || this.direction === 'horizontal' ? 'width' : 'height';
+          } else if (name === 'reset' && newValue) {
+            this.#prevBox.style.flex = `1 0 0`;
+            this.#nextBox.style.flex = `1 0 0`;
+          }
+        }
+
+        onResize(event) {
+          if (this.resizing) {
+            const diff = this.#prevPos - event.x;
+            this.#prevPos = event.x;
+
+            if (diff) {
+              this.#prevBox.style.flex = `${Math.max(0, (parseInt(getComputedStyle(this.#prevBox).getPropertyValue(this.#prop)) - diff))}px 0 0`;
+              this.#nextBox.style.flex = `${Math.max(0, (parseInt(getComputedStyle(this.#nextBox).getPropertyValue(this.#prop)) + diff))}px 0 0`
+            }
+          }
+        }
+
+        onResizeStart(event) {
+          this.#prevPos = event.x;
+          this.resizing = true;
+        }
+
+        onResizeEnd() {
+          this.resizing = false;
+        }
+
+        onDestroy() {
+          window.removeEventListener("mousemove", this.onResize.bind(this), false);
+          window.removeEventListener("resize", this.onResize.bind(this), true);
+        }
+      }
+	</script>
+
+	<script id="editor">
+      class CodeEditorApp extends ContextProviderComponent {
+        loading = false;
+        previewCollapsed = false;
+        menuCollapsed = false;
+        themes = [
+          {value: 'neo', label: 'Neo'},
+          {value: 'dracula', label: 'Dracula'},
+          {value: 'shadowfox', label: 'Shadow Box'},
+          {value: 'base16-light', label: 'Base 16 Light'},
+        ];
+        examples = [
+          {
+            title: "Create",
+            items: [
+              {value: 'create-component.html', label: 'Create Component'},
+              {value: 'create-component-instance.html', label: 'Create Component Instance'},
+              {value: 'create-context-provider-component.html', label: 'Create Context Provider Component'},
+              {value: 'create-abstract-component.html', label: 'Create Abstract Component'},
+              {value: 'create-global-error-component.html', label: 'Create Global Error Handler Component'},
+            ]
+          },
+          {
+            title: "Register",
+            items: [
+              {value: "register.html", label: "Register Component"},
+              {value: "register-custom-name.html", label: "Register Custom Named Component"},
+              {value: "register-all.html", label: "Register All Components at once"},
+            ]
+          },
+          {
+            title: "Configuration",
+            items: [
+              {value: "config-component-mode.html", label: "Component Mode"},
+              {value: "config-component-delegates-focus.html", label: "Component Delegates Focus"},
+            ]
+          },
+          {
+            title: "Template",
+            items: [
+              {value: "template.html", label: "Define Component Template"},
+              {value: "template-string-data.html", label: "Dynamically Generated Template"},
+              {value: "template-data-binding.html", label: "Template Data Binding"},
+              {value: "template-slot.html", label: "Template Slot"},
+              {value: "template-slot-attributes.html", label: "Template Slot Attributes Reflection"},
+              {value: "template-id.html", label: "Template Id"},
+            ]
+          },
+          {
+            title: "Attributes",
+            items: [
+              {value: "attr-definition.html", label: "Define Observed Attributes (Props)"},
+              {value: "attr-access.html", label: "Access Observed Attributes"},
+              {value: "attr-default.html", label: "Define Default Attributes Values"},
+            ]
+          },
+          {
+            title: "Properties",
+            items: [
+              {value: "properties.html", label: "Public Properties"},
+              {value: "properties-private.html", label: "Private Properties"},
+              {value: "properties-readonly.html", label: "ReadOnly Properties"},
+              {value: "properties-shallow-update.html", label: "Shallow Properties Update"},
+              {value: "properties-deep-update.html", label: "Deep Properties Update"},
+            ]
+          },
+          {
+            title: "Context",
+            items: [
+              {value: "context.html", label: "Define initial context"},
+              {value: "context-access.html", label: "Access context"},
+              {value: "context-update.html", label: "Update context"},
+              {value: "context-provider.html", label: "Context Provider Component"},
+              {value: "context-provider-nesting.html", label: "Context Provider Component Nesting"},
+            ]
+          },
+          {
+            title: "Styling",
+            items: [
+              {value: "stylesheet.html", label: "Define Component Style"},
+              {value: "stylesheet-data-binding.html", label: "Style Data Binding"},
+              {value: "stylesheet-extension.html", label: "Extend Style"},
+            ]
+          },
+          {
+            title: "Event Handling",
+            items: [
+              {value: "event-binding.html", label: "Callback Handler"},
+              {value: "event-inline-handler.html", label: "Inline Handler"},
+              {value: "event-dispatch.html", label: "Dispatch Event"},
+              {value: "event-bubbling.html", label: "Event Bubbling Best Practices"},
+              {value: "event-options.html", label: "Event Listener Options"},
+            ]
+          },
+          {
+            title: "Directives",
+            items: [
+              {value: "directive-ref.html", label: "Ref"},
+              {value: "directive-ref-grouping.html", label: "Ref Grouping"},
+              {value: "directive-deep-ref.html", label: "Deep Ref"},
+              {value: "directive-if.html", label: "If"},
+              {value: "directive-repeat.html", label: "Repeat"},
+              {value: "directive-repeat-as.html", label: "Repeat As"},
+              {value: "directive-attr.html", label: "Attr"},
+            ]
+          },
+          {
+            title: "Lifecycles",
+            items: [
+              {value: "lifecycle-onmount.html", label: "onMount"},
+              {value: "lifecycle-ondestroy.html", label: "onDestroy"},
+              {value: "lifecycle-onupdate.html", label: "onUpdate"},
+              {value: "lifecycle-onadoption.html", label: "onAdoption"},
+              {value: "lifecycle-onerror.html", label: "onError"},
+            ]
+          },
+          {
+            title: "Components/Small Apps",
+            items: [{value: "app-calculator.html", label: "Calculator App"},
+              // {value: "app-todo.html", label: "Todo App"},
+              {value: "component-search-field.html", label: "Search Field"},
+              {value: "component-card.html", label: "Blog Post Card"},
+              {value: "component-accordion.html", label: "Accordion"},
+              {value: "component-tabs.html", label: "Tabs"},
+              {value: "component-upload-button.html", label: "Upload Button"},
+            ]
+          },
+        ];
+        editors = [
+          {type: 'javascript', value: 'app.js', contentId: 'app-js'},
+          {type: 'htmlmixed', value: 'index.html', contentId: 'app-html'},
+          {type: 'css', value: 'app.css', contentId: 'app-css'},
+        ];
+        currentExample = this.examples[0].items[0];
+        currentEditor = this.editors[0];
+        currentTheme = this.themes[0];
+        currentCode = '';
+        url = new URL(location.href);
+        params = new URLSearchParams(this.url.search);
+
+        get stylesheet() {
+          return `
+            <style>
+	            :host {
+	                display: flex;
+	                flex-direction: column;
+	                width: 100%;
+					height: 100%;
+					overflow: hidden;
+	            }
+
+	            :host * {
+                    box-sizing: border-box;
+                }
+
+                header {
+                    height: 85px;
+                    display: flex;
+                    align-items: flex-start;
+                    justify-content: space-between;
+                    padding: 20px 10px;
+                }
+
+                header h1 {
+                    margin: 0;
+                    font-size: 1rem;
+                    color: #3490d0;
+                }
+
+                header .controls {
+                    display: flex;
+                    align-items: center;
+                }
+
+                header .controls > * {
+                    margin-left: 20px;
+                }
+
+                main {
+                    display: flex;
+                    flex: 1;
+                    height: calc(100% - 110px);
+                }
+
+	            .wrapper {
+	                display: flex;
+	                flex: 1;
+	                width: 100%;
+	                height: 100%;
+
+	            }
+
+	            footer {
+	                height: 35px;
+	                background: #222;
+	                color: #fff;
+	                display: flex;
+	                align-items: center;
+	                padding: 0 15px;
+	                justify-content: space-between;
+	            }
+
+	            footer p {
+	                margin: 0;
+	            }
+
+	            footer a {
+	                color: #fff;
+	                font-size: 12px;
+	                letter-spacing: 0.08rem;
+	                margin-left: 15px;
+	            }
+			</style>
+          `
+        }
+
+        onMount() {
+          const exampleFileName = this.params.get('example');
+          const themeName = this.params.get('theme');
+          const fileName = this.params.get('file');
+
+          if (exampleFileName) {
+            for (let example of this.examples) {
+              for (let item of example.items) {
+                if (item.value === exampleFileName) {
+                  this.currentExample = item;
+                  break;
+                }
+              }
+            }
+          }
+
+          if (themeName) {
+            const newTheme = this.themes.find(theme => theme.value === themeName);
+
+            if (newTheme) {
+              this.currentTheme = newTheme;
+            }
+          }
+
+          if (fileName) {
+            const newEditor = this.editors.find(theme => theme.value === fileName);
+
+            if (newEditor) {
+              this.currentEditor = newEditor;
+            }
+          }
+
+          this.updateUrl('example', this.currentExample.value);
+          this.updateUrl('theme', this.currentTheme.value);
+          this.updateUrl('file', this.currentEditor.value);
+          document.title = `${this.currentExample.label} - BFS Web Component`;
+        }
+
+        onEditorChange(event) {
+          this.currentEditor = this.editors[event.detail.index];
+          this.updateUrl('file', this.currentEditor.value);
+        };
+
+        onThemeChange(event) {
+          const newTheme = this.themes.find(theme => theme.value === event.detail.item.value);
+
+          if (newTheme) {
+            this.currentTheme = newTheme;
+          }
+
+          this.updateUrl('theme', this.currentTheme.value);
+        };
+
+        onEditorLoading(event) {
+          this.loading = event.detail;
+        }
+
+        onExampleSelection(event) {
+          this.currentExample = event.detail.item ?? event.detail;
+          this.updateUrl('example', this.currentExample.value);
+          document.title = `${this.currentExample.label} - BFS Web Component`;
+        }
+
+        onCodeLoaded(event) {
+          this.currentCode = event.detail;
+        }
+
+        onPreviewCollapse(event) {
+          this.previewCollapsed = event.detail;
+        }
+
+        onMenuCollapse(event) {
+          this.menuCollapsed = event.detail;
+        }
+
+        updateUrl(key, value) {
+          this.params.set(key, value);
+          this.url.search = this.params.toString();
+          history.pushState(null, null, this.url.toString());
+        }
+
+      }
+
+      class CodeExamplesMenu extends WebComponent {
+        static observedAttributes = ['list', 'active-item', 'collapsed'];
+
+        get template() {
+          this.collapsed = this.hasAttribute('collapsed');
+
+          return `
+            <nav name="main-menu">
+                <h2><span>Examples</span> <button type="button" onclick="toggleCollapse()">{collapsed ? '>' : '<'}</button></h2>
+                <ul class="items">
+                    <li repeat="list">
+                        <span>{$item.title}</span>
+                        <ul repeat="$item.items as $menuItem" class="sub-items">
+		                    <li data-item="{$menuItem.value}" attr.class.active="activeItem?.value === $menuItem.value">
+		                        <button type="button"
+		                            onclick="handleClick($event, $menuItem)">{$menuItem.label}</button>
+	                        </li>
+						</ul>
+					</li>
+				</ul>
+			</nav>
+          `;
+        }
+
+        get stylesheet() {
+          return `
+            <style>
+                :host {
+                    display: block;
+                    max-width: 300px;
+                    min-width: 300px;
+                    height: 100%;
+                    overflow: auto;
+                    padding: 15px 0;
+                    border-right: 1px solid #555;
+                }
+
+                :host([collapsed="true"]) {
+					max-width: 35px;
+					min-width: 35px;
+				}
+
+                :host * {
+                    box-sizing: border-box;
+                }
+
+                :host nav {
+                    position: center;
+                    background: #f5f5f5;
+                }
+
+                :host nav h2 {
+                    position: sticky;
+                    top: -20px;
+                    left: 0;
+                    background: #fff;
+                    padding: 8px 10px 4px;
+                    margin: -20px 0 0 0;
+                    font-size: 1rem;
+                    border-bottom: 2px solid #1d75b3;
+                    display: flex;
+                    justify-content: space-between;
+
+                }
+
+                :host([collapsed="true"]) h2 {
+                    padding: 8px 6px 4px;
+                }
+
+                :host([collapsed="true"]) h2 span {
+                    display: none;
+                }
+
+                :host nav h2 button {
+                    -webkit-appearance: none;
+                    -moz-appearance: none;
+                    appearance: none;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    background: #1d75b3;
+                    color: #fff;
+                    border-radius: 3px;
+                    min-width: 25px;
+                    min-height: 20px;
+                }
+
+                :host ul {
+                    list-style: none;
+                    margin: 0;
+                    padding: 0;
+                }
+
+                :host ul.items {
+                    padding: 0 10px;
+                }
+
+                :host([collapsed="true"]) ul.items {
+					display: none;
+				}
+
+                :host ul.items > li span {
+					font-size: 0.9rem;
+					font-weight: 700;
+					display: block;
+					margin: 15px 0 10px;
+					color: #1d75b3;
+                }
+
+                :host ul.sub-items {
+                    padding-left: 5px;
+                }
+
+                :host ul.sub-items button {
+                    border: none;
+                    background: none;
+                    text-align: left;
+                    font-size: 0.85rem;
+                    cursor: pointer;
+                    padding: 5px 8px;
+                    display: block;
+                    min-width: 100%;
+                    font-family: sans-serif;
+                    line-height: 125%;
+                }
+
+                :host ul.sub-items > li:hover button {
+                    background: #1d75b3;
+                    color: #fff;
+                }
+
+                :host ul.sub-items > li.active button {
+                    background: #3490d0;
+                    color: #fff;
+                }
+			</style>
+          `;
+        }
+
+        onUpdate(name, oldValue, newValue) {
+          if (name === 'activeItem' && newValue) {
+            this.root.querySelector(`[data-item="${newValue.value}"]`)?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+          }
+        }
+
+        handleClick(event, example) {
+          event.stopPropagation();
+          event.preventDefault();
+
+          if (example.value !== this.activeItem?.value) {
+            this.dispatchEvent(new CustomEvent('selection', {
+              detail: example
+            }));
+          }
+        }
+
+        toggleCollapse() {
+          if (this.collapsed) {
+            this.setAttribute('collapsed', 'false');
+          } else {
+            this.setAttribute('collapsed', 'true');
+          }
+
+          this.dispatchEvent(new CustomEvent('collapse', {
+            detail: this.collapsed
+          }));
+        }
+      }
+
+      class CodePreview extends WebComponent {
+        static observedAttributes = ['code', 'collapsed'];
+
+        get template() {
+          return `
+			<button type="button" class="collapse-button" onclick="toggleCollapse()">{collapsed ? '<' : '>'}</button>
+			<iframe id="editor-view" srcdoc="{code}"></iframe>`
+        }
+
+        get stylesheet() {
+          return `
+			<style>
+				:host {
+					display: block;
+					width: 100%;
+					min-width: 15px;
+					height: 100%;
+					border: 1px solid #ddd;
+					position: relative;
+					background: #fff;
+				}
+
+				:host([collapsed="true"]) {
+					max-width: 15px;
+				}
+
+				iframe {
+					width: 100%;
+					height: 100%;
+					border: none;
+					background: #fff;
+				}
+				
+				.collapse-button {
+                    border-radius: 3px;
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					appearance: none;
+					border: none;
+					cursor: pointer;
+					position: absolute;
+					left: 0;
+					top: 0;
+					transform: translate(calc(-100% - 15px), 0);
+					width: 25px;
+					height: 25px;
+					background: #1d75b3;
+					color: #fff;
+				}
+
+				:host([collapsed="true"]) iframe {
+					display: none;
+				}
+
+
+			</style>`;
+        }
+
+        toggleCollapse() {
+          if (this.collapsed) {
+            this.setAttribute('collapsed', 'false');
+          } else {
+            this.setAttribute('collapsed', 'true');
+          }
+
+          this.dispatchEvent(new CustomEvent('collapse', {
+            detail: this.collapsed
+          }));
+        }
+      }
+
+      class CodeEditor extends WebComponent {
+        static observedAttributes = ['example-path', 'type', 'content-id', 'active', 'theme'];
+        #exampleCode = '';
+        #pattern = '';
+        #loading = false;
+        #commonOptions = {
+          lineNumbers: true,
+          tabSize: 2,
+          autoCloseBrackets: true,
+          smartIndent: true,
+          indentWithTabs: true,
+          electricChars: true,
+          lineWrapping: true,
+          autofocus: true,
+          spellcheck: true,
+        }
+        #currentExamplePath = null;
+
+        get stylesheet() {
+          return `
+			<style>
+			    :host {
+			        display: block;
+			        width: 100%;
+			        height: 100%;
+			        position: absolute;
+				    left: 0;
+				    top: 0;
+			    }
+
+			    .CodeMirror pre.CodeMirror-line,
+				.CodeMirror pre.CodeMirror-line-like {
+					font-family: monospace;
+					font-size: 14px;
+					font-weight: 500;
+					line-height: 1.4375;
+					letter-spacing: 0.035rem;
+				}
+
+				@media screen and (max-width: 600px) {
+				    .CodeMirror pre.CodeMirror-line,
+					.CodeMirror pre.CodeMirror-line-like {
+						font-size: 12px;
+					}
+				}
+			</style>
+			`
+        }
+
+        get template() {
+          return `
+			<link rel="stylesheet" href="./examples/editor/codemirror.css">
+			<link rel="stylesheet" href="./examples/editor/themes/dracula.css">
+			<link rel="stylesheet" href="./examples/editor/themes/shadowfox.css">
+			<link rel="stylesheet" href="./examples/editor/themes/base16-light.css">
+			<link rel="stylesheet" href="./examples/editor/themes/neo.css">
+			<textarea ref="textarea"></textarea>`;
+        }
+
+        onMount() {
+          this.#pattern = new RegExp(`<([a-z][a-z0-9-\\.]+)\\s*id="${this.contentId}"\\s*[^>]*>(.*)<\/\\1>`, 'is');
+          this.editor = CodeMirror.fromTextArea(this.$refs.textarea, {
+            mode: this.type,
+            theme: this.theme,
+            ...this.#commonOptions,
+          });
+
+          this.editor.setSize('100%', '100%');
+
+          if (this.active) {
+            this.loadExample();
+          }
+
+          this.listenToChange();
+        }
+
+        onUpdate(name, olv, nv) {
+          if (name === 'examplePath' || name === 'active') {
+            this.loadExample();
+          } else if (name === 'theme') {
+            this.editor.setOption('theme', nv);
+          }
+        }
+
+        listenToChange() {
+          let timer;
+          this.editor.on('change', () => {
+            if (this.#loading) {
+                return;
+            }
+
+            const [fullMatch, tag] = this.#exampleCode.match(this.#pattern);
+
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+              const newCode = this.#exampleCode.replace(fullMatch, `<${tag} id="${this.contentId}">${this.editor.getValue()}</${tag}>`);
+
+              if (newCode !== this.#exampleCode) {
+                this.dispatchEvent(new CustomEvent('content', {
+                  detail: newCode
+                }));
+              }
+            }, 1000)
+          })
+        }
+
+        loadExample() {
+          if (!this.examplePath || !this.active || this.#currentExamplePath === this.examplePath) {
+            return;
+          }
+
+          this.#loading = true;
+          this.#currentExamplePath = this.examplePath;
+
+          this.dispatchEvent(new CustomEvent('loading', {detail: true}));
+
+          fetch(this.examplePath)
+            .then(res => {
+              if (res.status !== 200) {
+                throw new Error(`${res.status}: ${res.statusText}`)
+              }
+
+              return res.text();
+            })
+            .then(res => {
+              const code = res.match(this.#pattern);
+
+              this.#exampleCode = res;
+              this.editor.setValue(code[2].trim());
+              this.dispatchEvent(new CustomEvent('content', {detail: res}));
+              this.dispatchEvent(new CustomEvent('loading', {detail: false}));
+            })
+            .catch(() => {
+              this.editor.setValue('');
+              this.dispatchEvent(new CustomEvent('content', {detail: ''}));
+              this.dispatchEvent(new CustomEvent('loading', {detail: false}));
+            })
+            .finally(() => {
+			  this.#loading = false;
+			});
+        }
+      }
+
+      WebComponent.registerAll([
+        // providers
+        CodeEditorApp,
+        // components
+        ViewLoadingIndicator,
+        ListSelector,
+        FlexResizer,
+        CodeExamplesMenu,
+        TabHead,
+        TabContent,
+        TabsContainer,
+        CodeEditor,
+        CodePreview,
+      ]);
+
+	</script>
+</body>
+</html>

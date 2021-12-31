@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html"></main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	// public properties are just class properties
+	// that can be accessed anywhere inside and outside
+	// the class
+	label = "Do Something";
+	
+	onMount() {
+		// changing or re-assigning public properties
+		// will trigger a DOM update and onUpdate to
+		// be called soon after
+		this.label = "click me"
+	}
+	
+	get template() {
+		// public properties can be accessed inside
+		// the template and stylesheet
+		return `<button type="button">{label}</button>`
+	}
+}
+
+ActionButton.register();
+
+const btn = new ActionButton();
+
+document.body.appendChild(btn);
+
+// you can read any public properties (including attributes)
+// from the element reference
+document.body.insertAdjacentHTML('beforeend', `<p>The button label is "${btn.label}"</p>`);
+
+</script>
+</body>
+</html>

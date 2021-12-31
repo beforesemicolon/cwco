@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html"></main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	// private properties are just class properties
+	// that can ONLY be accessed inside the class
+	#label = "Do Something";
+	
+	onMount() {
+		// changing or re-assigning private properties
+		// will NOT trigger DOM updates
+		this.#label = "click me";
+		
+		// Because of this small detail
+		// use private properties for data
+		// not meant to be rendered and to avoid
+		// DOM updates
+	}
+	
+	get template() {
+		// private properties CANNOT be accessed inside
+		// the template or stylesheet
+		return `<button type="button">{this.#label}</button>`
+	}
+}
+
+ActionButton.register();
+
+const btn = new ActionButton();
+
+document.body.appendChild(btn);
+
+// you CANNOT read any private properties
+// from the element reference
+document.body.insertAdjacentHTML('beforeend', `<p>The button label is "${btn.label}"</p>`);
+
+</script>
+</body>
+</html>

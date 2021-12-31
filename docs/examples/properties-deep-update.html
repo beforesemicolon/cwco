@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<number-list></number-list>
+</main>
+
+<script id="app-js">
+class NumberList extends WebComponent {
+	list = [1];
+	
+	onUpdate(name, oldValue, newValue) {
+		// deeply changed properties old and new value
+		// will always be the same as the component
+		// does not track previews states of such
+		// data types
+	}
+	
+	get template() {
+		return `
+			<ul>
+				<li repeat="list">item-{$item}</li>
+			</ul>
+			<button type="button" onclick="addItem()">add to list</button>
+		  `
+	}
+	
+	addItem() {
+		// a deep update happens when an object property
+		// changes deeply at any level either
+		// by calling a method that changes it
+		// or to manually reach a internal property
+		// and change it
+		this.list.push(this.list.length + 1)
+	}
+}
+
+NumberList.register();
+
+</script>
+</body>
+</html>

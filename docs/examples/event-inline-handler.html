@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<action-button></action-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	color = {
+		bg: '#222',
+		text: '#fff',
+	}
+	
+	get template() {
+		/**
+		 * You can use curly brace to declare
+		 * inline event handler which is great
+		 * for quick one-liners that a function
+		 * would be too much.
+		 *
+		 * It is very important to use the
+		 * "this" keyword inside.
+		 * Simply pretend you are inside a body of
+		 * a function.
+		 *
+		 * AVOID bloating this with complex things.
+		 * If it is more than a one-liner simply
+		 * declare a method and handle things there
+		 * as it is more readable and
+		 * less error prone.
+		 */
+		return `
+			<button
+				type="button"
+				style="
+					background: {color.bg};
+					color: {color.text};
+					border: none;
+					padding: 5px 10px;
+				"
+				onmouseover="{this.color.bg = '#900'}"
+				onmouseout="{this.color.bg = '#222'}"
+				>Do Something</button>`
+	}
+}
+
+ActionButton.register();
+
+</script>
+</body>
+</html>

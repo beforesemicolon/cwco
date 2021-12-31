@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<calc-app>
+	<calc-display value="{value}"></calc-display>
+	<div class="row" repeat="keys as $row">
+		<calc-key
+			repeat="$row as $k"
+			value="{$k.value}"
+			span="{$k.span}"
+			attr.class.active="operation === $k.value"
+			onclick="onKeyPressed($k.value)"
+		>{$k.label}</calc-key>
+	</div>
+</calc-app>
+</main>
+
+<script id="app-js">
+const {WebComponent, ContextProviderComponent} = window;
+
+class Key {
+	constructor(value, label = null, span = 1) {
+	  this.value = value;
+	  this.label = label ?? value;
+	  this.span = span;
+	}
+}
+
+class CalcApp extends ContextProviderComponent {
+	keys = [
+	  [new Key('C'), new Key('+/-'), new Key('%'), new Key('/', '÷')],
+	  [new Key(7), new Key(8), new Key(9), new Key('*', 'x')],
+	  [new Key(4), new Key(5), new Key(6), new Key('-')],
+	  [new Key(1), new Key(2), new Key(3), new Key('+')],
+	  [new Key(0, '0', 2), new Key('.'), new Key('=')],
+	];
+	value = 0;
+	operation = null;
+	#operations = [];
+
+	get stylesheet() {
+	  return `
+	  :host {
+	    display: block;
+	    width: 260px;
+	  }
+
+	  :host * {
+	    box-sizing: border-box;
+	  }
+
+	  :host .row {
+	    display: flex;
+	    min-width: 100%;
+	  }
+	`;
+	}
+
+	onKeyPressed(value) {
+	  switch(value) {
+	    case '%':
+	      if(typeof this.value === 'number') {
+	        this.value /= 100;
+	      }
+	      break;
+	    case '+/-':
+	      if(typeof this.value === 'number') {
+	        this.value *= -1;
+	      }
+	      break;
+	    case 'C':
+	      this.value = 0;
+	      this.operation = null;
+	      this.#operations = [];
+	      break;
+	    case '.':
+	      if(`${this.value}`.indexOf('.') === -1) {
+	        this.value = `${this.value}.`
+	      }
+	      break;
+	    case '=':
+	      if(typeof this.#operations[this.#operations.length - 1] !== 'number') {
+	        this.#operations.push(Number(this.value));
+	      }
+
+	      this.value = eval(this.#operations.join(' '));
+	      this.operation = null;
+	      this.#operations = [this.value];
+	      break;
+	    case '-':
+	    case '+':
+	    case '/':
+	    case '*':
+	      if(typeof this.#operations[this.#operations.length - 1] !== 'number') {
+	        this.#operations.push(Number(this.value));
+		      this.value = eval(this.#operations.join(' '));
+	      }
+		    
+	      this.operation = value;
+	      this.#operations.push(value);
+	      break;
+	    default:
+	      if(`${this.value}`.replace(/\.|-/, '').length < 9) {
+	        this.value = this.operation ?
+	          value : Number(`${this.value}${value}`);
+	      }
+	      this.operation = null;
+	  }
+	}
+}
+
+class CalcDisplay extends WebComponent {
+	static observedAttributes = ['value', 'max-digits'];
+
+	get template() {
+	  this.maxDigits = Number(this.maxDigits) || 9;
+	  this.value = Number(this.value) || 0;
+	  return '<div class="number-display">{this.formatDisplayValue()}</div>'
+	}
+
+	get stylesheet() {
+	  return `
+		  :host {
+		    display: block;
+		    box-sizing: border-box;
+		    padding: 2px;
+		  }
+
+		  :host * {
+		    box-sizing: border-box;
+		  }
+
+		  .number-display {
+		    font-size: 2rem;
+		    font-family: monospace;
+		    text-align: right;
+		    background: #fff;
+		    padding: 20px 10px 5px 10px;
+		    min-width: 260px;
+		    max-width: 260px;
+		    border: 2px solid #111;
+		    border-radius: 5px;
+		    white-space: nowrap;
+		  }
+		`;
+	}
+
+	formatter = new Intl.NumberFormat(navigator.language);
+
+	formatDisplayValue() {
+	  const val = `${this.value}`;
+
+	  if(val.replace('.', '').length > this.maxDigits) {
+	    return this.formatter.format(Number(val).toExponential(8));
+	  }
+
+	  return this.formatter.format(Number(val));
+	}
+}
+
+class CalcKey extends WebComponent {
+	static observedAttributes = ['label', 'value', 'span'];
+
+	get template() {
+	  return '<button type="button"><slot>{label}</slot></button>'
+	}
+
+	get stylesheet() {
+	  return `
+	  :host {
+	    display: inline-block;
+	    padding: 2px;
+	    width: ${this.span === 2 ? '130px' : '65px'};
+	    height: 65px;
+	    box-sizing: border-box;
+	  }
+
+	  :host * {
+	    box-sizing: border-box;
+	  }
+
+	  button {
+	    width: 100%;
+	    height: 100%;
+	    border: 2px solid #111;
+	    border-radius: 5px;
+	    font-size: 1.5rem;
+	    font-weight: 300;
+	    background: none;
+	    color: #444;
+	    font-family: sans-serif;
+	    cursor: pointer;
+	    background-color: #fff;
+	  }
+
+	  button:hover {
+	    background-color: #f2f2f2;
+	  }
+
+	  button:active {
+	    background-color: #ddd;
+	  }
+
+	  :host(.active) button {
+	    background: #111;
+	    color: #fff;
+	  }
+	`;
+	}
+}
+
+CalcApp.register();
+CalcDisplay.register();
+CalcKey.register();
+</script>
+</body>
+</html>

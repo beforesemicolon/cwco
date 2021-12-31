@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<demo-app></demo-app>
+</main>
+
+<script id="app-js">
+class DemoApp extends WebComponent {
+	/**
+	 * The static initialContext is a way
+	 * to start your component context data.
+	 *
+	 * Context data are different than component
+	 * properties and attributes as they can
+	 * be accessed by any child component without
+	 * this component having to pass it via attributes
+	 */
+	static initialContext = {
+		title: 'Web Component',
+		description: 'Lorem ipsum dolor sit amet, consectetur ' +
+			'adipisicing elit. At autem deserunt eaque eum facilis ' +
+			'in, incidunt molestiae nam nostrum odio placeat ' +
+			'recusandae, rem repudiandae tempore.'
+	}
+}
+
+DemoApp.register();
+
+</script>
+</body>
+</html>

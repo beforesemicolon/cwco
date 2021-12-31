@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<parent-box>
+	<inner-box>
+		<button onclick="parentClickHandler()">trigger parent</button>
+		<!--
+		"innerClickHandler" is inaccessible and will throw error
+		because everything inside <parent-box> is seen as
+		ParentBox template as if it was declared inside the class
+		, and therefore can only access
+		things declared inside ParentBox unless it is context -->
+		<button onclick="innerClickHandler()">trigger inner</button>
+	</inner-box>
+</parent-box>
+</main>
+
+<script id="app-js">
+class ParentBox extends ContextProviderComponent {
+	parentClickHandler() {
+		alert('parent handler called')
+	}
+}
+
+class InnerBox extends ContextProviderComponent {
+	innerClickHandler() {
+		alert('inner handler called')
+	}
+}
+
+// when registering context providers, order matters
+// and the one meant to wrap the other should
+// declared first
+ParentBox.register();
+InnerBox.register();
+
+</script>
+</body>
+</html>

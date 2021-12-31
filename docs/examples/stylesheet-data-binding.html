@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<action-button></action-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	colors = {
+		bg: "#d1dbdb",
+		text: "#111"
+	}
+	
+	onMount() {
+		this.rainbowColor()
+	}
+	
+	rainbowColor(val = 0) {
+		// changing the property will cause the style to
+		// be updated with every change which is a super
+		// powerful feature that means that you don't have
+		// to be toggling classing to apply CSS changes
+		// to your component and treat style as part
+		// of the component as the template
+		this.colors.bg = `hsl(${val}, 100%, 50%)`
+		requestAnimationFrame(() => this.rainbowColor((val + 1) % 360))
+	}
+	
+	onUpdate(name, oldValue, newValue) {
+		console.log(name, oldValue, newValue);
+	}
+	
+	get template() {
+		return `<button type="button">Do Something</button>`
+	}
+	
+	get stylesheet() {
+		return `<style>
+			:host button {
+				-moz-appearance: none;
+				-webkit-appearance: none;
+				appearance: none;
+				
+				/**
+				You can use square brackets inside your style
+				to bind class properties to style property
+				values which update when the property changes
+				 */
+				background: [colors.bg];
+				color: [colors.text];
+				
+				border: none;
+				padding: 8px 12px;
+				border-radius: 3px;
+				letter-spacing: 0.05rem;
+				font-size: 0.9rem;
+				cursor: pointer;
+			}
+		</style>`
+	}
+}
+
+ActionButton.register();
+</script>
+</body>
+</html>

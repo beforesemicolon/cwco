@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html"></main>
+
+<script id="app-js">
+class UploadButton extends WebComponent {
+	static observedAttributes = [
+		'loading',
+		'type',
+		'label',
+		'multiple',
+		'aria-label',
+	];
+	
+	get template() {
+		return `
+			<label class="upload-btn" aria-label="{ariaLabel}">
+				<slot>{label || (loading ? 'Uploading' : 'Upload')}</slot>
+				<span class="loading-indicator" if="loading"></span>
+				<input
+					type="file"
+					attr.multiple="multiple"
+					accept="{type || '*'}" style="display: none;"
+					onchange="handleChange($event)"
+					/>
+			</label>`;
+	}
+	
+	get stylesheet() {
+		return `
+			<style>
+				:host {
+					display: inline-block;
+				}
+				
+				:host * {
+					box-sizing: border-box;
+				}
+				
+				:host .upload-btn {
+					background: #58b7fc;
+					color: #000;
+					padding: 10px 18px;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					border-radius: 3px;
+					text-transform: capitalize;
+					font-family: sans-serif;
+					letter-spacing: 0.05rem;
+					font-size: 0.9rem;
+					cursor: pointer;
+				}
+				
+				:host .loading-indicator {
+					display: inline-block;
+					width: 20px;
+					height: 20px;
+					background: url("https://www.freeiconspng.com/thumbs/load-icon-png/load-icon-png-8.png") center/ 100% no-repeat;
+					margin-left: 10px;
+					animation: rotate 0.4s linear infinite;
+				}
+				
+				@keyframes rotate {
+					100% {
+						transform: rotate(1turn);
+					}
+				}
+			</style>`;
+	}
+	
+	handleChange(event) {
+		this.dispatchEvent(new CustomEvent('files', {
+			detail: {
+				files: event.target.files
+			}
+		}));
+	}
+}
+
+UploadButton.register();
+
+const btn = new UploadButton();
+
+btn.addEventListener('files', () => {
+	btn.loading = true;
+	setTimeout(() => {
+		// simulating uploading
+		btn.loading = false;
+	}, 5000);
+})
+
+document.body.appendChild(btn);
+
+</script>
+</body>
+</html>

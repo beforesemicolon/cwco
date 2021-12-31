@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html"></main>
+
+<script id="app-js">
+class DestroyExample extends WebComponent {
+	// the onDestroy is called before the element is removed
+	// from the DOM and it is great to do cleanup tasks like
+	// clear timeout, unsubscribe, cancel requests, etc
+	onDestroy() {
+		alert('I am being destroyed')
+	}
+	
+	get template() {
+		// the "this" always refers to the element
+		// https://developer.mozilla.org/en-US/docs/Web/API/Element/remove
+		return `<button onclick="{this.remove()}">Destroy Me</button>`
+	}
+}
+
+DestroyExample.register();
+
+document.body.appendChild(new DestroyExample());
+document.body.appendChild(new DestroyExample());
+document.body.appendChild(new DestroyExample());
+
+</script>
+</body>
+</html>

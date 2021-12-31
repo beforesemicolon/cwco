@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<!--
+Wrap your app inside the context provider
+to inherit all context data and CSS variables -->
+<theme-provider>
+	<demo-app></demo-app>
+</theme-provider>
+</main>
+
+<script id="app-js">
+
+// to create a context provider you must extend
+// the ContextProviderComponent class which has
+// extra handling of template slot
+class ThemeProvider extends ContextProviderComponent {
+	// for this theme provider we can define
+	// the theme values for the app
+	static initialContext = {
+		color: {
+			brand: '#900',
+			primary: '#222',
+			secondary: '#f2f2f2',
+		},
+		fontFamily: {
+			heading: 'Arial, serif',
+			body: '"Open Sans", sans-serif',
+		},
+		space: {
+			xsm: '4px',
+			sm: '8px',
+			md: '12px',
+			lg: '18px',
+			xlg: '24px',
+		}
+	}
+	
+	get stylesheet() {
+		// with the power of style data binding
+		// your can reference the context to declare
+		// variables for usages inside style which
+		// can be referenced even inside shadow root
+		return `
+			<style>
+				:host {
+					--color-brand: [color.brand];
+					--color-primary: [color.primary];
+					--color-secondary: [color.secondary];
+					--font-heading: [fontFamily.heading];
+					--font-body: [fontFamily.body];
+					--space-xsm: [space.xsm];
+					--space-sm: [space.sm];
+					--space-md: [space.md];
+					--space-lg: [space.lg];
+					--space-xlg: [space.xlg];
+				}
+			</style>
+		`
+	}
+}
+
+class DemoApp extends WebComponent {
+	get template() {
+		// you can reference theme context from the template
+		return `
+			<h2 style="color: {color.brand}">Demo App</h2>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium architecto libero natus officiis repellat rerum.</p>
+			<button type="button">click me</button>
+		`;
+	}
+	
+	// you can reference theme variables from the template
+	get stylesheet() {
+		return `
+			<style>
+				h2 {
+					font-family: [fontFamily.heading];
+					margin-bottom: var(--space-xsm);
+				}
+				
+				p {
+					margin-top: 0;
+					margin-bottom: var(--space-xlg);
+				}
+				
+				button {
+					background: [color.primary];
+					color: #fff;
+					border: none;
+					padding: 5px 10px;
+					border-radius: 3px;
+					text-transform: capitalize;
+				}
+			</style>
+		`;
+	}
+}
+
+ThemeProvider.register();
+DemoApp.register();
+
+</script>
+</body>
+</html>

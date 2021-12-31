@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<demo-app></demo-app>
+</main>
+
+<script id="app-js">
+class DemoApp extends WebComponent {
+	static initialContext = {
+		title: 'Web Component',
+		description: 'Lorem ipsum dolor sit amet, consectetur ' +
+			'adipisicing elit. At autem deserunt eaque eum facilis ' +
+			'in, incidunt molestiae nam nostrum odio placeat ' +
+			'recusandae, rem repudiandae tempore.'
+	}
+	
+	onMount() {
+		// you can read context via $context property of the class
+		console.log(
+			this.$context.title,
+			this.$context.description
+		);
+	}
+	
+	get template() {
+		// the components in the body will inherit
+		// any context data from this component.
+		// so there is no need to pass them via
+		// attributes
+		return `
+			<header-content></header-content>
+		`
+	}
+}
+
+class HeaderContent extends WebComponent {
+	get template() {
+		/**
+		 * This component assumes that it will be used
+		 * as descendant of some component which has
+		 * context with title and description
+		 *
+		 * This component $context property will
+		 * contain own context as well as inherit ones
+		 *
+		 * Inside the template you can simply access the
+		 * property directly without mentioning $context
+		 * but if the component also had a "description"
+		 * property the value with be as of the component
+		 * instead of inherit context.
+		 *
+		 * For consistency, always be explicit when you
+		 * are reading context data by using the "$context"
+		 * property
+		 */
+		return `
+			<h2>{$context.title}</h2>
+			<p>{description}</p>
+		`
+	}
+}
+
+HeaderContent.register();
+DemoApp.register();
+
+</script>
+</body>
+</html>

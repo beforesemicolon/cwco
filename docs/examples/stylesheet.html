@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<action-button></action-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	get template() {
+		return `<button type="button">Do Something</button>`
+	}
+	
+	/**
+	 * Declaring your style is a simple as defining the
+	 * stylesheet getter and return your CSS string
+	 */
+	get stylesheet() {
+		// the style tag is optional but
+		// it helps IDE and code editor highlight CSS
+		// much better
+		return `<style>
+			/**
+				starting all style with the :host is great
+				especially if the component mode is "none"
+			 */
+			:host button {
+				-moz-appearance: none;
+				-webkit-appearance: none;
+				appearance: none;
+				background: #d1dbdb;
+				color: #111;
+				border: none;
+				padding: 8px 12px;
+				border-radius: 3px;
+				letter-spacing: 0.05rem;
+				font-size: 0.9rem;
+				cursor: pointer;
+			}
+		</style>`
+	}
+}
+
+ActionButton.register();
+</script>
+</body>
+</html>

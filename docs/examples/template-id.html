@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<template id="action-button-template">
+	<button type="button"><slot></slot></button>
+</template>
+
+<action-button>Do Something</action-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	/**
+	 * You may also specify the template id instead of
+	 * the template if you have any declared in the
+	 * document body.
+	 *
+	 * If specified along with the template, the
+	 * template will be used instead
+	 */
+	templateId = "action-button-template";
+}
+
+ActionButton.register();
+
+</script>
+</body>
+</html>

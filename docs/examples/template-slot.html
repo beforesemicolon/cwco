@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<bfs-description>
+	<p slot="intro">
+		It allows leaving placeholder in the template to be
+		filled with any HTML from inside the tag when used.
+	</p>
+	<p slot="intro">
+		For example, these 2 initial paragraphs will be place
+		where the "intro" named slot is in the template all because
+		these paragraphs have the slot attribute with value of
+		"intro" to match.
+	</p>
+	<p>
+		This one will be grabbed by the un-named slot since it does
+		not also have a specified slot.
+	</p>
+	<p slot="ignored">
+		This paragraph will be ignored since the slot value
+		does not match any existing one in the template.
+	</p>
+</bfs-description>
+</main>
+
+<script id="app-js">
+class BFSDescription extends WebComponent {
+	/**
+	* slot tags only work when there is a shadow-root.
+	* When the mode is either "open" or "closed"
+	*/
+	get template() {
+	  return `
+	    <h2>Slot tags are amazing!</h2>
+	    <slot name="intro"></slot>
+	    <slot></slot>
+
+		<!-- What's inside the slot will be used
+		  if the slot does not find any direct child
+		  with slot attribute of "conclusion" value -->
+	    <slot name="conclusion">
+	        <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot">Learn More</a>
+		</slot>
+	  `
+	}
+}
+
+BFSDescription.register();
+
+</script>
+</body>
+</html>

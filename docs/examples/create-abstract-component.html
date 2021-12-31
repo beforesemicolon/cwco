@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<primary-button>save</primary-button>
+<secondary-button>cancel</secondary-button>
+</main>
+
+<script id="app-js">
+/**
+* Abstract component is a component not meant to be registered
+* and used as is.
+*
+* It is ONLY meant to be extended to help create other versions of it
+* and to refactor common things among components
+*/
+class Button extends WebComponent {
+	static observedAttributes = ['type', 'disabled', 'autofocus', 'name'];
+	
+	get template() {
+		return `
+		  <button
+		    class="btn"
+		    type="{type || 'button'}"
+		    attr.disabled="disabled"
+		    attr.autofocus="autofocus"
+		    attr.name="name"
+		    >
+		    <slot></slot>
+		  </button>
+		`;
+	}
+
+	get stylesheet() {
+		return `
+		  <style>
+		    :host {
+		      display: inline-block;
+		    }
+
+		    :host .btn {
+		      appearance: none;
+		      -moz-appearance: none;
+		      -webkit-appearance: none;
+		      background: none;
+		      border: none;
+		      cursor: pointer;
+		      border-radius: 3px;
+		      padding: 5px 8px;
+		      text-transform: capitalize;
+		      letter-spacing: 0.05rem;
+		    }
+		  </style>
+		`;
+	}
+}
+
+/**
+ * You can now extend button and
+ * only override the things you need to be different
+ */
+class PrimaryButton extends Button {
+	get stylesheet() {
+		return `
+		  ${super.stylesheet}
+		  <style>
+		    :host .btn {
+		      background: #222;
+		      color: #fff;
+		    }
+		  </style>
+		`;
+	}
+}
+
+class SecondaryButton extends Button {
+	get stylesheet() {
+		// To inherit the parent(Button) stylesheet
+		// you must call the "super.stylesheet" and insert before-hand
+		return `
+		  ${super.stylesheet}
+		  <style>
+		    :host .btn {
+		      background: #f2f2f2;
+		      color: #222;
+		    }
+		  </style>
+		`;
+	}
+}
+
+// only register the derived component and NEVER
+// the abstract component
+WebComponent.registerAll([
+  PrimaryButton,
+  SecondaryButton
+])
+
+</script>
+</body>
+</html>

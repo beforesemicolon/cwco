@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<error-example></error-example>
+</main>
+
+<script id="app-js">
+class ErrorExample extends WebComponent {
+	// the onError is called whenever something goes wrong
+	// processing template, style, and lifecycle of the component
+	//
+	// It can also be used to propagate errors that happen
+	// with your logic as a way to not crash your application
+	//
+	// this is a way to follow HTML silent way to deal with things
+	// without breaking the view and still give you a
+	// way to react to these errors as they are happening
+	onError(error) {
+		alert(`error ${error.message}`)
+	}
+	
+	get template() {
+		return `<button type="button" onclick="throwError()">throw error</button>`
+	}
+	
+	throwError() {
+		// this error is silently handled and
+		// won't crash your component and in case
+		// you have a global error handler component
+		// it will be propagate to the top level
+		this.onError(new Error('throwError'))
+	}
+}
+
+ErrorExample.register();
+
+</script>
+</body>
+</html>

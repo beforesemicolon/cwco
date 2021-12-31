@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<action-button></action-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	color = {
+		bg: '#222',
+		text: '#fff',
+	}
+	
+	get template() {
+		/**
+		 * To add an event listener to a element you
+		 * simply use the native HTML on* event attributes
+		 * and as value simply call the function you declared
+		 * in the class and that's it!
+		 *
+		 * All on* attributes are removed before element
+		 * is added to the DOM.
+		 */
+		return `
+			<button
+				type="button"
+				style="
+					background: {color.bg};
+					color: {color.text};
+					border: none;
+					padding: 5px 10px;
+				"
+				onmouseover="onMouseOver()"
+				onmouseout="onMouseOut()"
+				>Do Something</button>`
+	}
+	
+	onMouseOver() {
+		this.color.bg = '#900';
+	}
+	
+	onMouseOut() {
+		this.color.bg = '#222';
+	}
+}
+
+ActionButton.register();
+
+</script>
+</body>
+</html>

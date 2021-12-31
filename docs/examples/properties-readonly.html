@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html"></main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	#label = "Do Something";
+	
+	// readonly properties are just class getters
+	// that can ONLY be read inside and outside the class
+	get label() {
+		// getters are a great way to limit access to
+		// internal private properties
+		return this.#label;
+	};
+	
+	onMount() {
+		// changing or re-assigning private properties
+		// will NOT trigger DOM updates
+		this.#label = "click me";
+		
+		// When exposing private property through a getter
+		// make sure to couple it another public property
+		// that they are always changed together like
+		// "loading" and "list" properties where list
+		// can be public and loading private
+		// and both readonly but they are always
+		// changed together
+	}
+	
+	get template() {
+		// readonly properties can be accessed inside
+		// the template or stylesheet
+		return `<button type="button">{this.label}</button>`
+	}
+}
+
+ActionButton.register();
+
+const btn = new ActionButton();
+
+document.body.appendChild(btn);
+
+// you can read any readonly properties
+// from the element reference
+document.body.insertAdjacentHTML('beforeend', `<p>The button label is "${btn.label}"</p>`);
+
+</script>
+</body>
+</html>

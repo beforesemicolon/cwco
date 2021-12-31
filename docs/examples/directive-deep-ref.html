@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<button-wrapper></button-wrapper>
+</main>
+
+<script id="app-js">
+class ButtonWrapper extends WebComponent {
+
+	onMount() {
+	  // you can use the reference of a component tag
+	  // to read its inner references
+	  console.log(
+	    this.$refs.aBtn.$refs.btn
+	  )
+	}
+
+	get template() {
+	  // you can get a ref of an element with inner references
+	  return `<action-button ref="aBtn">Do Something</action-button>`
+	}
+}
+
+class ActionButton extends WebComponent {
+	get template() {
+	  return `<button type="button" ref="btn"><slot></slot></button>`
+	}
+}
+
+ActionButton.register();
+ButtonWrapper.register();
+
+</script>
+</body>
+</html>

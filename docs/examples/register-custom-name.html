@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<do-button></do-button>
+<send-button></send-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+    // define the tag name for this component
+    static tagName = "do-button";
+
+	get template() {
+	  return `<button type="button">Do Something</button>`
+	}
+}
+
+class SubmitButton extends WebComponent {
+	get template() {
+	  return `<button type="submit">Submit</button>`
+	}
+}
+
+/**
+* To register method will use the class name to generate the tag name
+* unless you define the "tagName" inside the component
+*/
+ActionButton.register(); // do-button
+
+/**
+ * You may also specify the tag name at when you call the register method
+ */
+SubmitButton.register('send-button'); // send-button
+
+</script>
+</body>
+</html>

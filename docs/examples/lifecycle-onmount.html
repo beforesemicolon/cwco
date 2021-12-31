@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html"></main>
+
+<script id="app-js">
+class MountExample extends WebComponent {
+	// the onMount is call soon after the element is added
+	// to the DOM and it is great for doing initializing task
+	// like subscribing to things, fetching data, checkin DOM, etc
+	onMount() {
+		alert('MountExample component added to the DOM')
+	}
+	
+	get template() {
+		return "<p>You added me to the DOM</p>"
+	}
+}
+
+MountExample.register();
+
+const btn = document.createElement('button');
+btn.textContent = "mount component";
+
+btn.onclick = () => {
+	document.body.appendChild(new MountExample());
+}
+
+document.body.appendChild(btn);
+
+</script>
+</body>
+</html>

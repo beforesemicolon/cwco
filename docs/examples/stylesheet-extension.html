@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<primary-button></primary-button>
+</main>
+
+<script id="app-js">
+
+/**
+ * You start first by declaring a Abstract component.
+ * A component only meant to be extended and cannot
+ * be registered
+ */
+class ActionButton extends WebComponent {
+	get template() {
+		return `<button type="button">Do Something</button>`
+	}
+	
+	get stylesheet() {
+		return `<style>
+			:host button {
+				-moz-appearance: none;
+				-webkit-appearance: none;
+				appearance: none;
+				border: none;
+				padding: 8px 12px;
+				border-radius: 3px;
+				letter-spacing: 0.05rem;
+				font-size: 0.9rem;
+				cursor: pointer;
+			}
+		</style>`
+	}
+}
+
+// you can now extend your Abstract component and
+// override the stylesheet
+class PrimaryButton extends ActionButton {
+	get stylesheet() {
+		/**
+		 * Start by getting the parent class stylesheet
+		 * and then declare your style soon after
+		 */
+		return `
+			${super.stylesheet}
+			
+			<style>
+				:host button {
+					background: orange;
+					color: black;
+				}
+			</style>`
+	}
+}
+
+PrimaryButton.register();
+</script>
+</body>
+</html>

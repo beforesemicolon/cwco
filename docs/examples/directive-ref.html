@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+	<action-button></action-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	
+	onMount() {
+		/**
+		 * The component will collect all element references
+		 * in the $refs property keyed by the name you gave them
+		 */
+		const { btn } = this.$refs;
+		
+		btn.style.background = 'green';
+		btn.style.color = 'white';
+	}
+	
+	get template() {
+		// to get a reference of a element simply attach
+		// the "ref" directive white the name you want to call
+		// it when trying to read it from the $refs object
+		return `<button type="button" ref="btn">Do Something</button>`
+	}
+}
+
+ActionButton.register();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html"></main>
+
+<script id="app-js">
+class TextField extends WebComponent {
+	static observedAttributes = ['value'];
+	
+	onUpdate(name, oldValue, newValue) {
+		// dispatching an event is a great example
+		// of how you can use the onUpdate lifecycle to
+		// react to a changes in the component
+		if (name === 'value') {
+			/**
+			 * you should dispatch any non-mouse or keyboard
+			 * event so you can listen to on the component
+			 * element
+			 */
+			this.dispatchEvent(new Event('input'))
+		}
+	}
+	
+	get template() {
+		/**
+		 * You can always refer to the
+		 * event object with $event property
+		 */
+		return `<input
+			type="text"
+			value="{value}"
+			oninput="onInput($event)"
+			onchange="{this.dispatchEvent(new Event('change'))}"
+			/>`
+	}
+	
+	onInput(event) {
+		/**
+		 * For this example, updating the "value"
+		 * will not try to update the input element because
+		 * the values are the same but it would
+		 * trigger the onUpdate lifecycle callback
+		 * to be called
+		 */
+		this.value = event.target.value;
+	}
+}
+
+TextField.register();
+
+const p = document.createElement('p');
+const field = new TextField();
+
+field.addEventListener('input', e => {
+	p.textContent = `event: "input", value: ${e.target.value}`;
+})
+
+field.addEventListener('change', e => {
+	p.textContent = `event: "change", value: ${e.target.value}`;
+})
+
+document.body.appendChild(field);
+document.body.appendChild(p);
+
+</script>
+</body>
+</html>

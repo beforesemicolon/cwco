@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<action-button disabled sub-type="primary">
+	click me
+</action-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	static observedAttributes = [
+		"disabled",
+		"type",
+		"readonly",
+		"sub-type"
+	];
+	
+	// NEVER declare a property that is
+	// also an "observedAttributes" attribute.
+	//
+	// It will throw a TypeError and break the component
+	// preventing it from rendering
+	subType = "primary"
+	
+	get template() {
+		/**
+		 * Every "observedAttributes" is turned into a property
+		 * in the component that you can access directly
+		 * in the template and as you would read any property.
+		 *
+		 */
+		
+		// dashed "observedAttributes" become camel-cased
+		console.log(this.subType);
+		
+		return `
+			<button
+				type="{type || 'button'}"
+				attr.disabled="disabled"
+				attr.readonly="readonly"
+				>
+				<slot></slot>
+			</button>`
+	}
+}
+
+ActionButton.register();
+</script>
+</body>
+</html>

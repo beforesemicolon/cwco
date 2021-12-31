@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<action-button sub-type="primary">
+	click me
+</action-button>
+</main>
+
+<script id="app-js">
+class ActionButton extends WebComponent {
+	static observedAttributes = [
+		"disabled",
+		"type",
+		"readonly",
+		"sub-type"
+	];
+	
+	
+	get template() {
+		/**
+		 * Inside the template is a safe place to define your
+		 * attribute default values since it won't trigger the
+		 * onUpdate lifecycle callback
+		 */
+		this.subType = this.subType || "primary";
+		this.type = this.type || "button";
+		
+		/**
+		 * Every attribute with value will be parsed to
+		 * their respective Javascript object or primitive value
+		 *
+		 * If they are not set on the tag their value will be
+		 * either an empty string or a boolean(false) in case of known
+		 * HTML boolean attributes like "hidden" & "disabled"
+		 */
+		
+		return `
+			<button
+				type="{type}"
+				attr.disabled="disabled"
+				attr.readonly="readonly"
+				attr.class.primary="subType === 'primary'"
+				attr.class.secondary="subType === 'secondary'"
+				>
+				<slot></slot>
+			</button>`
+	}
+}
+
+ActionButton.register();
+</script>
+</body>
+</html>

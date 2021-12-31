@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html"></main>
+
+<script id="app-js">
+/**
+ * All you have to do to create a component is
+ * extending your component class with WebComponent
+ *
+ * That alone will only define your component but not make it usable
+ * You will have to register it before using it
+ */
+class SiteName extends WebComponent {
+
+    // define what your component will render with "template" getter
+	get template() {
+	  return `<h1>Before Semicolon</h1>`
+	}
+}
+</script>
+</body>
+</html>

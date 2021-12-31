@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="https://unpkg.com/cwco/dist/web-component.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html"></main>
+
+<script id="app-js">
+/**
+* Create an abstract component that any component you create
+* must extend so you can have common handling of things like error
+*/
+class Component extends WebComponent {
+	onError(error) {
+	  // You can call super.onError to log the error to the console.
+	  super.onError(error);
+
+
+	  alert(error);
+
+      /**
+       * Here you can
+       *    - send error to some error analytics service you use
+       *    - trigger an error indicator component to show
+       *    - handle errors as your application needs to
+       */
+	}
+}
+
+/**
+ * Use the global Component class to create any component
+ * which automatically inherit the global error handling
+ * capability and related logic
+ */
+class MyButton extends Component {
+	get template() {
+		// this button will throw error or render because
+		// "handleClick" is not defined in this component
+		return `
+		    <button type="button" onclick="handleClick()" onmousedown="throwError()">click me to throw error</button>
+		`;
+	}
+
+	throwError() {
+		try {
+		   // do something that can throw
+		   this.x = this.y.value;
+		} catch(e) {
+		   // simply call the onError to report the error caught
+		   this.onError(e);
+		}
+	}
+}
+
+MyButton.register();
+
+const btn = document.createElement('button');
+btn.textContent = "click to render bad button";
+
+btn.onclick = () => {
+  document.body.appendChild(new MyButton());
+}
+
+document.body.appendChild(btn);
+
+</script>
+</body>
+</html>
