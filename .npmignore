@@ -1,0 +1,11 @@
+.idea
+node_module
+src
+webpack.config.js
+tsconfig.json
+docs
+**.tgz
+coverage
+examples
+jest.config.js
+.github
