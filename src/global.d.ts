@@ -4,8 +4,6 @@ export declare global {
 	export type onUpdateCallback = (property: string, oldValue: unknown, newValue: unknown) => void;
 	
 	export interface trackerOptions {
-		customSlot?: boolean;
-		customSlotChildNodes?: Array<Node>;
 		trackOnly?: boolean;
 		tracks: Map<Node, NodeTrack>;
 	}

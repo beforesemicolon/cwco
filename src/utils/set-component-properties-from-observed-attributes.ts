@@ -16,8 +16,8 @@ export function setComponentPropertiesFromObservedAttributes(
 		attr = attr.trim();
 
 		if (!directives.has(attr) && !(attr.startsWith('data-') || attr === 'class' || attr === 'style')) {
-			let value: string | boolean = comp.getAttribute(attr) ?? '';
 			let prop = attrsMap[attr];
+			let value: any = comp.getAttribute(attr) ?? comp[prop] ?? '';
 
 			properties.push(prop);
 
@@ -29,7 +29,6 @@ export function setComponentPropertiesFromObservedAttributes(
 				value = comp.hasAttribute(attr);
 				prop = (boolAttr as booleanAttributes)[prop].name;
 			}
-
 
 			if (value && typeof value === 'object') {
 				comp.removeAttribute(attr);

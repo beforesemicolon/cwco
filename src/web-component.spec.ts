@@ -51,6 +51,7 @@ describe('WebComponent', () => {
 			AComp.observedAttributes = ['unique', 'is-valid'];
 
 			const a = new AComp();
+			document.body.appendChild(a);
 
 			expect((a as any).unique).toBe('');
 			expect((a as any).isValid).toBe('');
@@ -343,12 +344,21 @@ describe('WebComponent', () => {
 		})
 
 		beforeEach(() => {
+			k.remove();
 			mountFn.mockClear();
 			destroyFn.mockClear();
 			updateFn.mockClear();
 			adoptionFn.mockClear();
 			errorFn.mockClear();
 		})
+
+		it('should use property values set before mounted if same attribute is not set', () => {
+			k.sample = 'new test value';
+
+			document.body.appendChild(k);
+
+			expect(k.sample).toBe('new test value');
+		});
 
 		it('should trigger onMount when added and onDestroy when removed from the DOM', () => {
 			document.body.appendChild(k);
