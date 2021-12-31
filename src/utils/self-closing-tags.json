@@ -1,0 +1,21 @@
+{
+  "AREA": "AREA",
+  "META": "META",
+  "BASE": "BASE",
+  "BR": "BR",
+  "COL": "COL",
+  "EMBED": "EMBED",
+  "HR": "HR",
+  "IMG": "IMG",
+  "INPUT": "INPUT",
+  "LINK": "LINK",
+  "PARAM": "PARAM",
+  "SOURCE": "SOURCE",
+  "TRACK": "TRACK",
+  "WBR": "WBR",
+  "COMMAND": "COMMAND",
+  "KEYGEN": "KEYGEN",
+  "MENUITEM": "MENUITEM",
+  "DOCTYPE": "DOCTYPE",
+  "!DOCTYPE": "!DOCTYPE"
+}

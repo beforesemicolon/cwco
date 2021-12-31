@@ -1,0 +1,106 @@
+{
+  "allowfullscreen": {
+    "value": false,
+    "name": "allowFullscreen"
+  },
+  "allowpaymentrequest": {
+    "value": false,
+    "name": "allowPaymentRequest"
+  },
+  "async": {
+    "value": false,
+    "name": "async"
+  },
+  "autofocus": {
+    "value": false,
+    "name": "autofocus"
+  },
+  "autoplay": {
+    "value": false,
+    "name": "autoplay"
+  },
+  "checked": {
+    "value": false,
+    "name": "checked"
+  },
+  "controls": {
+    "value": false,
+    "name": "controls"
+  },
+  "default": {
+    "value": false,
+    "name": "default"
+  },
+  "defer": {
+    "value": false,
+    "name": "defer"
+  },
+  "disabled": {
+    "value": false,
+    "name": "disabled"
+  },
+  "formnovlidate": {
+    "value": false,
+    "name": "formNoValidate"
+  },
+  "hidden": {
+    "value": false,
+    "name": "hidden"
+  },
+  "ismap": {
+    "value": false,
+    "name": "isMap"
+  },
+  "itemscope": {
+    "value": false,
+    "name": "itemScope"
+  },
+  "loop": {
+    "value": false,
+    "name": "loop"
+  },
+  "multiple": {
+    "value": false,
+    "name": "multiple"
+  },
+  "muted": {
+    "value": false,
+    "name": "muted"
+  },
+  "nomodule": {
+    "value": false,
+    "name": "noModule"
+  },
+  "novalidate": {
+    "value": false,
+    "name": "novalidate"
+  },
+  "open": {
+    "value": false,
+    "name": "open"
+  },
+  "playsinline": {
+    "value": false,
+    "name": "playsInline"
+  },
+  "readonly": {
+    "value": false,
+    "name": "readonly"
+  },
+  "required": {
+    "value": false,
+    "name": "required"
+  },
+  "reversed": {
+    "value": false,
+    "name": "reversed"
+  },
+  "selected": {
+    "value": false,
+    "name": "selected"
+  },
+  "truspeed": {
+    "value": false,
+    "name": "truSpeed"
+  }
+}
