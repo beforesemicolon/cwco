@@ -21,7 +21,7 @@
 
 ### Learn with Examples
 
-**Learn More From The [Documentation](https://github.com/beforesemicolon/cwco#documentation)** or 
+**Learn More From The [Documentation](https://github.com/beforesemicolon/cwco/tree/master/docs)** or 
 visit **[Examples Playground Page](https://beforesemicolon.github.io/cwco/?example=create-component.html&theme=neo&file=app.js)** for
 an extensive list of examples of everything this framework can do 
 **[including some components and small apps examples](https://beforesemicolon.github.io/cwco/?example=app-calculator.html&theme=neo&file=app.js)**.
