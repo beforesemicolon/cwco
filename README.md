@@ -10,6 +10,8 @@
 - ✅ Built-in Context
 - ✅ Powerful built-in Directives(including ability to create your own)
 - ✅ Client and Server Side Rendering
+- ✅ Works with other library and frameworks
+- 🚫 No Build Required!
 - 🚫 No JSX!
 - 🚫 No Virtual DOM!
 - 🚫 No Weird HTML or Javascript Syntax!
