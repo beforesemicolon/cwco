@@ -48,6 +48,51 @@ TodoApp.register();
 </todo-app>
 ```
 
+### Registration
+
+If you intend to define content in the HTML file, you MUST register the context provider component before all other components.
+
+If you have multiple context provider component you must register them in the order you use them in the HTML file.
+
+```html
+<theme-provider>
+    <store-data-provider>
+        <todo-app>
+            <h1>{app.title}</h1>
+            <p>{app.description</p>
+        </todo-app>
+    </store-data-provider>
+</theme-provider>
+```
+
+```js
+class ThemeProvider extends ContextProviderComponent {
+  theme = {
+    primary: "blue",
+    secondary: "red",
+  }
+}
+
+class StoreDataProvider extends ContextProviderComponent {
+  store = {
+    todos: [],
+    user: {}
+  }
+}
+
+class TodoApp extends ContextProviderComponent {
+  app = {
+    title: "Todo App",
+    description: "My super cool todo app",
+  }
+}
+
+// register them in the order you use them in the HTML file
+ThemeProvider.register()
+StoreDataProvider.register();
+TodoApp.register();
+```
+
 ### The slot tag
 
 What really makes the ContextProviderComponent special is how it handles the `slot` tag. It has a custom slot handler that gives
