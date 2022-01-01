@@ -6,7 +6,7 @@ and [contenteditable](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_a
 They can be placed in any HTML tag to allow that tag to gain special capabilities.
 
 The idea is same here and with Web Components you have a few special built-in ones, and you can also [create a custom
-one](https://github.com/beforesemicolon/cwco/blob/master/doc/custom-directives.md) for your need.
+one](https://github.com/beforesemicolon/cwco/blob/master/docs/custom-directives.md) for your need.
 
 One thing in common for all directives is that you don't need to use the curly braces to specify data or logic in some cases.
 Their value are already understood to be information to be executed for a result. When creating a custom one,
@@ -391,4 +391,4 @@ with the format of:
     attr.data.[data-name]="[value], [condition]"
 
 
-#### Next => [Custom Directives](https://github.com/beforesemicolon/cwco/blob/master/doc/custom-directives.md)
+#### Next => [Custom Directives](https://github.com/beforesemicolon/cwco/blob/master/docs/custom-directives.md)

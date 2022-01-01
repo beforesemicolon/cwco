@@ -201,10 +201,10 @@ class FirstChildRef extends Directive {
 FirstChildRef.register();
 ```
 
-This will be accessed the same way you [access node references inside component](https://github.com/beforesemicolon/cwco/blob/master/doc/directives.md#ref).
+This will be accessed the same way you [access node references inside component](https://github.com/beforesemicolon/cwco/blob/master/docs/directives.md#ref).
 
 ### node context
-You may also define context data for the node element itself. This is similar to [component context](https://github.com/beforesemicolon/cwco/blob/master/doc/context.md)
+You may also define context data for the node element itself. This is similar to [component context](https://github.com/beforesemicolon/cwco/blob/master/docs/context.md)
 which means that you can define data for the node which will be inherited by any descendent nodes.
 
 You already have seen this in action. When you use the `repeat` directive it sets `$item` and `$key` context
@@ -249,4 +249,4 @@ It helps makes a good distinction of where data is coming from and match the `cw
 ⚠️ It is important to know that a node context data has precedence over the component data or context data. It will also
 override its ancestors nodes similarly named context data.
 
-#### Next => [LiveCycles](https://github.com/beforesemicolon/cwco/blob/master/doc/livecycles.md)
+#### Next => [LiveCycles](https://github.com/beforesemicolon/cwco/blob/master/docs/livecycles.md)
