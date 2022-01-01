@@ -197,11 +197,9 @@ export class WebComponent extends HTMLElement {
 			$.get(this).updateContext(initialContext);
 		}
 
-		const onPropUpdate = (prop: string, oldValue: any, newValue: any, update = true) => {
+		const onPropUpdate = (prop: string, oldValue: any, newValue: any) => {
 			if (this.mounted) {
-				if (update) {
-					this.forceUpdate();
-				}
+				this.forceUpdate();
 				this.onUpdate(prop, oldValue, newValue);
 			} else if(this.parsed) {
 				this.onError(new Error(`[Possibly a memory leak]: Cannot set property "${prop}" on unmounted component.`));
@@ -210,7 +208,7 @@ export class WebComponent extends HTMLElement {
 
 		try {
 			$.get(this).unsubscribeCtx = $.get(this).subscribe((newContext: ObjectLiteral) => {
-				onPropUpdate('$context', $.get(this).$context, newContext, false);
+				onPropUpdate('$context', $.get(this).$context, newContext);
 			})
 
 			$.get(this).mounted = true;
