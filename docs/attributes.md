@@ -10,13 +10,17 @@ would look like when placed on the HTML tag.
 class SubmitButton extends WebComponent {
   static observedAttributes = ['label'];
   
-  get template() {
-    return '<button type="submit">{label}</button>'
-  }
+  template = '<button type="submit">{label}</button>';
 }
 ```
 
 In other libraries like React, these are referred to as **props**. Attributes that you get notified when they change.
+
+Attribute names must be:
+- kebab-case
+- lowercase
+- must start with a letter
+- may contain numbers
 
 ### Accessing attribute
 `WebComponent` will automatically map the attributes to properties in the class.
@@ -40,9 +44,10 @@ They will also update the DOM if changed.
 ```js
 const indicator = new StatusIndicator();
 
-indicator.currentStatus = 'Pending';
+document.body.appendChild(indicator);
 
-document.body.appendChild(indicator)
+indicator.setAttribute('current-status', 'Pending');
+
 ```
 
 ### Auto parsing
@@ -93,6 +98,19 @@ indicator.style.background = 'red';
 indicator.dataset.sample = 'x'
 ```
 
+### Default value
+You can define a observed attribute default value by simply defining a camel case version of it.
+
+```js
+class MyButton extends WebComponent {
+  static observedAttributes = ['label', 'type'];
+  type = 'button'; // default value for type if type attribute is not set
+  
+  template = '<button type="{}">{label}</button>';
+  
+}
+```
+
 ### Attributes vs Properties
 Attributes end up working just like properties because they are changed to be properties. On top of that,
 they have the advantage of triggering changes when they are set or changed on the HTML tag.
@@ -109,4 +127,4 @@ You should prefer attributes whenever you are expecting data to be set directly 
 <flat-list list="{items}"></flat-list>
 ```
 
-#### Recommended next: [LiveCycles](https://github.com/beforesemicolon/cwco/blob/master/docs/livecycles.md)
+#### Recommended next: [Events](https://github.com/beforesemicolon/cwco/blob/master/docs/events.md)

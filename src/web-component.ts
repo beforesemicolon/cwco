@@ -22,20 +22,43 @@ import {resolveHtmlEntities} from "./utils/resolve-html-entities";
 export class WebComponent extends HTMLElement {
 	readonly $refs: Refs = {};
 	$properties: Array<string> = ['$context', '$refs'];
-	templateId = '';
+	/**
+	 * the id of the template tag placed in the body of the document which contains the template content
+	 */
+	templateId: string = '';
+	/**
+	 * style for the component whether inside the style tag, as object or straight CSS string
+	 */
+	private _stylesheet: string = '';
+	public get stylesheet(): string {
+        return this._stylesheet;
+    }
+    public set stylesheet(value: string) {
+        this._stylesheet = value;
+    }
+	/**
+	 * template for the element HTML content
+	 */
+	private _template: string = '';
+	public get template(): string {
+        return this._template;
+    }
+    public set template(value: string) {
+        this._template = value;
+    }
 	_childNodes: Array<Node> = [];
 	
 	constructor() {
 		super();
 
 		let {mode, observedAttributes, delegatesFocus} = this.constructor as WebComponentConstructor;
-		
+
 		if (!$.has(this)) {
 			$.set(this, {})
 		}
-		
+
 		const meta = $.get(this);
-		
+
 		meta.root = this;
 		meta.mounted = false;
 		meta.parsed = false;
@@ -46,22 +69,10 @@ export class WebComponent extends HTMLElement {
 			...map,
 			[attr]: turnKebabToCamelCasing(attr)
 		}), {} as ObjectLiteral);
-		
+
 		if (mode !== 'none') {
 			$.get(this).root = this.attachShadow({mode, delegatesFocus});
 		}
-		
-		this.$properties.push(
-			...setComponentPropertiesFromObservedAttributes(this, observedAttributes, meta.attrPropsMap,
-				(prop, oldValue, newValue) => {
-					if (this.mounted) {
-						this.forceUpdate();
-						this.onUpdate(prop, oldValue, newValue);
-					} else if(this.parsed) {
-						this.onError(new Error(`[Possibly a memory leak]: Cannot set property "${prop}" on unmounted component.`));
-					}
-				})
-		);
 	}
 	
 	/**
@@ -165,22 +176,6 @@ export class WebComponent extends HTMLElement {
 		return $.get(this)?.mounted ?? false;
 	}
 	
-	/**
-	 * style for the component whether inside the style tag, as object or straight CSS string
-	 * @returns {string | {type: string, content: string}}
-	 */
-	get stylesheet() {
-		return '';
-	}
-	
-	/**
-	 * template for the element HTML content
-	 * @returns {string}
-	 */
-	get template() {
-		return '';
-	}
-	
 	get parsed() {
 		return $.get(this).parsed;
 	}
@@ -195,21 +190,27 @@ export class WebComponent extends HTMLElement {
 	
 	connectedCallback() {
 		defineNodeContextMetadata(this);
-		const {initialContext} = this.constructor as WebComponentConstructor;
+		const {initialContext, observedAttributes, name} = this.constructor as WebComponentConstructor;
+		const {parsed, tracks, root, attrPropsMap} = $.get(this);
 
 		if (Object.keys(initialContext).length) {
 			$.get(this).updateContext(initialContext);
 		}
-		
-		const {parsed, tracks, root} = $.get(this);
-		
+
+		const onPropUpdate = (prop: string, oldValue: any, newValue: any, update = true) => {
+			if (this.mounted) {
+				if (update) {
+					this.forceUpdate();
+				}
+				this.onUpdate(prop, oldValue, newValue);
+			} else if(this.parsed) {
+				this.onError(new Error(`[Possibly a memory leak]: Cannot set property "${prop}" on unmounted component.`));
+			}
+		};
+
 		try {
 			$.get(this).unsubscribeCtx = $.get(this).subscribe((newContext: ObjectLiteral) => {
-				if (this.mounted) {
-					this.onUpdate('$context', newContext, newContext)
-				} else if(this.parsed) {
-					this.onError(new Error(`[Possibly a memory leak]: Cannot update "$content" on unmounted component.`));
-				}
+				onPropUpdate('$context', $.get(this).$context, newContext, false);
 			})
 
 			$.get(this).mounted = true;
@@ -223,15 +224,10 @@ export class WebComponent extends HTMLElement {
 			if (parsed) {
 				this.updateContext({});
 			} else {
+
 				this.$properties.push(
-					...setupComponentPropertiesForAutoUpdate(this, (prop, oldValue, newValue) => {
-						if (this.mounted) {
-							this.forceUpdate();
-							this.onUpdate(prop, oldValue, newValue);
-						} else if(this.parsed) {
-							this.onError(new Error(`[Possibly a memory leak]: Cannot set property "${prop}" on unmounted component.`));
-						}
-					})
+					...setComponentPropertiesFromObservedAttributes(this, observedAttributes, attrPropsMap, onPropUpdate),
+					...setupComponentPropertiesForAutoUpdate(this, onPropUpdate)
 				)
 				
 				Object.freeze(this.$properties);
@@ -248,7 +244,7 @@ export class WebComponent extends HTMLElement {
 				}
 				
 				contentNode = parse(resolveHtmlEntities(style + temp));
-				
+
 				this._childNodes = Array.from(this.childNodes);
 				
 				if (this.customSlot) {
@@ -256,8 +252,6 @@ export class WebComponent extends HTMLElement {
 				}
 				
 				trackNode(contentNode, this, {
-					customSlot: this.customSlot,
-					customSlotChildNodes: this.customSlot ? this._childNodes : [],
 					tracks,
 				});
 				

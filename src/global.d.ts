@@ -4,8 +4,6 @@ export declare global {
 	export type onUpdateCallback = (property: string, oldValue: unknown, newValue: unknown) => void;
 	
 	export interface trackerOptions {
-		customSlot?: boolean;
-		customSlotChildNodes?: Array<Node>;
 		trackOnly?: boolean;
 		tracks: Map<Node, NodeTrack>;
 	}
@@ -111,9 +109,9 @@ export declare global {
 
 		readonly root: HTMLElement | ShadowRoot | null;
 		readonly mounted: boolean;
-		readonly template: string;
-		readonly templateId: string;
-		readonly stylesheet: string;
+		template: string;
+		templateId: string;
+		stylesheet: string;
 		readonly customSlot: boolean;
 
 		readonly $context: ObjectLiteral;

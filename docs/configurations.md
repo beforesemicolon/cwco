@@ -3,7 +3,7 @@ The `WebComponent` class allows for very minimal configuration. These are mostly
 shadow root and HTML tag. Everything else must be explicitly set to be taken into consideration.
 
 ### tagName
-The tag name is defined by:
+The tag name is defined by any of the following:
 - the name of the class;
 - the value of the static `tagName` property;
 - the name you provided when registering with the `register` call;
@@ -13,8 +13,8 @@ When you define the class for your component you must use a combination of at le
 distinguished by casing (camel or pascal casing).
 Your class name is then taken and converted into HTML tags before trying to register it.
 
-The tag name must be [valid](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name)
-according to rules defined web standards.
+The tag name must be a [valid tag name](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name)
+according to rules defined by web standards.
 
 ```js
 class FlatList extends WebComponent {}
@@ -27,24 +27,24 @@ class BFSButton extends WebComponent {}
 // becomes bfs-button
 ```
 
-In this form, if you try to access the `tagName` before you register the component, it will simply return
-an empty string.
+If you try to access the `tagName` before you register the component, it will simply return
+an empty string unless you specified it inside the class.
 
 ```js
 
 class FlatList extends WebComponent {}
 
-console.log(FlatList.tagName) // returns empty string
+console.log(FlatList.tagName) // returns ''
 
 FlatList.register();
 
-console.log(FlatList.tagName) // returns flat-list
+console.log(FlatList.tagName) // returns 'flat-list'
 
 ```
 
 ##### tagName
 You may also use the static `tagName` inside your class definition. This option is particularly useful
-if you want to keep your class names simple and a custom name to match.
+if you want to keep your class names simple and a custom tag name to match.
 
 ```js
 class Button extends WebComponent {
@@ -58,14 +58,30 @@ class Todo extends WebComponent {
 
 Using this option to define the tag name gives you the advantage of `tagName` always being there.
 
+```js
+
+class Button extends WebComponent {
+  static tagName = 'bfs-button';
+}
+
+console.log(Button.tagName) // returns 'bfs-button'
+
+FlatList.register();
+
+console.log(Button.tagName) // returns 'bfs-button'
+
+```
+
 ##### register
-The name of your tag can also be defined when you register your tag as well.
+The name of your tag can also be defined when you try to register your tag as a value for the `register` call.
 
 ```js
 
 class FlatList extends WebComponent {}
 
 FlatList.register('flat-list');
+
+console.log(FlatList.tagName) // returns 'flat-list'
 
 ```
 
@@ -102,9 +118,9 @@ document.body.appendChild(todo);
 ```
 
 ### delegatesFocus
-The [delegateFocus](https://developer.mozilla.org/en-US/docs/Web/API/ShadowRoot/delegatesFocus) control 
-how the internal focus propagate to the host tag. It can be very useful to make the tag focusable when
-some internal element receive focus.
+The [delegateFocus](https://developer.mozilla.org/en-US/docs/Web/API/ShadowRoot/delegatesFocus) options control s
+how the internal focus propagate to the host tag. It can be very useful to apply focus to the component tag when
+some internal element receives focus.
 
 ```js
 class SearchField extends WebComponent {
@@ -116,10 +132,9 @@ class SearchField extends WebComponent {
 }
 ```
 
-Now:
+So instead of this:
 
 ```js
-// Instead of this
 class MyButton extends HTMLElement {
   constructor() {
     super();
@@ -129,8 +144,11 @@ class MyButton extends HTMLElement {
 }
 
 customElements.define('my-button', MyButton)
+```
 
-// you can do this
+You can do this:
+
+```js
 class MyButton extends WebComponent {
   static mode = 'closed';
   static delegatesFocus = true;
@@ -140,4 +158,4 @@ MyButton.register();
 ```
 
 
-#### Recommended next: [Properties](https://github.com/beforesemicolon/cwco/blob/master/docs/properties.md)
+#### Next => [Properties](https://github.com/beforesemicolon/cwco/blob/master/docs/properties.md)

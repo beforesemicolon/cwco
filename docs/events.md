@@ -10,7 +10,9 @@ on the DOM.
 ```js
 class MyButton extends WebComponent {
   
-  handleClick() {}
+  handleClick() {
+    // logic here
+  }
   
   get template() {
     return `
@@ -21,7 +23,7 @@ class MyButton extends WebComponent {
 ```
 
 #### $event
-You can use the `$event` notation to pass the event to the handler.
+You can use the `$event` property to pass the event to the handler.
 
 ```js
 class MyButton extends WebComponent {
@@ -57,8 +59,8 @@ class MyButton extends WebComponent {
 }
 ```
 
-### Handler statements
-Sometimes the even handler function does a very simple thing that may feel like too much to create
+### Handler statement
+Sometimes the event handler function does a very simple thing that may feel like too much to create
 a whole function for.
 
 For cases like that you can leverage the curly braces to add the logic as a handler and `WebComponent`
@@ -105,7 +107,8 @@ class MyButton extends WebComponent {
 }
 ```
 
-This feature is great for small code execution and should not be used for complex handling.
+This feature is great for small code execution and should not be used for complex code logic. Think of the `{...}` as
+a place to put the body of the function.
 
 
-#### Recommended next: [Properties](https://github.com/beforesemicolon/cwco/blob/master/docs/properties.md)
+#### Next => [Errors](https://github.com/beforesemicolon/cwco/blob/master/docs/errors.md)

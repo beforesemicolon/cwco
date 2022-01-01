@@ -10,9 +10,8 @@ export function trackNode(node: Node | HTMLElement | DocumentFragment, component
 		return;
 	}
 
-	if (nodeType !== 11 && nodeName !== 'SLOT') {
-		defineNodeContextMetadata(node);
-	}
+	defineNodeContextMetadata(node);
+	$.get(node).tracked = true;
 
 	if (/#comment|SCRIPT/.test(nodeName)) {
 		return;
@@ -54,8 +53,6 @@ export function trackNode(node: Node | HTMLElement | DocumentFragment, component
 					tracks = track.tracks;
 				}
 			}
-
-			$.get(node).tracked = true;
 			
 			if (/#text|TEXTAREA|STYLE/.test(nodeName)) {
 				return;

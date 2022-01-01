@@ -315,8 +315,6 @@ export class NodeTrack {
 
 	private _trackNode(n: Node) {
 		trackNode(n, this.component, {
-			customSlot: this.component.customSlot,
-			customSlotChildNodes: this.component.customSlot ? this.component._childNodes : [],
 			tracks: this.tracks
 		})
 	}
