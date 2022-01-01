@@ -1,18 +1,19 @@
 ## Errors
 
 With HTML if something is invalid it will simply be ignored most of the time. If you provide invalid attribute value or
-fail to provide a required attribute, the browser will simply ignore the element.
+fail to provide a required attribute, the DOM will simply ignore the element.
 
 `WebComponent` follows the same philosophy. If you provide invalid attribute value or fail to provide a required
 attribute, it will simply be ignored. Anything that goes wrong with your component will be logged to the console but
-will not prevent the rest of the app from working.
+will not prevent the rest of the app from working unless it affects the internal logic.
 
 ### onError
 
 The `onError` callback is called when an error occurs. It is passed the error object and will simply log the error to
 the console.
 
-It is a perfect hook to use to debug your component. It can also be used to track errors globally.
+### Global error handler
+It is a perfect hook to use to debug your application since it can also be used to track errors globally.
 
 You can simply create a non-rendering component which sole purpose is to handle errors.
 
@@ -54,3 +55,5 @@ HeadingTitle.register()
 This is simply using the power of OOP inheritance to handle errors. Any component meant to be extended **should not be registered**.
 
 This concept is an amazing `WebComponent` feature that allows you to create variations and a component.
+
+#### Next => [WebComponent](https://github.com/beforesemicolon/cwco/blob/master/docs/WebComponent.md)

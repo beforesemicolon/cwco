@@ -1,11 +1,11 @@
 ## Properties
-Properties are class properties that WebComponent can watch for updates.
+Properties are simply class properties that WebComponent watch for updates.
 
-It must not be private, static or setters and getters.
+It must not be private, static or setters and getters in order to trigger a DOM update.
 
 ```js
 class TodoItem extends WebComponent {
-  // properties
+  // normal class properties
   title = 'untitled';
   description = '';
   status = 'in-progress';
@@ -23,7 +23,7 @@ class TodoItem extends WebComponent {
 ```
 
 ### Property Update 
-Property can be update inside the class or directly on the class instance.
+Property can be updated inside the class or directly on the class element instance.
 
 ```js
 const todo = new TodoItem();
@@ -89,47 +89,22 @@ CounterWidget.register();
 document.body.appendChild(new CounterWidget())
 ```
 
+This is what makes this library a truly reactive library. It does this by using proxy behind the scenes.
+
 #### forceUpdate
-The `forceUpdate` is a NOT recommended way to force the component DOM Nodes to be updated.
+The `forceUpdate` is a NOT recommended way to force the component DOM Nodes to be updated. 
 
-It will not cause the [onUpdate](https://github.com/beforesemicolon/cwco/blob/master/docs/livecycles.md#onupdate) livecycle method to be called.
+You should NEVER feel the need to use this method as the component does its job to update the DOM when there is 
+change at any level of the properties value.
 
-We can *"fix"* the example above with the `forceUpdate` like so:
-
-```js
-class CounterWidget extends WebComponent {
-  // properties
-  count = {value: 0};
-  
-  get template() {
-    return `
-      {count.value}
-      <button type="button" onclick="updateCount(this.count.value - 1)">decrement</button>
-      <button type="button" onclick="updateCount(this.count.value + 1)">increment</button>
-    `;
-  }
-  
-  updateCount(newCount) {
-    this.count.value = newCount; // will NOT trigger DOM update
-    this.forceUpdate() // not recommended method to update DOM
-  }
-}
-```
-
-You should always keep the data and component simple and try your best to always re-assign rather
-than making deep updates. If you find yourself using the `forceUpdate` often it is a great sign you
-are doing something wrong.
+Know that, it will not cause the [onUpdate](https://github.com/beforesemicolon/cwco/blob/master/docs/livecycles.md#onupdate) livecycle method to be called.
 
 ### Private Property
 Private properties are private to anything outside the class. They are perfect when you want to set data
-that should only be access or changed inside the class.
+that should only be accessed or changed from inside the class.
 
-One thing to know is that they do not trigger DOM update when they are updated.
+One thing to know is that they do not trigger DOM update when they are updated. 
 
-#### Properties best practices
-- keep properties simple ([primitives](https://developer.mozilla.org/en-US/docs/Glossary/Primitive) only)
-- if complex ([objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#objects)):
-  - try to re-assign rather than making deep updates 
-  - split your component into even smaller components to handle the data snippets 
+Use them to avoid DOM updates when internal stuff change. If a property is not used in the template, it SHOULD be private.
 
-#### Recommended next: [Context](https://github.com/beforesemicolon/cwco/blob/master/docs/context.md)
+#### Next => [Context](https://github.com/beforesemicolon/cwco/blob/master/docs/context.md)

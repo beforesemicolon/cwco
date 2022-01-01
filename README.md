@@ -1,12 +1,12 @@
 # CWCO
 
-Contextful Web Component Framework created to improve native web component APIs user experience with:
+**Contextful Web Component Library** created to improve native Web Component APIs user experience with:
 - ✅ Event and Data Binding in HTML and CSS
 - ✅ Simple API
 - ✅ Truly Reactive Template
 - ✅ Lightweight package
 - ✅ Fast rendering
-- ✅ In HTML file component template
+- ✅ Build view directly in HTML file
 - ✅ Built-in Context
 - ✅ Powerful built-in Directives(including ability to create your own)
 - ✅ Client and Server Side Rendering
@@ -47,10 +47,10 @@ This module can be used directly in the browser as well in Node environment
 npm install cwco
 ```
 
-You can then import the `WebComponent` class wherever you need it.
+You can then import the constructors class according to what you are building.
 
 ```js
-const {WebComponent} = require('cwco');
+const { WebComponent, ContextProviderComponent, Directive } = require('cwco');
 ```
 
 #### ⚠️ Warning

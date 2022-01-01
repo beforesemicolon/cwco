@@ -1,7 +1,7 @@
 ## ContextProviderComponent
 
 The ContextProviderComponent class is a
-special [WebComponent](https://github.com/beforesemicolon/cwco/blob/master/docs/WebComponent.md)
+special [WebComponent](https://github.com/beforesemicolon/cwco/blob/master/docs/WebComponent.md) class
 in a sense that it allows you to define the template right in your HTML file with it serving as the data provider for
 your template.
 
@@ -13,12 +13,16 @@ const {ContextProviderComponent} = window;
 import {ContextProviderComponent} from "cwco";
 ```
 
+### Mode
+By default, the ContextProviderComponent is in the `"none"` mode. Which means that its content can be easily
+target by CSS selectors of the document or in javascript DOM queries.
+
 ### Template
 
 By default, the template is a single slot tag which means you don't need to define the component template inside the
 class.
 
-Define your data in the class...
+You can define your data in the class...
 
 ```js
 // todo-app.js
@@ -33,7 +37,7 @@ class TodoApp extends ContextProviderComponent {
 TodoApp.register();
 ```
 
-...then set the content right in the HTML file.
+...then set the content right in the HTML file and reference the data from the class.
 
 ```html
 <!-- index.html-->
@@ -47,7 +51,8 @@ TodoApp.register();
 ### The slot tag
 
 What really makes the ContextProviderComponent special is how it handles the `slot` tag. It has a custom slot handler that gives
-it its superpowers. This means that no matter the component mode, the slot tag will be handled the same way.
+it its superpowers. This means that no matter the component mode, the slot tag will be handled the same way which is 
+not something you can do natively in HTML.
 
 The template is a single slot tag, but you can also define your own template with slots where you wish. The only thing
 you need to keep in mind is that the slot is handled differently.
@@ -90,7 +95,7 @@ TodoApp.register();
 
 You can render the `todo-item` tag inside the `todo-app` tag and it will be placed where the slot tag is defined using
 the [repeat directive](https://github.com/beforesemicolon/cwco/blob/master/docs/directives.md#repeat) to repeat
-for every todo item.
+for every `app.todos` array item.
 
 ```html
 <!-- index.html-->
@@ -107,11 +112,11 @@ for every todo item.
 ```
 
 ### Data and methods
-Any data defined inside the class is available inside the template but not inside the custom components
+Any data defined inside the class can be accessed inside the template but not inside the custom components
 you create.
 
 From the example above, the `app` object cannot be accessed inside the `todo-item` template. However, you can access
-the data and methods inside the `todo-item` tag body.
+the data and methods inside the `todo-item` tag body as this is still considered to be part of the provider template.
 
 ```html
 <!-- index.html-->
@@ -173,13 +178,19 @@ deeply inside any component templates.
 ```
 
 ### Styling
+By default, all context providers tag will be styled as display block. This can easily be overridden by defining
+your own stylesheet property.
+
 Styling your context provider component is no different than styling any other WebComponent but because
-it by default it does not use shadow root, you need to prefix every style with the `:host` to make sure
+by default it does not use shadow root, you need to prefix every style with the `:host` to make sure
 the style does not affect things outside of its body.
+
+This is due to the special way style tags are handled in `none` mode. You can 
+[Lear more about it here](https://github.com/beforesemicolon/cwco/blob/master/docs/stylesheet.md)
 
 ```js
 class TodoApp extends ContextProviderComponent {
-  ...
+  // ...
   
   get stylesheet() {
     return `
@@ -205,4 +216,4 @@ One thing to know is that the [::slotted selector](https://developer.mozilla.org
 will not work because the way the ContextProviderComponent handles the slot tags no matter what the mode
 of the component.
 
-#### Recommended next: [Configurations](https://github.com/beforesemicolon/cwco/blob/master/docs/directives.md)
+#### Next => [LiveCycles](https://github.com/beforesemicolon/cwco/blob/master/docs/livecycles.md)
