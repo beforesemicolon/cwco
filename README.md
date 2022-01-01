@@ -1,6 +1,6 @@
 # CWCO
 
-**Contextful Web Component Library** created to improve native Web Component APIs user experience with:
+**Contextfull Web Component Library** created to improve native Web Component APIs user experience with:
 - ✅ Event and Data Binding in HTML and CSS
 - ✅ Simple API
 - ✅ Truly Reactive Template
@@ -20,6 +20,8 @@
 - 🚫 No Tedious State Management or DOM Manipulation!
 
 ### Learn with Examples
+
+[Watch Live Video Introduction](https://www.youtube.com/watch?v=yv3BeEssw9E)
 
 **Learn More From The [Documentation](https://github.com/beforesemicolon/cwco/tree/master/docs)** or 
 visit **[Examples Playground Page](https://beforesemicolon.github.io/cwco/?example=create-component.html&theme=neo&file=app.js)** for
