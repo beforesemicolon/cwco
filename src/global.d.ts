@@ -109,9 +109,9 @@ export declare global {
 
 		readonly root: HTMLElement | ShadowRoot | null;
 		readonly mounted: boolean;
-		readonly template: string;
-		readonly templateId: string;
-		readonly stylesheet: string;
+		template: string;
+		templateId: string;
+		stylesheet: string;
 		readonly customSlot: boolean;
 
 		readonly $context: ObjectLiteral;

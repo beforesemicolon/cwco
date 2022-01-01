@@ -22,7 +22,30 @@ import {resolveHtmlEntities} from "./utils/resolve-html-entities";
 export class WebComponent extends HTMLElement {
 	readonly $refs: Refs = {};
 	$properties: Array<string> = ['$context', '$refs'];
-	templateId = '';
+	/**
+	 * the id of the template tag placed in the body of the document which contains the template content
+	 */
+	templateId: string = '';
+	/**
+	 * style for the component whether inside the style tag, as object or straight CSS string
+	 */
+	private _stylesheet: string = '';
+	public get stylesheet(): string {
+        return this._stylesheet;
+    }
+    public set stylesheet(value: string) {
+        this._stylesheet = value;
+    }
+	/**
+	 * template for the element HTML content
+	 */
+	private _template: string = '';
+	public get template(): string {
+        return this._template;
+    }
+    public set template(value: string) {
+        this._template = value;
+    }
 	_childNodes: Array<Node> = [];
 	
 	constructor() {
@@ -151,22 +174,6 @@ export class WebComponent extends HTMLElement {
 	 */
 	get mounted() {
 		return $.get(this)?.mounted ?? false;
-	}
-	
-	/**
-	 * style for the component whether inside the style tag, as object or straight CSS string
-	 * @returns {string | {type: string, content: string}}
-	 */
-	get stylesheet() {
-		return '';
-	}
-	
-	/**
-	 * template for the element HTML content
-	 * @returns {string}
-	 */
-	get template() {
-		return '';
 	}
 	
 	get parsed() {
