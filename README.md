@@ -3,7 +3,7 @@
 **Contextfull Web Component Library** created to improve native Web Component APIs user experience with:
 - ✅ Event and Data Binding in HTML and CSS
 - ✅ Simple API
-- ✅ Truly Reactive Template
+- ✅ Reactive Template
 - ✅ Lightweight package
 - ✅ Fast rendering
 - ✅ Build view directly in HTML file
