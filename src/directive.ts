@@ -26,14 +26,12 @@ export class Directive {
 	setRef(name: string, node: Node) {
 		const currRef = $.get(this).component.$refs[name];
 
-		if (currRef !== undefined) {
-			if(Array.isArray(currRef)) {
-				currRef.push(node);
-			} else {
-				$.get(this).component.$refs[name] = [currRef, node];
-			}
-		} else {
+		if (currRef === undefined) {
 			$.get(this).component.$refs[name] = node;
+		} else if(Array.isArray(currRef)) {
+			!currRef.includes(node) && currRef.push(node);
+		} else if(currRef !== node) {
+			$.get(this).component.$refs[name] = [currRef, node];
 		}
 	}
 
