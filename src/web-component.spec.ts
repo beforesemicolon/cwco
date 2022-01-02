@@ -128,7 +128,7 @@ describe('WebComponent', () => {
 
 			document.body.appendChild(f);
 
-			expect(f.root?.innerHTML).toBe('<style class="f-comp">:host {display: inline-block;}</style>')
+			expect(f.root?.innerHTML).toBe('<style>:host {display: inline-block;}</style>')
 		});
 
 		it('should define style with CSS inside style tag', () => {
@@ -144,7 +144,7 @@ describe('WebComponent', () => {
 
 			document.body.appendChild(g);
 
-			expect(g.root?.innerHTML).toBe('<style class="g-comp">:host {display: inline-block;}</style>')
+			expect(g.root?.innerHTML).toBe('<style>:host {display: inline-block;}</style>')
 		});
 
 		it('should not set style if stylesheet is empty', () => {
@@ -168,7 +168,7 @@ describe('WebComponent', () => {
 				static mode = ShadowRootModeExtended.NONE;
 
 				get stylesheet() {
-					return ':host {display: inline-block;}'
+					return '<style>:host {display: inline-block;}</style><link rel="stylesheet " href="app.css"> :host {display: inline-block;}'
 				}
 			}
 
@@ -179,15 +179,14 @@ describe('WebComponent', () => {
 			document.body.appendChild(i);
 
 			expect(i.root?.innerHTML).toBe('')
-			expect(document.head.innerHTML).toBe('<style class="i-comp">i-comp {display: inline-block;}</style>')
+			expect(document.head.innerHTML).toBe('<style class="i-comp">i-comp {display: inline-block;} i-comp {display: inline-block;}</style><link rel="stylesheet " href="app.css">')
 		});
 
-		it.todo('should update style when data or context changes')
-	});
-
-	describe('template', () => {
-		it('should not set content with empty template', () => {
+		it('should handle link stylesheet', () => {
 			class JComp extends WebComponent {
+				get stylesheet() {
+					return '<link rel="stylesheet " href="app.css">'
+				}
 			}
 
 			JComp.register();
@@ -196,13 +195,13 @@ describe('WebComponent', () => {
 
 			document.body.appendChild(j);
 
-			expect(j.root?.innerHTML).toBe('')
+			expect(j.root?.innerHTML).toBe('<link rel="stylesheet " href="app.css">')
 		});
 
-		it('should set template in the shadow root if mode is not none', () => {
+		it('should handle link and style tags', () => {
 			class KComp extends WebComponent {
-				get template() {
-					return '<div>test</div>'
+				get stylesheet() {
+					return '<style>:host {display: inline-block;}</style><link rel="stylesheet " href="app.css"> :host {display: inline-block;}'
 				}
 			}
 
@@ -212,11 +211,44 @@ describe('WebComponent', () => {
 
 			document.body.appendChild(k);
 
-			expect(k.root?.innerHTML).toBe('<div>test</div>')
+			expect(k.root?.innerHTML).toBe('<style>:host {display: inline-block;} :host {display: inline-block;}</style><link rel="stylesheet " href="app.css">')
+		});
+
+		it.todo('should update style when data or context changes')
+	});
+
+	describe('template', () => {
+		it('should not set content with empty template', () => {
+			class ATemp extends WebComponent {
+			}
+
+			ATemp.register();
+
+			const a = new ATemp();
+
+			document.body.appendChild(a);
+
+			expect(a.root?.innerHTML).toBe('')
+		});
+
+		it('should set template in the shadow root if mode is not none', () => {
+			class BTemp extends WebComponent {
+				get template() {
+					return '<div>test</div>'
+				}
+			}
+
+			BTemp.register();
+
+			const b = new BTemp();
+
+			document.body.appendChild(b);
+
+			expect(b.root?.innerHTML).toBe('<div>test</div>')
 		});
 
 		it('should set template in the element if mode is none', () => {
-			class LComp extends WebComponent {
+			class CTemp extends WebComponent {
 				static mode = ShadowRootModeExtended.NONE;
 
 				get template() {
@@ -224,50 +256,50 @@ describe('WebComponent', () => {
 				}
 			}
 
-			LComp.register();
+			CTemp.register();
 
-			const l = new LComp();
+			const c = new CTemp();
 
-			document.body.appendChild(l);
+			document.body.appendChild(c);
 
-			expect(l.innerHTML).toBe('<div>test</div>')
+			expect(c.innerHTML).toBe('<div>test</div>')
 		});
 
 		it('should use template id', () => {
-			class OComp extends WebComponent {
+			class DTemp extends WebComponent {
 				templateId = "sample";
 			}
 
-			OComp.register();
+			DTemp.register();
 
 			document.body.innerHTML = `
 				<template id="sample"><div>test</div></template>
 			`;
 
-			const l = new OComp();
+			const d = new DTemp();
 
-			document.body.appendChild(l);
+			document.body.appendChild(d);
 
-			expect(l.root?.innerHTML).toBe('<div>test</div>')
+			expect(d.root?.innerHTML).toBe('<div>test</div>')
 		});
 
 		it('should render html entities', () => {
-			class PComp extends WebComponent {
+			class ETemp extends WebComponent {
 				get template() {
 					return "&copy;"
 				}
 			}
 
-			PComp.register();
-			const s = new PComp();
+			ETemp.register();
+			const e = new ETemp();
 
-			document.body.appendChild(s);
+			document.body.appendChild(e);
 
-			expect(s.root?.innerHTML).toBe('©');
+			expect(e.root?.innerHTML).toBe('©');
 		});
 
 		it('should remove component tag object observed attributes before render', () => {
-			class TComp extends WebComponent {
+			class FTemp extends WebComponent {
 				static observedAttributes = ['foo'];
 
 				get template() {
@@ -275,27 +307,27 @@ describe('WebComponent', () => {
 				}
 			}
 
-			class QComp extends WebComponent {
+			class GTemp extends WebComponent {
 				bar = {
 					value: 'bar'
 				};
 
 				get template() {
-					return "<t-comp foo='{bar}'></t-comp>"
+					return "<f-temp foo='{bar}'></f-temp>"
 				}
 			}
 
-			TComp.register();
-			QComp.register();
+			FTemp.register();
+			GTemp.register();
 
-			const q = new QComp();
+			const g = new GTemp();
 
-			document.body.appendChild(q);
+			document.body.appendChild(g);
 
-			const t = q.root?.children[0] as WebComponent;
+			const f = g.root?.children[0] as WebComponent;
 
-			expect(q.root?.innerHTML).toBe('<t-comp></t-comp>');
-			expect(t.root?.innerHTML).toBe('bar');
+			expect(g.root?.innerHTML).toBe('<f-temp></f-temp>');
+			expect(f.root?.innerHTML).toBe('bar');
 		});
 
 	});
@@ -660,7 +692,7 @@ describe('WebComponent', () => {
 
 			document.body.appendChild(s);
 
-			expect(s.root?.innerHTML).toBe("<style class=\"sample-g\"> " +
+			expect(s.root?.innerHTML).toBe("<style> " +
 				":host {background: red} " +
 				":host(.active) { background: green url('./sample.png') no-repeat; color: #222; } </style>")
 		});

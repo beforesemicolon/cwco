@@ -256,15 +256,16 @@ export class WebComponent extends HTMLElement {
 				const {tagName, mode} = (this.constructor as WebComponentConstructor);
 				
 				if (mode === 'none') {
-					const styles = contentNode.querySelectorAll('style');
-					
-					styles.forEach((style: HTMLStyleElement) => {
-						const existingStyleElement: HTMLStyleElement | null = document.head.querySelector(`style.${tagName}`);
+					[
+						...Array.from(contentNode.querySelectorAll('style')),
+						...Array.from(contentNode.querySelectorAll('link')),
+					].forEach((el: HTMLElement) => {
+						const existingEl: HTMLStyleElement | null = document.head.querySelector(`${el.nodeName.toLowerCase()}.${tagName}`);
 						
-						if (existingStyleElement) {
-							existingStyleElement.textContent = `${style?.textContent}${existingStyleElement.textContent}`;
+						if (existingEl) {
+							existingEl.textContent = el.textContent;
 						} else {
-							document.head.appendChild(style);
+							document.head.appendChild(el);
 						}
 					})
 				}

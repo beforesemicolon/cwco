@@ -5,14 +5,26 @@ export function getStyleString(stylesheet: string, tagName: string, hasShadowRoo
 	    return '';
 	}
 
-	let style = stylesheet.startsWith('<style')
-		? stylesheet
-		: `<style>${stylesheet}</style>`;
-
 	const div = document.createElement('div');
 
+	div.innerHTML = stylesheet;
+	const styleTag = document.createElement('style');
+
+	const linkElements: HTMLLinkElement[] = []
+
+	Array.from(div.childNodes).forEach(child => {
+		if (child.nodeName === 'LINK' && ((child as HTMLLinkElement).getAttribute('rel') || '').trim() === 'stylesheet') {
+			linkElements.push(child as HTMLLinkElement);
+		} else if (child.nodeName === 'STYLE') {
+			styleTag.appendChild(child.childNodes[0]);
+		} else if(child.nodeName === '#text') {
+			styleTag.appendChild(child);
+		}
+	});
+
 	if (!hasShadowRoot) {
-		style = style.replace(/(:host)((\s*\(.*\)|))?/g, (_, h, s) => {
+		styleTag.classList.add(tagName);
+		styleTag.textContent = (styleTag.innerHTML).replace(/(:host)((\s*\(.*\)|))?/g, (_, h, s) => {
 			if (s) {
 				return tagName + s.trim().slice(1, -1).trim();
 			}
@@ -20,11 +32,5 @@ export function getStyleString(stylesheet: string, tagName: string, hasShadowRoo
 		})
 	}
 
-	div.innerHTML = style;
-
-	Array.from(div.children).forEach(child => {
-		child.className = tagName;
-	});
-
-	return div.innerHTML;
+	return (styleTag.innerHTML.trim() && styleTag.outerHTML) + linkElements.map(link => link.outerHTML).join('');
 }
