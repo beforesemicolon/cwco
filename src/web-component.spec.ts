@@ -839,27 +839,6 @@ describe('WebComponent', () => {
 
 			expect(sSlot?.outerHTML).toBe('<slot>content</slot>')
 		})
-
-		it('should reflect slot attributes to elements', (done) => {
-			class SlotD extends WebComponent {
-				get template() {
-					return '<ul><slot name="item" class="item" repeat="2"></slot></ul>'
-				}
-			}
-
-			SlotD.register();
-
-			document.body.innerHTML = '<slot-d><li slot="item">{$item}</li></slot-d>';
-
-			let s = document.body.children[0] as WebComponent;
-
-			setTimeout(() => {
-				expect(s.innerHTML).toEqual(
-					'<li slot="item" class="item">1</li>' +
-					'<li slot="item" class="item">2</li>');
-				done();
-			})
-		});
 	})
 
 	describe('directives', () => {
