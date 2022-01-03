@@ -42,7 +42,7 @@ This module can be used directly in the browser as well in Node environment
 <script src="https://unpkg.com/cwco@1.0.0/dist/cwco.min.js"></script>
 
 <!-- link your app script after -->
-<script src"app.js"></script>
+<script src="app.js"></script>
 ```
 
 #### NodeJs
