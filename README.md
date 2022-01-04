@@ -3,23 +3,17 @@
 ![CWCO Banner](https://github.com/beforesemicolon/cwco/blob/master/docs/Git-Banner.jpg)
 
 **Contextfull Web Component Library** created to improve native Web Component APIs user experience with:
-- ✅ Event and Data Binding in HTML and CSS
-- ✅ Simple API
+- ✅ No Build Required!
+- ✅ Works with other library and frameworks
 - ✅ Reactive Template
-- ✅ Lightweight package
-- ✅ Fast rendering
+- ✅ Powerful built-in Directives(including ability to create your own)
+- ✅ Built-in Context Data Handling
+- ✅ Event and Data Binding in HTML and CSS
 - ✅ Build view directly in HTML file
 - ✅ Built-in Context
-- ✅ Powerful built-in Directives(including ability to create your own)
-- ✅ Client and Server Side Rendering
-- ✅ Works with other library and frameworks
-- ✅ No Build Required!
-- 🚫 No JSX!
-- 🚫 No Virtual DOM!
-- 🚫 No Weird HTML or Javascript Syntax!
-- 🚫 No Decorators Hell!
-- 🚫 No Robust Data Store and Context Setup needed!
-- 🚫 No Tedious State Management or DOM Manipulation!
+- ✅ Simple API
+- ✅ Fast rendering
+- ✅ Lightweight package
 
 ### Learn with Examples
 
@@ -44,7 +38,7 @@ This module can be used directly in the browser as well in Node environment
 <script src="https://unpkg.com/cwco@1.0.0/dist/cwco.min.js"></script>
 
 <!-- link your app script after -->
-<script src"app.js"></script>
+<script src="app.js"></script>
 ```
 
 #### NodeJs
