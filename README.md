@@ -1,5 +1,7 @@
 # CWCO
 
+![CWCO Banner](https://github.com/beforesemicolon/cwco/blob/master/docs/Git-Banner.jpg)
+
 **Contextfull Web Component Library** created to improve native Web Component APIs user experience with:
 - ✅ Event and Data Binding in HTML and CSS
 - ✅ Simple API
