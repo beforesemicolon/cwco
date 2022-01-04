@@ -148,11 +148,10 @@ export class NodeTrack {
 
 			if (nodeName === 'TEXTAREA') {
 				this.property = {
-					name: 'value',
+					name: 'textContent',
 					value: textContent || '',
 					executables: []
 				}
-				this.node.textContent = '';
 			} else if (nodeName === 'STYLE') {
 				const selectorPattern = /[a-z:#\.*\[][^{}]*[^\s:]\s*(?={){/gmi;
 				const propValueStylePattern = /[a-z][a-z-]*:([^;]*)(;|})/gmi;

@@ -662,8 +662,13 @@ describe('WebComponent', () => {
 
 			document.body.appendChild(s);
 
-			expect(s.root?.innerHTML).toBe('<textarea></textarea>')
-			expect((s.root?.children[0] as HTMLTextAreaElement).value).toBe('some text')
+			expect(s.root?.innerHTML).toBe('<textarea>some text</textarea>')
+			expect((s.root?.children[0] as HTMLTextAreaElement).value).toBe('some text');
+			
+			s.val = 'new value';
+			
+			expect(s.root?.innerHTML).toBe('<textarea>new value</textarea>')
+			expect((s.root?.children[0] as HTMLTextAreaElement).value).toBe('new value');
 		});
 
 		it('should bind data to style', () => {
