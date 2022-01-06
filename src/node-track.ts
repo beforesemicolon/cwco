@@ -133,6 +133,7 @@ export class NodeTrack {
 	}
 
 	private _setTracks() {
+		const dirPattern = new RegExp(`^(${Object.keys(directiveRegistry).join('|')})\\.?`);
 		const {nodeName, nodeValue, textContent, attributes} = this.node as HTMLElement;
 		const eventHandlers: Array<EventHandlerTrack> = [];
 
@@ -179,7 +180,7 @@ export class NodeTrack {
 
 			// @ts-ignore
 			for (let attribute of [...attributes]) {
-				if (/^(attr\.|ref|if|repeat)/.test(attribute.name)) {
+				if (dirPattern.test(attribute.name)) {
 					const directive = parseNodeDirective(this.node as HTMLElement, attribute.name, attribute.value);
 
 					if (directiveRegistry[directive.name]) {
