@@ -560,7 +560,7 @@ describe('WebComponent', () => {
 
 	describe('data bind', () => {
 		it('should render attribute with multiple bindings', () => {
-			class SampleA extends WebComponent {
+			class BindA extends WebComponent {
 				x = 'X';
 				y = 'Y';
 
@@ -569,8 +569,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			SampleA.register();
-			const s = new SampleA();
+			BindA.register();
+			const s = new BindA();
 
 			document.body.appendChild(s);
 
@@ -578,7 +578,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should render attribute with single binding', () => {
-			class SampleB extends WebComponent {
+			class BindB extends WebComponent {
 				cls = 'items';
 
 				get template() {
@@ -586,8 +586,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			SampleB.register();
-			const s = new SampleB();
+			BindB.register();
+			const s = new BindB();
 
 			document.body.appendChild(s);
 
@@ -595,7 +595,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should render text with multiple bindings', () => {
-			class SampleC extends WebComponent {
+			class BindC extends WebComponent {
 				x = 'X';
 				y = 'Y';
 
@@ -604,8 +604,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			SampleC.register();
-			const s = new SampleC();
+			BindC.register();
+			const s = new BindC();
 
 			document.body.appendChild(s);
 
@@ -613,7 +613,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should render text with single binding', () => {
-			class SampleD extends WebComponent {
+			class BindD extends WebComponent {
 				val = 'some text';
 
 				get template() {
@@ -621,8 +621,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			SampleD.register();
-			const s = new SampleD();
+			BindD.register();
+			const s = new BindD();
 
 			document.body.appendChild(s);
 
@@ -630,7 +630,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should take object as attribute value', () => {
-			class SampleE extends WebComponent {
+			class BindE extends WebComponent {
 				static observedAttributes = ['list']
 
 				get template() {
@@ -638,8 +638,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			SampleE.register();
-			const s = new SampleE();
+			BindE.register();
+			const s = new BindE();
 
 			document.body.appendChild(s);
 
@@ -649,7 +649,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should handle textarea text binding', () => {
-			class SampleF extends WebComponent {
+			class BindF extends WebComponent {
 				val = 'some text';
 
 				get template() {
@@ -657,8 +657,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			SampleF.register();
-			const s = new SampleF();
+			BindF.register();
+			const s = new BindF();
 
 			document.body.appendChild(s);
 
@@ -672,7 +672,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should bind data to style', () => {
-			class SampleG extends WebComponent {
+			class BindG extends WebComponent {
 				colors = {
 					bg: 'red',
 					active: 'green',
@@ -692,8 +692,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			SampleG.register();
-			const s = new SampleG();
+			BindG.register();
+			const s = new BindG();
 
 			document.body.appendChild(s);
 
