@@ -10,7 +10,7 @@ export class Directive {
 	static register(name: string = '') {
 		name = (name || this.name).toLowerCase();
 
-		if (directiveRegistry[name] === undefined) {
+		if (!directiveRegistry.hasOwnProperty(name)) {
 			directiveRegistry[name] = this;
 		}
 	}

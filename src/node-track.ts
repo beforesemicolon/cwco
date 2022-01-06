@@ -179,9 +179,9 @@ export class NodeTrack {
 			}
 
 			// @ts-ignore
-			for (let attribute of [...attributes]) {
-				if (dirPattern.test(attribute.name)) {
-					const directive = parseNodeDirective(this.node as HTMLElement, attribute.name, attribute.value);
+			for (let attr of [...attributes]) {
+				if (dirPattern.test(attr.name)) {
+					const directive = parseNodeDirective(this.node as HTMLElement, attr.name, attr.value);
 
 					if (directiveRegistry[directive.name]) {
 						const Dir = directiveRegistry[directive.name];
@@ -203,14 +203,14 @@ export class NodeTrack {
 							this.directives.push(directive);
 					}
 
-					(this.node as Element).removeAttribute(attribute.name);
-				} else if (attribute.name.startsWith('on')) {
+					(this.node as Element).removeAttribute(attr.name);
+				} else if (attr.name.startsWith('on')) {
 					eventHandlers.push({
-						eventName: attribute.name.slice(2).toLowerCase(),
-						attribute
+						eventName: attr.name.slice(2).toLowerCase(),
+						attribute: attr
 					});
 				} else {
-					attrs.push(attribute)
+					attrs.push(attr)
 				}
 			}
 
