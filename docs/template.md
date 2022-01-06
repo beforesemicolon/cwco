@@ -77,6 +77,23 @@ class TodoItem extends WebComponent {
 `cwco` tracks these data references and know when and where to update the DOM when there is a data change. You
 don't have to do anything to update the DOM once there is a data change.
 
+#### Escaping curly braces
+There are cases where you want to add a curly brace to your template. For example, in a regex for the input
+pattern attribute:
+
+```html
+<input type="text" pattern="{0,9}">
+```
+
+Just leaving it like that will throw an error because it will assume you want to execute what's inside the curly braces.
+
+To solve this you can wrap it in single quotes and again wrap that in curly braces. What this does is execute what's
+inside the curly braces resulting in a string matching the regex pattern you want.
+
+```html
+<input type="text" pattern="{'{0,9}'}">
+```
+
 #### Data Logic
 
 Inside the curly brace you can put javascript logic that gets executed and result is added to the template.
