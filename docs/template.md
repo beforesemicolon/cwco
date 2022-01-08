@@ -27,10 +27,7 @@ class TodoItem extends WebComponent {
 }
 ```
 
-The template does not need to be a getter but a getter allows you to do some things before returning the template string.
-
-Know that even if you change the template after the element is set on the DOM, will not change how the component is rendered.
-This is true even if you remove the element from the DOM and add it again. All elements are parsed from template ONCE.
+It is important to keep template readonly with the getter.
 
 #### Template ID
 You may also use HTML [template tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template) to set 
@@ -64,13 +61,15 @@ class TodoItem extends WebComponent {
   description = '';
   status = 'in-progress';
   
-  template = `
+  get template() {
+    return `
       <div class="todo-item">
         <h3>{title}</h3>
         <p>{description}</p>
         <p><strong>Status</strong> {status}</p>
       </div>
     `
+  }
 }
 ```
 
@@ -104,13 +103,15 @@ class TodoItem extends WebComponent {
   description = '';
   status = 'in-progress';
   
-  template = `
+  get template() {
+    return `
       <div class="todo-item {status === 'done' ? 'completed' : 'pending'}">
         <h3>{title}</h3>
         <p>{description}</p>
         <p><strong>Status</strong> {status === 'done' ? 'Done' : 'In Progress'}</p>
       </div>
     `;
+  }
 }
 ```
 
@@ -193,7 +194,9 @@ class SampleApp extends WebComponent {
     }
   };
   
-  template = '<slot></slot>';
+  get template() {
+    return '<slot></slot>';
+  }
 }
 ```
 

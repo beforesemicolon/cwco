@@ -65,8 +65,10 @@ const { WebComponent } = require('cwco');
 class MyButton extends WebComponent {
   static observedAttributes = ['type', 'label'];
   
-  template = `<button type="{type}"><slot>{label}</slot></button>`;
-}
+  get template() {
+    return `<button type="{type}"><slot>{label}</slot></button>`;
+  }
+}   
 
 MyButton.register();
 
@@ -102,7 +104,9 @@ import { WebComponent } from 'cwco';
 class MyButton extends WebComponent {
   static observedAttributes = ['type', 'label'];
   
-  template = `<button type="{type}"><slot>{label}</slot></button>`;
+  get template() {
+    return `<button type="{type}"><slot>{label}</slot></button>`;
+  }
 }
 
 MyButton.register();
@@ -151,7 +155,9 @@ import { WebComponent } from 'cwco';
 export class MyButton extends WebComponent {
   static observedAttributes = ['type', 'label'];
   
-  template = `<button type="{type}"><slot>{label}</slot></button>`;
+  get template() {
+    return `<button type="{type}"><slot>{label}</slot></button>`;
+  }
 }
 
 
@@ -229,8 +235,10 @@ import { WebComponent } from 'cwco';
 
 export class MyButton extends WebComponent {
   static override observedAttributes = ['type', 'label'];
-
-  override template = `<button type="{type}"><slot>{label}</slot></button>`;
+  
+  override get template() {
+    return `<button type="{type}"><slot>{label}</slot></button>`;
+  }
 }
 
 ```
