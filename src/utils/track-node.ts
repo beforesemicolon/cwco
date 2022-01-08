@@ -40,11 +40,11 @@ export function trackNode(node: Node | HTMLElement | DocumentFragment, component
 					tracks.set(node, track);
 
 					if (!trackOnly) {
-						const res = track.updateNode();
-						if (res !== node) {
+						track.updateNode();
+						if (track.anchor !== node) {
 							trackOnly = true;
 
-							if (Array.isArray(res)) {
+							if (Array.isArray(track.anchor)) {
 							   return;
 							}
 						}

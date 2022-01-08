@@ -16,13 +16,13 @@ import {jsonParse} from "./utils/json-parse";
  */
 export class NodeTrack {
 	node: HTMLElement | Node;
-	attributes: Array<{
+	readonly attributes: Array<{
 		name: string;
 		propName: string;
 		value: string;
 		executables: Array<Executable>;
 	}> = []
-	directives: Array<DirectiveValue> = [];
+	readonly directives: Array<DirectiveValue> = [];
 	property: {
 		name: string;
 		value: string;
@@ -34,8 +34,10 @@ export class NodeTrack {
 	};
 	readonly component: WebComponent;
 	anchor: HTMLElement | Node | Comment | Array<Element>;
+	anchorDir: DirectiveValue | null = null;
 	empty = false;
-	tracks = new Map();
+	readonly tracks = new Map();
+	readonly dirValues = new WeakMap();
 	readonly dirAnchors = new WeakMap();
 
 	constructor(node: HTMLElement | Node, component: WebComponent) {
@@ -52,12 +54,15 @@ export class NodeTrack {
 	}
 
 	get $context() {
+		// use this track node context if it does not happen to be anchored
+		// otherwise the anchor context will reflect its ancestor's context
 		return (this.anchor === this.node
 			? $.get(this.node).$context
 			: $.get((this.anchor as Array<Element>)[0] ?? this.anchor)?.$context) || {};
 	}
 
 	updateNode() {
+		let updated = false;
 		let directiveNode: any = this.node;
 
 		for (let directive of this.directives) {
@@ -71,17 +76,30 @@ export class NodeTrack {
 					});
 
 					const value = evaluateStringInComponentContext(val, this.component, this.$context);
-					directiveNode = handler.render(value, {
-						element: this.node,
-						anchorNode: this.dirAnchors.get(directive) ?? null,
-						rawElementOuterHTML: $.get(this.node).rawNodeString
-					} as directiveRenderOptions);
-
-					if (directiveNode !== this.node) {
-						this.dirAnchors.set(directive, directiveNode)
-						break;
+					
+					// compare with previous directive value before rendering the directive
+					if (this.dirValues.get(directive) !== value) {
+						updated = true;
+						
+						directiveNode = handler.render(value, {
+							element: this.node,
+							anchorNode: this.dirAnchors.get(directive) ?? null,
+							rawElementOuterHTML: $.get(this.node).rawNodeString
+						} as directiveRenderOptions);
+						
+						this.dirValues.set(directive, value);
+						
+						if (directiveNode !== this.node) {
+							this.dirAnchors.set(directive, directiveNode);
+							this.anchorDir = directive;
+							break;
+						}
+					} else if(this.anchorDir === directive) {
+						// if this directive happens to be the one which cause this node to be anchored
+						// and its value did not change, we can just quit the updating al together
+						// since nothing else will update this node
+						return false;
 					}
-
 				} catch (e: any) {
 					this.component.onError(new Error(`"${directive.name}" on ${$.get(this.node).rawNodeString}: ${e.message}`));
 				}
@@ -91,6 +109,7 @@ export class NodeTrack {
 		}
 
 		if (directiveNode === this.node) {
+			this.anchorDir = null;
 			this.anchor = this._switchNodeAndAnchor(directiveNode);
 
 			if (this.property?.executables.length) {
@@ -99,6 +118,7 @@ export class NodeTrack {
 				}, this.property.value)
 
 				if (newValue !== (this.node as ObjectLiteral)[this.property.name]) {
+					updated = true;
 					(this.node as ObjectLiteral)[this.property.name] = newValue;
 				}
 			}
@@ -113,9 +133,11 @@ export class NodeTrack {
 						newValue = jsonParse(newValue);
 
 						if (newValue !== (this.node as WebComponent)[propName]) {
+							updated = true;
 							(this.node as WebComponent)[propName] = newValue;
 						}
 					} else if ((this.node as HTMLElement).getAttribute(name) !== newValue) {
+						updated = true;
 						(this.node as HTMLElement).setAttribute(name, newValue);
 					}
 				}
@@ -129,7 +151,7 @@ export class NodeTrack {
 			this.anchor = this._switchNodeAndAnchor(directiveNode);
 		}
 
-		return directiveNode;
+		return updated;
 	}
 
 	private _setTracks() {
