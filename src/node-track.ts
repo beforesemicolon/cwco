@@ -18,7 +18,6 @@ export class NodeTrack {
 	node: HTMLElement | Node;
 	readonly attributes: Array<{
 		name: string;
-		propName: string;
 		value: string;
 		executables: Array<Executable>;
 	}> = []
@@ -123,20 +122,13 @@ export class NodeTrack {
 				}
 			}
 
-			for (let {name, propName, value, executables} of this.attributes) {
+			for (let {name, value, executables} of this.attributes) {
 				if (executables.length) {
 					let newValue = executables.reduce((val, exc) => {
 						return resolveExecutable(this.component, this.$context, exc, val);
 					}, value);
 
-					if ((this.node as WebComponent)[propName] !== undefined) {
-						newValue = jsonParse(newValue);
-
-						if (newValue !== (this.node as WebComponent)[propName]) {
-							updated = true;
-							(this.node as WebComponent)[propName] = newValue;
-						}
-					} else if ((this.node as HTMLElement).getAttribute(name) !== newValue) {
+					if ((this.node as HTMLElement).getAttribute(name) !== newValue) {
 						updated = true;
 						(this.node as HTMLElement).setAttribute(name, newValue);
 					}
@@ -252,7 +244,6 @@ export class NodeTrack {
 				if (attr.value.trim()) {
 					this.attributes.push({
 						name: attr.name,
-						propName: turnKebabToCamelCasing(attr.name),
 						value: attr.value,
 						executables: extractExecutableSnippetFromString(attr.value)
 					})
