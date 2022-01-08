@@ -5,7 +5,7 @@ export function defineNodeContextMetadata(node: Node) {
 		return;
 	}
 
-	let ctx: ObjectLiteral = proxyCtx({}, node);
+	let ctx: ObjectLiteral = {};
 	let subs: Array<ObserverCallback> = [];
 	const dt: ObjectLiteral = $.get(node) || {};
 
@@ -18,16 +18,22 @@ export function defineNodeContextMetadata(node: Node) {
 
 	dt.updateContext = (newCtx: ObjectLiteral | null = null) => {
 		if (newCtx && typeof newCtx === 'object') {
-			ctx = proxyCtx({...ctx, ...newCtx}, node);
+			ctx = {...ctx, ...newCtx};
 		}
-
-		$.get(node)?.track?.updateNode();
-		notify();
+		
+		// if the node is not tracked (contains no bound prop or attr)
+		// or is a component node which calling updateNode ended up not changing anything
+		// we can continue to propagate the context
+		// this is because if a track node ends up updated, it will automatically
+		// update all its inner tracker which will read the context just fine
+		if (!$.get(node).track || (!$.get(node).track.updateNode() && node.nodeName.includes('-'))) {
+			notify();
+		}
 	}
 
 	Object.defineProperty(dt, '$context', {
 		get() {
-			return ctx;
+			return {...$.get(getParent(node))?.$context, ...ctx};
 		}
 	})
 
@@ -51,23 +57,5 @@ function getParent(node: Node) {
 	return node.parentNode instanceof ShadowRoot
 		? node.parentNode.host
 		: node.parentNode
-}
-
-function proxyCtx(obj: ObjectLiteral, node: Node) {
-	let keys = Object.keys(obj);
-
-	return new Proxy(obj, {
-		get(obj: ObjectLiteral, n: string) {
-			let res = Reflect.get(obj, n);
-
-			return res ?? Reflect.get($.get(getParent(node))?.$context ?? {}, n);
-		},
-		ownKeys(): ArrayLike<string | symbol> {
-			return Array.from(new Set([
-				...keys,
-				...Reflect.ownKeys($.get(getParent(node))?.$context ?? {})
-			]));
-		},
-	});
 }
 
