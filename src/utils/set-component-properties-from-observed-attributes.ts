@@ -3,12 +3,13 @@ import boolAttr from './boolean-attributes.json';
 import {directives} from "../directives";
 import {jsonParse} from "./json-parse";
 import {$} from "../metadata";
+import {CWCO} from "../cwco";
 
 export function setComponentPropertiesFromObservedAttributes(
-	comp: WebComponent,
+	comp: CWCO.WebComponent,
 	attrs: string[],
-	attrsMap: ObjectLiteral = {},
-	cb: onUpdateCallback
+	attrsMap: CWCO.ObjectLiteral = {},
+	cb: CWCO.onUpdateCallback
 ): string[] {
 	const properties: string[] = [];
 
@@ -27,7 +28,7 @@ export function setComponentPropertiesFromObservedAttributes(
 			
 			if ((boolAttr).hasOwnProperty(prop)) {
 				value = comp.hasAttribute(attr);
-				prop = (boolAttr as booleanAttributes)[prop].name;
+				prop = (boolAttr as CWCO.booleanAttributes)[prop].name;
 			}
 
 			if (value && typeof value === 'object') {

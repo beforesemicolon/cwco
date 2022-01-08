@@ -8,10 +8,10 @@ describe('Bind Directive', () => {
 	const dir = new Bind(new TestComp());
 
 	it('should handle parsing', () => {
-		expect(dir.parseValue('', '')).toEqual("['', null]");
-		expect(dir.parseValue('sample', '')).toEqual("['', sample]");
-		expect(dir.parseValue('', 'value')).toEqual("['value', null]");
-		expect(dir.parseValue('sample', 'value')).toEqual("['value', sample]");
+		expect(dir.parseValue('', '')).toEqual('["", ""]');
+		expect(dir.parseValue('sample', '')).toEqual('["", "sample"]');
+		expect(dir.parseValue('', 'value')).toEqual('["value", ""]');
+		expect(dir.parseValue('sample', 'value')).toEqual('["value", "sample"]');
 	});
 
 	it('should render', () => {

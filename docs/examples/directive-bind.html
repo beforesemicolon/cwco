@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Component Instance</title>
+	<script src="../../dist/cwco.min.js"
+	        type="text/javascript"></script>
+	<style id="app-css"></style>
+</head>
+<body>
+
+<main id="app-html">
+<text-field label="Name:" value="John Doe"></text-field>
+</main>
+
+<script id="app-js">
+class TextField extends WebComponent {
+	static observedAttributes = [
+		"value",
+		"label"
+	];
+	
+	
+	get template() {
+		/**
+		 * The bind attribute can be used to bind a
+		 * property on the element
+		 *
+		 * If no specific property specified, it will
+		 * automatically bind to the 'textContent'
+		 * property of the element
+		 *
+		 * It does NOT replace attr directive of
+		 * data bind curly braces. It is perfect for
+		 * - SSR rendering with bind instructions
+		 * - Avoid curly braces flashing when rendering
+		 * template directly on the HTML file
+		 *
+		 * Learn more:
+		 * https://github.com/beforesemicolon/cwco/blob/master/docs/directives.md#bind
+		 */
+		return `
+			<label>
+				<span bind="{label}">Field:</span>
+				<input bind.value="{value}" value="" />
+			</label>`;
+	}
+}
+
+TextField.register();
+</script>
+</body>
+</html>

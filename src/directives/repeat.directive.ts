@@ -1,5 +1,6 @@
 import {Directive} from "../directive";
 import {parse} from "../utils/parse";
+import {CWCO} from "../cwco";
 
 export class Repeat extends Directive {
 	parseValue(value: string): string {
@@ -18,7 +19,7 @@ export class Repeat extends Directive {
 		return `[${v}, "${vAs}", "${k === '$key' ? kAs : ''}"]`;
 	}
 	
-	render([repeatData, vAs, kAs]: any, {element, rawElementOuterHTML, anchorNode}: directiveRenderOptions) {
+	render([repeatData, vAs, kAs]: any, {element, rawElementOuterHTML, anchorNode}: CWCO.directiveRenderOptions) {
 		anchorNode = (anchorNode ?? []) as Array<Element>;
 		const list: Array<Element> = [];
 

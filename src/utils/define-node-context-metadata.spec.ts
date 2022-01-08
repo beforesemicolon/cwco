@@ -130,7 +130,7 @@ describe('defineNodeContextMetadata', () => {
 			my: 'content'
 		});
 
-		expect(Object.keys($.get(node).$context)).toEqual(['my']);
-		expect(Object.getOwnPropertyNames($.get(node).$context)).toEqual(['my', 'some']);
+		expect(Object.keys($.get(node).$context)).toEqual(['some', 'my']);
+		expect(Object.getOwnPropertyNames($.get(node).$context)).toEqual(['some', 'my']);
 	});
 });

@@ -1,9 +1,10 @@
 import {directiveRegistry} from "./directives/registry";
 import {$} from "./metadata";
 import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
+import {CWCO} from "./cwco";
 
-export class Directive {
-	constructor(component: WebComponent) {
+export class Directive implements CWCO.Directive  {
+	constructor(component: CWCO.WebComponent) {
 		$.set(this, {component})
 	}
 
@@ -19,7 +20,7 @@ export class Directive {
 		return value;
 	}
 
-	render(val: unknown, {element}: directiveRenderOptions): directiveRenderOptions['anchorNode'] {
+	render(val: unknown, {element}: CWCO.directiveRenderOptions): CWCO.directiveRenderOptions['anchorNode'] {
 		return element;
 	}
 
@@ -39,7 +40,7 @@ export class Directive {
 		return $.get(node).$context ?? null;
 	}
 
-	updateContext(node: Node, newCtx: ObjectLiteral) {
+	updateContext(node: Node, newCtx: CWCO.ObjectLiteral) {
 		defineNodeContextMetadata(node);
 		$.get(node)?.updateContext(newCtx);
 	}

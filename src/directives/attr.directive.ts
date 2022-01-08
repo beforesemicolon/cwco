@@ -2,6 +2,7 @@ import {Directive} from "../directive";
 import {turnKebabToCamelCasing} from "../utils/turn-kebab-to-camel-casing";
 import {turnCamelToKebabCasing} from "../utils/turn-camel-to-kebab-casing";
 import booleanAttr from "../utils/boolean-attributes.json";
+import {CWCO} from "../cwco";
 
 export class Attr extends Directive {
 	parseValue(value: string, prop: string | null): string {
@@ -11,7 +12,7 @@ export class Attr extends Directive {
 		return `["${attrName}", "${property || ''}", ${commaIdx >= 0 ? value.slice(commaIdx + 1).trim() : value}, "${commaIdx >= 0 ? value.slice(0, commaIdx).trim() : ''}"]`;
 	}
 
-	render([attrName, property, shouldAdd, val]: any, {element}: directiveRenderOptions): HTMLElement {
+	render([attrName, property, shouldAdd, val]: any, {element}: CWCO.directiveRenderOptions): HTMLElement {
 		switch (attrName) {
 			case 'style':
 				if (property) {

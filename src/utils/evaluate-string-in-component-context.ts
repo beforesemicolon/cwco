@@ -1,7 +1,9 @@
+import {CWCO} from "../cwco";
+
 export function evaluateStringInComponentContext(
 	executable: string,
-	component: WebComponent,
-	nodeData: ObjectLiteral = {}
+	component: CWCO.WebComponent,
+	nodeData: CWCO.ObjectLiteral = {}
 ) {
 	if (!executable.trim()) {
 		return '';

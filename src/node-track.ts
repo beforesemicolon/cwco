@@ -1,45 +1,44 @@
 import {extractExecutableSnippetFromString} from "./utils/extract-executable-snippet-from-string";
 import {parseNodeDirective} from "./utils/parse-node-directive";
-import {turnKebabToCamelCasing} from "./utils/turn-kebab-to-camel-casing";
 import {resolveExecutable} from "./utils/resolve-executable";
 import {getEventHandlerFunction} from "./utils/get-event-handler-function";
 import {directiveRegistry} from './directives/registry';
 import {evaluateStringInComponentContext} from "./utils/evaluate-string-in-component-context";
 import {$} from "./metadata";
 import {trackNode} from "./utils/track-node";
-import {jsonParse} from "./utils/json-parse";
+import {CWCO} from "./cwco";
 
 /**
  * handles all logic related to tracking and updating a tracked node.
  * It is a extension of the component that handles all the logic related to updating nodes
  * in conjunction with the node component
  */
-export class NodeTrack {
+export class NodeTrack implements CWCO.NodeTrack {
 	node: HTMLElement | Node;
 	readonly attributes: Array<{
 		name: string;
 		value: string;
-		executables: Array<Executable>;
+		executables: Array<CWCO.Executable>;
 	}> = []
-	readonly directives: Array<DirectiveValue> = [];
+	readonly directives: Array<CWCO.DirectiveValue> = [];
 	property: {
 		name: string;
 		value: string;
-		executables: Array<Executable>;
+		executables: Array<CWCO.Executable>;
 	} = {
 		name: '',
 		value: '',
 		executables: []
 	};
-	readonly component: WebComponent;
+	readonly component: CWCO.WebComponent;
 	anchor: HTMLElement | Node | Comment | Array<Element>;
-	anchorDir: DirectiveValue | null = null;
+	anchorDir: CWCO.DirectiveValue | null = null;
 	empty = false;
 	readonly tracks = new Map();
 	readonly dirValues = new WeakMap();
 	readonly dirAnchors = new WeakMap();
 
-	constructor(node: HTMLElement | Node, component: WebComponent) {
+	constructor(node: HTMLElement | Node, component: CWCO.WebComponent) {
 		this.node = node;
 		this.anchor = node;
 		this.component = component;
@@ -84,7 +83,7 @@ export class NodeTrack {
 							element: this.node,
 							anchorNode: this.dirAnchors.get(directive) ?? null,
 							rawElementOuterHTML: $.get(this.node).rawNodeString
-						} as directiveRenderOptions);
+						} as CWCO.directiveRenderOptions);
 						
 						this.dirValues.set(directive, value);
 						
@@ -116,9 +115,9 @@ export class NodeTrack {
 					return resolveExecutable(this.component, this.$context, exc, val);
 				}, this.property.value)
 
-				if (newValue !== (this.node as ObjectLiteral)[this.property.name]) {
+				if (newValue !== (this.node as CWCO.ObjectLiteral)[this.property.name]) {
 					updated = true;
-					(this.node as ObjectLiteral)[this.property.name] = newValue;
+					(this.node as CWCO.ObjectLiteral)[this.property.name] = newValue;
 				}
 			}
 
@@ -149,7 +148,7 @@ export class NodeTrack {
 	private _setTracks() {
 		const dirPattern = new RegExp(`^(${Object.keys(directiveRegistry).join('|')})\\.?`);
 		const {nodeName, nodeValue, textContent, attributes} = this.node as HTMLElement;
-		const eventHandlers: Array<EventHandlerTrack> = [];
+		const eventHandlers: Array<CWCO.EventHandlerTrack> = [];
 
 		if (nodeName === '#text') {
 			this.property = {
@@ -172,7 +171,7 @@ export class NodeTrack {
 				const propValueStylePattern = /[a-z][a-z-]*:([^;]*)(;|})/gmi;
 				let styleText = (textContent ?? '');
 				let match: RegExpExecArray | null = null;
-				let executables: Array<Executable> = [];
+				let executables: Array<CWCO.Executable> = [];
 
 				while ((match = selectorPattern.exec(styleText)) !== null) {
 					let propValueMatch: RegExpExecArray | null = null;
@@ -232,7 +231,7 @@ export class NodeTrack {
 				(this.node as HTMLElement).removeAttribute(attribute.name);
 
 				if (!fn && !isRepeatedNode) {
-					fn = getEventHandlerFunction(this.component, this.$context, attribute) as EventListenerCallback;
+					fn = getEventHandlerFunction(this.component, this.$context, attribute) as CWCO.EventListenerCallback;
 
 					if (fn) {
 						this.node.addEventListener(eventName, fn);

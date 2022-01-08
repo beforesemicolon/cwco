@@ -15,18 +15,22 @@
 - ✅ Fast rendering
 - ✅ Lightweight package
 
-### Learn with Examples
+## Learn by Examples
+
+**Learn More From The [Documentation](https://github.com/beforesemicolon/cwco/blob/master/docs/getting-started.md)** or 
+visit **[Examples Playground Page](https://beforesemicolon.github.io/cwco/?example=create-component.html&theme=neo&file=app.js)** for
+an extensive list of examples of everything this library can do.
 
 [Watch Live Video Introduction](https://www.youtube.com/watch?v=yv3BeEssw9E)
 
-**Learn More From The [Documentation](https://github.com/beforesemicolon/cwco/tree/master/docs)** or 
-visit **[Examples Playground Page](https://beforesemicolon.github.io/cwco/?example=create-component.html&theme=neo&file=app.js)** for
-an extensive list of examples of everything this framework can do 
-**[including some components and small apps examples](https://beforesemicolon.github.io/cwco/?example=app-calculator.html&theme=neo&file=app.js)**.
+## Get Started
+Learn about how [create a project or starting to explore CWCO](https://github.com/beforesemicolon/cwco/blob/master/docs/getting-started.md)
+as soon as possible.
 
 ### Install
 
-This module can be used directly in the browser as well in Node environment
+This module can be used directly in the browser as well in Node environment. You can even use it along with other
+web libraries and frameworks like `React` and `Angular`.
 
 #### Browser
 ```html 
@@ -53,39 +57,9 @@ You can then import the constructors class according to what you are building.
 const { WebComponent, ContextProviderComponent, Directive } = require('cwco');
 ```
 
-#### ⚠️ Warning
-
-Make sure to exclude the `jsdom` module when compiling or building your project to run in the browser.
-This module is used so `WebComponent` can work in NodeJs (not a browser environment). In browsers, the DOM
-will be available and things will be fine.
-
-For example:
-
-```js
-// webpack.config.js
-
-module.exports = {
-  //...
-  externals: {
-    jsdom: 'jsdom',
-  },
-};
-```
-
-```js
-// esbuild
-
-require('esbuild').build({
-  entryPoints: ['app.js'],
-  outfile: 'out.js',
-  external: ['jsdom'], // <<< exclude
-})
-```
-
-    Check your bundler documentation to see how it handles specific modules exclusions.
-
 ### Documentation
 
+- [Getting Started](https://github.com/beforesemicolon/cwco/blob/master/docs/getting-started.md)
 - [WebComponent](https://github.com/beforesemicolon/cwco/blob/master/docs/WebComponent.md)
 - [ContextProviderComponent](https://github.com/beforesemicolon/cwco/blob/master/docs/ContextProviderComponent.md)
 - [Configurations](https://github.com/beforesemicolon/cwco/blob/master/docs/configurations.md)
