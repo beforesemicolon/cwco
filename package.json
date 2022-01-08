@@ -1,6 +1,6 @@
 {
   "name": "cwco",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "description": "Contextful Web Component Library",
   "main": "dist/index.js",
   "scripts": {
