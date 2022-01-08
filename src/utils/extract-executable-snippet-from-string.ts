@@ -1,7 +1,9 @@
+import {CWCO} from "../cwco";
+
 export function extractExecutableSnippetFromString(str: string, [start, end] = ['{', '}']) {
 	const stack = [];
 	const pattern = new RegExp(`[\\${start}\\${end}]`, 'g');
-	let snippets: Executable[] = [];
+	let snippets: CWCO.Executable[] = [];
 	let match;
 	let startingCurlyIndex: number;
 

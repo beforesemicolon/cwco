@@ -1,10 +1,11 @@
 import {ShadowRootModeExtended} from "./enums/ShadowRootModeExtended.enum";
 import {WebComponent} from "./web-component";
+import {CWCO} from "./cwco";
 
 /**
  * a special WebComponent that handles slot tag differently allowing for render template right into HTML files
  */
-export class ContextProviderComponent extends WebComponent {
+export class ContextProviderComponent extends WebComponent implements CWCO.WebComponent  {
 	get customSlot() {
 		return true;
 	}

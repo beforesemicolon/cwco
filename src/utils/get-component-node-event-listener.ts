@@ -1,10 +1,12 @@
+import {CWCO} from "../cwco";
+
 export function getComponentNodeEventListener(
-	component: WebComponent,
+	component: CWCO.WebComponent,
 	name: string,
 	value: string,
 	props: Array<string> = [],
 	values: Array<unknown> = [],
-): EventListenerCallback | null {
+): CWCO.EventListenerCallback | null {
 	value = value.trim()
 	const match = value.match(/^(?:((?:this\.)?([a-z$_][a-z0-9$_]*)\s*\((.*)\))|\{(.*)\})$/i);
 

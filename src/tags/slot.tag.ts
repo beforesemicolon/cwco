@@ -1,4 +1,6 @@
-export const slotTag = (node: HTMLElement, {component}: ObjectLiteral = {}, cb: (n: Node[]) => void): void => {
+import {CWCO} from "../cwco";
+
+export const slotTag = (node: HTMLElement, {component}: CWCO.ObjectLiteral = {}, cb: (n: Node[]) => void): void => {
 	if (component.type === 'context') {
 		cb(renderCustomSlot(node, component.childNodes));
 	} else {

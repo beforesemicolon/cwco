@@ -10,7 +10,9 @@ would look like when placed on the HTML tag.
 class SubmitButton extends WebComponent {
   static observedAttributes = ['label'];
   
-  template = '<button type="submit">{label}</button>';
+  get template() {
+    return '<button type="submit">{label}</button>';
+  }
 }
 ```
 
@@ -106,7 +108,9 @@ class MyButton extends WebComponent {
   static observedAttributes = ['label', 'type'];
   type = 'button'; // default value for type if type attribute is not set
   
-  template = '<button type="{}">{label}</button>';
+  get template() {
+    return '<button type="{}">{label}</button>';
+  }
   
 }
 ```

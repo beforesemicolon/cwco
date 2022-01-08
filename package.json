@@ -1,6 +1,6 @@
 {
   "name": "cwco",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "Contextful Web Component Library",
   "main": "dist/index.js",
   "scripts": {
@@ -8,8 +8,8 @@
     "test:coverage": "jest --coverage",
     "build:browser": "esbuild src/client.ts --bundle --minify --keep-names --sourcemap --target=es2020 --outfile=dist/cwco.min.js",
     "build:browser-local": "esbuild src/client.ts --bundle --target=es2020 --outfile=dist/cwco.min.js",
-    "build": "tsc --noEmit && rm -rf dist && npm run build:browser && tsc",
-    "build:local": "tsc --noEmit && rm -rf dist && npm run build:browser-local && tsc",
+    "build": "tsc --noEmit && rm -rf dist && npm run build:browser && tsc && cp src/cwco.d.ts dist",
+    "build:local": "tsc --noEmit && rm -rf dist && npm run build:browser-local && tsc && cp src/cwco.d.ts dist",
     "local": "nodemon --watch src -e ts --exec npm run build:local"
   },
   "keywords": [

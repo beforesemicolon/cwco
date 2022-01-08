@@ -194,7 +194,6 @@ class ContextMenu extends WebComponent {
 You don't have to specify a name starting with dollar sign, but it is conventional with this library to do so in order to distinguish
 data created in the template vs from the class or context.
 
-
 ### ref
 The `ref` directive allows you to grab a reference to a DOM element. Its value must be the name of the property you want
 to assign the reference to.
@@ -390,5 +389,57 @@ with the format of:
 
     attr.data.[data-name]="[value], [condition]"
 
+### bind
+The `bind` directive allows you to bind a property to a DOM element. This can be a specific attribute, a property of 
+the component class, or a property of the component instance. It may feel redundant to use the `bind` directive when you
+can just use curly braces but bind was introduced to solve a very specific problem.
+
+The following is how to do data binding with curly braces:
+
+```html
+<span>{label}</span>
+<input placeholder="{placeholder}" />
+```
+
+However, if you want to use a template directly on the HTML file(when using 
+[context providers](https://github.com/beforesemicolon/cwco/blob/master/docs/ContextProviderComponent.md) for example) 
+you may experience a quick flash where you see the curly braces instead of the value they are supposed to represent.
+
+For that case and other you may want to use the `bind` directive.
+
+The following will show the default static value until Javascript kicks in and bind the value to the element.
+
+```html
+<span bind="{label}">Default Label</span>
+<input bind.placeholder="{placeholder}" placeholder="Default Placeholder" />
+```
+
+If you simply do `bind="{label}"` for example, it is assumed you want to bind to the element text content. You also
+have the option to specify which property or attribute you want to bind to, like `bind.innerHTML="{markup}"` or `bind.placeholder="{placeholder}"`
+
+The bind become even more powerful when you server side render the HTML. It allows you to set the value in the server
+and then have the data bound when the javascript loads. It is also a nice way to provide backup for in HTML template
+rendered in case user has JavaScript disabled.
+
+#### bind vs attr
+The `attr` will CONDITIONALLY set the attribute, while the `bind` will ALWAYS set the attribute or property.
+
+You should AVOID using both `attr` and `bind` on the same attribute. The last one acting on the element attribute will 
+be the one that ends up binding the attribute value.
+
+```html
+<li 
+    bind.className="bind" attr.class="attr, true" 
+    attr.id="attr, true" bind.id="bind"
+></li>
+
+<!-- renders:
+<li class="attr" id="bind">my item</li>
+-->
+
+```
+
+Also, while `attr` only acts on element attributes, `bind` acts on the element's property. That's why you use `className`
+instead of `class` when using `bind`.
 
 #### Next => [Custom Directives](https://github.com/beforesemicolon/cwco/blob/master/docs/custom-directives.md)

@@ -560,7 +560,7 @@ describe('WebComponent', () => {
 
 	describe('data bind', () => {
 		it('should render attribute with multiple bindings', () => {
-			class BindA extends WebComponent {
+			class BindingA extends WebComponent {
 				x = 'X';
 				y = 'Y';
 
@@ -569,8 +569,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindA.register();
-			const s = new BindA();
+			BindingA.register();
+			const s = new BindingA();
 
 			document.body.appendChild(s);
 
@@ -578,7 +578,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should render attribute with single binding', () => {
-			class BindB extends WebComponent {
+			class BindingB extends WebComponent {
 				cls = 'items';
 
 				get template() {
@@ -586,8 +586,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindB.register();
-			const s = new BindB();
+			BindingB.register();
+			const s = new BindingB();
 
 			document.body.appendChild(s);
 
@@ -595,7 +595,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should render text with multiple bindings', () => {
-			class BindC extends WebComponent {
+			class BindingC extends WebComponent {
 				x = 'X';
 				y = 'Y';
 
@@ -604,8 +604,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindC.register();
-			const s = new BindC();
+			BindingC.register();
+			const s = new BindingC();
 
 			document.body.appendChild(s);
 
@@ -613,7 +613,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should render text with single binding', () => {
-			class BindD extends WebComponent {
+			class BindingD extends WebComponent {
 				val = 'some text';
 
 				get template() {
@@ -621,8 +621,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindD.register();
-			const s = new BindD();
+			BindingD.register();
+			const s = new BindingD();
 
 			document.body.appendChild(s);
 
@@ -630,7 +630,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should take object as attribute value', () => {
-			class BindE extends WebComponent {
+			class BindingE extends WebComponent {
 				static observedAttributes = ['list']
 
 				get template() {
@@ -638,8 +638,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindE.register();
-			const s = new BindE();
+			BindingE.register();
+			const s = new BindingE();
 
 			document.body.appendChild(s);
 
@@ -649,7 +649,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should handle textarea text binding', () => {
-			class BindF extends WebComponent {
+			class BindingF extends WebComponent {
 				val = 'some text';
 
 				get template() {
@@ -657,8 +657,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindF.register();
-			const s = new BindF();
+			BindingF.register();
+			const s = new BindingF();
 
 			document.body.appendChild(s);
 
@@ -672,7 +672,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should bind data to style', () => {
-			class BindG extends WebComponent {
+			class BindingG extends WebComponent {
 				colors = {
 					bg: 'red',
 					active: 'green',
@@ -692,8 +692,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindG.register();
-			const s = new BindG();
+			BindingG.register();
+			const s = new BindingG();
 
 			document.body.appendChild(s);
 
@@ -944,6 +944,34 @@ describe('WebComponent', () => {
 
 				expect(s.$refs.item).toEqual(expect.any(Array))
 				expect((s.$refs.item as Node[]).length).toBe(2)
+			});
+		});
+
+		describe('bind', () => {
+			it('should bind text or attribute to node', () => {
+				class BindA extends WebComponent {
+					placeholder = 'Search';
+					label = 'Field Label';
+
+					get template() {
+						return '<span bind="{label}">label</span><input bind.placeholder="{placeholder}" placeholder="Some Value" />'
+					}
+				}
+
+				BindA.register();
+				const s = new BindA();
+
+				document.body.appendChild(s);
+
+				expect(s.root?.innerHTML).toBe('<span>Field Label</span><input placeholder="Search">');
+
+				s.label = "New label";
+
+				expect(s.root?.innerHTML).toBe('<span>New label</span><input placeholder="Search">');
+
+				s.placeholder = "Search...";
+
+				expect(s.root?.innerHTML).toBe('<span>New label</span><input placeholder="Search...">');
 			});
 		});
 
@@ -1479,9 +1507,9 @@ describe('WebComponent', () => {
 			it.todo('should handle nested component repeats')
 		});
 
-		describe('should allow mix of hashed attributes', () => {
+		describe('should allow mix of directives', () => {
 			it('if and repeat', () => {
-				class ComboA extends WebComponent {
+				class MixA extends WebComponent {
 					condition = false;
 					count = 3;
 
@@ -1490,8 +1518,8 @@ describe('WebComponent', () => {
 					}
 				}
 
-				ComboA.register();
-				const s = new ComboA();
+				MixA.register();
+				const s = new MixA();
 
 				document.body.appendChild(s);
 
@@ -1515,7 +1543,7 @@ describe('WebComponent', () => {
 			});
 
 			it('if and ref', () => {
-				class ComboB extends WebComponent {
+				class MixB extends WebComponent {
 					condition = false;
 
 					get template() {
@@ -1523,8 +1551,8 @@ describe('WebComponent', () => {
 					}
 				}
 
-				ComboB.register();
-				const s = new ComboB();
+				MixB.register();
+				const s = new MixB();
 
 				document.body.appendChild(s);
 
@@ -1540,7 +1568,7 @@ describe('WebComponent', () => {
 			});
 
 			it('if and attr', () => {
-				class ComboC extends WebComponent {
+				class MixC extends WebComponent {
 					condition = false;
 
 					get template() {
@@ -1548,8 +1576,8 @@ describe('WebComponent', () => {
 					}
 				}
 
-				ComboC.register();
-				const s = new ComboC();
+				MixC.register();
+				const s = new MixC();
 
 				document.body.appendChild(s);
 
@@ -1561,7 +1589,7 @@ describe('WebComponent', () => {
 			});
 
 			it('repeat and ref', () => {
-				class ComboD extends WebComponent {
+				class MixD extends WebComponent {
 					count = 2;
 
 					get template() {
@@ -1569,8 +1597,8 @@ describe('WebComponent', () => {
 					}
 				}
 
-				ComboD.register();
-				const s = new ComboD();
+				MixD.register();
+				const s = new MixD();
 
 				document.body.appendChild(s);
 
@@ -1579,7 +1607,7 @@ describe('WebComponent', () => {
 			});
 
 			it('repeat and attr', () => {
-				class ComboE extends WebComponent {
+				class MixE extends WebComponent {
 					count = 2;
 
 					get template() {
@@ -1587,8 +1615,8 @@ describe('WebComponent', () => {
 					}
 				}
 
-				ComboE.register();
-				const s = new ComboE();
+				MixE.register();
+				const s = new MixE();
 
 				document.body.appendChild(s);
 
@@ -1596,19 +1624,34 @@ describe('WebComponent', () => {
 			});
 
 			it('attr and ref', () => {
-				class ComboF extends WebComponent {
+				class MixF extends WebComponent {
 					get template() {
 						return '<li ref="item" attr.data.test="sample, true">my item</li>'
 					}
 				}
 
-				ComboF.register();
-				const s = new ComboF();
+				MixF.register();
+				const s = new MixF();
 
 				document.body.appendChild(s);
 
 				expect(s.root?.innerHTML).toBe('<li data-test="sample">my item</li>');
 				expect(s.$refs.item).toBeDefined();
+			});
+
+			it('bind and attr', () => {
+				class MixG extends WebComponent {
+					get template() {
+						return '<li bind.className="bind" attr.class="attr, true" attr.id="attr, true" bind.id="bind">my item</li>'
+					}
+				}
+
+				MixG.register();
+				const s = new MixG();
+
+				document.body.appendChild(s);
+
+				expect(s.root?.innerHTML).toBe('<li class="attr" id="bind">my item</li>');
 			});
 		});
 	});

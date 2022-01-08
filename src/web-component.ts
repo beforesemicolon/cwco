@@ -14,44 +14,25 @@ import {trackNode} from "./utils/track-node";
 import {jsonParse} from "./utils/json-parse";
 import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
 import {resolveHtmlEntities} from "./utils/resolve-html-entities";
+import {CWCO} from "./cwco";
 
 /**
  * a extension on the native web component API to simplify and automate most of the pain points
  * when it comes to creating and working with web components on the browser
  */
-export class WebComponent extends HTMLElement {
-	readonly $refs: Refs = {};
+export class WebComponent extends HTMLElement implements CWCO.WebComponent {
+	readonly $refs: CWCO.Refs = {};
 	$properties: Array<string> = ['$context', '$refs'];
 	/**
 	 * the id of the template tag placed in the body of the document which contains the template content
 	 */
 	templateId: string = '';
-	/**
-	 * style for the component whether inside the style tag, as object or straight CSS string
-	 */
-	private _stylesheet: string = '';
-	public get stylesheet(): string {
-        return this._stylesheet;
-    }
-    public set stylesheet(value: string) {
-        this._stylesheet = value;
-    }
-	/**
-	 * template for the element HTML content
-	 */
-	private _template: string = '';
-	public get template(): string {
-        return this._template;
-    }
-    public set template(value: string) {
-        this._template = value;
-    }
 	_childNodes: Array<Node> = [];
 	
 	constructor() {
 		super();
 
-		let {mode, observedAttributes, delegatesFocus} = this.constructor as WebComponentConstructor;
+		let {mode, observedAttributes, delegatesFocus} = this.constructor as CWCO.WebComponentConstructor;
 
 		if (!$.has(this)) {
 			$.set(this, {})
@@ -68,7 +49,7 @@ export class WebComponent extends HTMLElement {
 		meta.attrPropsMap = observedAttributes.reduce((map, attr) => ({
 			...map,
 			[attr]: turnKebabToCamelCasing(attr)
-		}), {} as ObjectLiteral);
+		}), {} as CWCO.ObjectLiteral);
 
 		if (mode !== 'none') {
 			$.get(this).root = this.attachShadow({mode, delegatesFocus});
@@ -140,7 +121,7 @@ export class WebComponent extends HTMLElement {
 	 * registers a list of provided web component classes
 	 * @param components
 	 */
-	static registerAll(components: Array<WebComponentConstructor>) {
+	static registerAll(components: Array<CWCO.WebComponentConstructor>) {
 		components.forEach(comp => comp.register());
 	}
 	
@@ -150,6 +131,20 @@ export class WebComponent extends HTMLElement {
 	static get isRegistered() {
 		return customElements.get(this.tagName) !== undefined;
 	}
+	
+	/**
+	 * template for the element HTML content
+	 */
+	get template(): string {
+		return '';
+	};
+	
+	/**
+	 * style for the component whether inside the style tag, as object or straight CSS string
+	 */
+	get stylesheet(): string {
+		return '';
+	};
 	
 	/**
 	 * whether or not the component should use the real slot element or mimic its behavior
@@ -165,7 +160,7 @@ export class WebComponent extends HTMLElement {
 	 * @returns {*}
 	 */
 	get root(): HTMLElement | ShadowRoot | null {
-		return (this.constructor as WebComponentConstructor).mode === 'closed' ? null : $.get(this).root;
+		return (this.constructor as CWCO.WebComponentConstructor).mode === 'closed' ? null : $.get(this).root;
 	}
 	
 	/**
@@ -180,26 +175,28 @@ export class WebComponent extends HTMLElement {
 		return $.get(this).parsed;
 	}
 	
-	get $context(): ObjectLiteral {
+	get $context(): CWCO.ObjectLiteral {
 		return $.get(this).$context;
 	}
 	
-	updateContext(ctx: ObjectLiteral) {
+	updateContext(ctx: CWCO.ObjectLiteral) {
 		$.get(this).updateContext(ctx);
 	}
 	
 	connectedCallback() {
 		defineNodeContextMetadata(this);
-		const {initialContext, observedAttributes, name} = this.constructor as WebComponentConstructor;
+		const {initialContext, observedAttributes, name} = this.constructor as CWCO.WebComponentConstructor;
 		const {parsed, tracks, root, attrPropsMap} = $.get(this);
 
 		if (Object.keys(initialContext).length) {
 			$.get(this).updateContext(initialContext);
 		}
 
-		const onPropUpdate = (prop: string, oldValue: any, newValue: any) => {
+		const onPropUpdate = (prop: string, oldValue: any, newValue: any, update = true) => {
 			if (this.mounted) {
-				this.forceUpdate();
+				if (update) {
+					this.forceUpdate();
+				}
 				this.onUpdate(prop, oldValue, newValue);
 			} else if(this.parsed) {
 				this.onError(new Error(`[Possibly a memory leak]: Cannot set property "${prop}" on unmounted component.`));
@@ -207,8 +204,8 @@ export class WebComponent extends HTMLElement {
 		};
 
 		try {
-			$.get(this).unsubscribeCtx = $.get(this).subscribe((newContext: ObjectLiteral) => {
-				onPropUpdate('$context', $.get(this).$context, newContext);
+			$.get(this).unsubscribeCtx = $.get(this).subscribe((newContext: CWCO.ObjectLiteral) => {
+				onPropUpdate('$context', newContext, newContext, false);
 			})
 
 			$.get(this).mounted = true;
@@ -231,8 +228,8 @@ export class WebComponent extends HTMLElement {
 				Object.freeze(this.$properties);
 				
 				let contentNode;
-				const hasShadowRoot = (this.constructor as WebComponentConstructor).mode !== 'none';
-				const style = getStyleString(this.stylesheet, (this.constructor as WebComponentConstructor).tagName, hasShadowRoot);
+				const hasShadowRoot = (this.constructor as CWCO.WebComponentConstructor).mode !== 'none';
+				const style = getStyleString(this.stylesheet, (this.constructor as CWCO.WebComponentConstructor).tagName, hasShadowRoot);
 				let temp: string = this.template;
 				
 				if (!temp && this.templateId) {
@@ -253,7 +250,7 @@ export class WebComponent extends HTMLElement {
 					tracks,
 				});
 				
-				const {tagName, mode} = (this.constructor as WebComponentConstructor);
+				const {tagName, mode} = (this.constructor as CWCO.WebComponentConstructor);
 				
 				if (mode === 'none') {
 					[
@@ -338,7 +335,7 @@ export class WebComponent extends HTMLElement {
 		if (this.mounted) {
 			cancelAnimationFrame($.get(this).updateFrame);
 			$.get(this).updateFrame = requestAnimationFrame(() => {
-				$.get(this).tracks.forEach((t: NodeTrack) => {
+				$.get(this).tracks.forEach((t: CWCO.NodeTrack) => {
 					t.updateNode();
 				});
 			});

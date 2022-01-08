@@ -2,8 +2,9 @@ import {$} from "../metadata";
 import {NodeTrack} from "../node-track";
 import {defineNodeContextMetadata} from "./define-node-context-metadata";
 import {slotTag} from "../tags/slot.tag";
+import {CWCO} from "../cwco";
 
-export function trackNode(node: Node | HTMLElement | DocumentFragment, component: WebComponent, opt: trackerOptions) {
+export function trackNode(node: Node | HTMLElement | DocumentFragment, component: CWCO.WebComponent, opt: CWCO.trackerOptions) {
 	const {nodeName, nodeValue, childNodes, nodeType} = node;
 
 	if ($.get(node)?.tracked || (nodeName === '#text' && !nodeValue?.trim())) {
@@ -40,11 +41,11 @@ export function trackNode(node: Node | HTMLElement | DocumentFragment, component
 					tracks.set(node, track);
 
 					if (!trackOnly) {
-						const res = track.updateNode();
-						if (res !== node) {
+						track.updateNode();
+						if (track.anchor !== node) {
 							trackOnly = true;
 
-							if (Array.isArray(res)) {
+							if (Array.isArray(track.anchor)) {
 							   return;
 							}
 						}
