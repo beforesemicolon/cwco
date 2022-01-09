@@ -52,7 +52,7 @@ declare namespace CWCO {
 	
 	export interface NodeTrack {
 		node: HTMLElement | Node | WebComponent;
-		anchor: HTMLElement | Node | Comment | Array<Element>;
+		anchor: HTMLElement | Node | Array<Element>;
 		tracks: Map<Node, NodeTrack>;
 		attributes: Array<{
 			name: string;
@@ -76,7 +76,7 @@ declare namespace CWCO {
 	
 	export type onUpdateCallback = (property: string, oldValue: unknown, newValue: unknown) => void;
 	
-	export type Refs = {[key: string]: Node | Node[]};
+	export type Refs = {[key: string]: HTMLElement | HTMLElement[]};
 	
 	export interface trackerOptions {
 		trackOnly?: boolean;
