@@ -1,18 +1,28 @@
+const TypedArray = Object.getPrototypeOf(Uint8Array);
+
 export function proxify(name: string, object: any, notify: (name: string, o: any) => void = () => {
 }, self = null): any {
 	self = self ?? object;
-
+	
 	if (
 		!object ||
-		object.__proxy__ ||
-		/number|function|string|bigint|boolean/.test(typeof object) ||
-		[String, Number, Boolean, BigInt].some(o => object instanceof o)
+		object.__isProxy || // ignore objects already gone through proxify
+		/number|function|string|bigint|boolean|symbol/.test(typeof object) || // ignore primitives
+		(
+			// ignore any object that is not in this array or an object literal
+			![Array, Map, Set, TypedArray].some(o => object instanceof o) &&
+			(object.constructor && object.constructor.name !== 'Object')
+		)
 	) {
 		return object;
 	}
 
 	return new Proxy(object, {
 		get(obj, n: string) {
+			if (n === "__isProxy") {
+				return true;
+			}
+			
 			let res = Reflect.get(obj, n);
 
 			if (res) {

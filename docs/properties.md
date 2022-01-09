@@ -89,7 +89,15 @@ CounterWidget.register();
 document.body.appendChild(new CounterWidget())
 ```
 
-This is what makes this library a truly reactive library. It does this by using proxy behind the scenes.
+This is what makes this library a truly reactive library. It does this by using proxy behind the scenes. Also, it is good
+to know that not everything you set as a property will be observed.
+
+For example, you can set a canvas context or a DOM to a property and those will only trigger an update if you re-assign
+the property. Not if they changed deeply.
+
+So, updates are triggered by:
+- Any property re-assignment;
+- Deep updates on plain Array, Typed Arrays, Object Literals, Map and Set.
 
 #### forceUpdate
 The `forceUpdate` is a NOT recommended way to force the component DOM Nodes to be updated. 
