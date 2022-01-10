@@ -237,8 +237,8 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 					temp = t?.nodeName === 'TEMPLATE' ? t.innerHTML : temp;
 				}
 
-				if (mode !== 'none' || !document.head.querySelectorAll(`.${tagName}`).length) {
-					style = getStyleString(this.stylesheet, (this.constructor as CWCO.WebComponentConstructor).tagName, hasShadowRoot);
+				if (mode !== 'none' || !document.head.querySelectorAll(`.${tagName}`.toLowerCase()).length) {
+					style = getStyleString(this.stylesheet, tagName.toLowerCase(), hasShadowRoot);
 				}
 
 				const contentNode = parse(resolveHtmlEntities(style + temp));
