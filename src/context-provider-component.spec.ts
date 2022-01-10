@@ -56,8 +56,6 @@ describe('ContextProviderComponent', () => {
 
 		it('should render named slot content WITHOUT shadow root', () => {
 			class SlotF extends ContextProviderComponent {
-				static mode = ShadowRootModeExtended.NONE;
-
 				get template() {
 					return '<slot name="content"></slot>'
 				}
@@ -75,7 +73,8 @@ describe('ContextProviderComponent', () => {
 
 			s = document.body.children[0] as WebComponent;
 
-			expect(s.innerHTML).toBe('<style class="slot-f">slot-f { display: block; }</style><p slot="content">one</p>');
+			expect(s.innerHTML).toBe('<p slot="content">one</p>');
+			expect(document.head.querySelector(`.${s.tagName}`.toLowerCase())?.outerHTML).toEqual('<style class="slot-f">slot-f { display: block; }</style>');
 		});
 	})
 
