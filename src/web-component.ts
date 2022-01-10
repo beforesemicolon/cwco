@@ -185,7 +185,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	
 	connectedCallback() {
 		defineNodeContextMetadata(this);
-		const {initialContext, observedAttributes, name} = this.constructor as CWCO.WebComponentConstructor;
+		const {initialContext, observedAttributes, tagName, mode} = this.constructor as CWCO.WebComponentConstructor;
 		const {parsed, tracks, root, attrPropsMap} = $.get(this);
 
 		if (Object.keys(initialContext).length) {
@@ -227,18 +227,30 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				
 				Object.freeze(this.$properties);
 				
-				let contentNode;
 				const hasShadowRoot = (this.constructor as CWCO.WebComponentConstructor).mode !== 'none';
-				const style = getStyleString(this.stylesheet, (this.constructor as CWCO.WebComponentConstructor).tagName, hasShadowRoot);
 				let temp: string = this.template;
-				
+				let style = '';
+
 				if (!temp && this.templateId) {
 					const t = document.getElementById(this.templateId);
-					
+
 					temp = t?.nodeName === 'TEMPLATE' ? t.innerHTML : temp;
 				}
-				
-				contentNode = parse(resolveHtmlEntities(style + temp));
+
+				if (mode !== 'none' || !document.head.querySelectorAll(`.${tagName}`).length) {
+					style = getStyleString(this.stylesheet, (this.constructor as CWCO.WebComponentConstructor).tagName, hasShadowRoot);
+				}
+
+				const contentNode = parse(resolveHtmlEntities(style + temp));
+
+				if (mode === 'none') {
+					[
+						...Array.from(contentNode.querySelectorAll('style')),
+						...Array.from(contentNode.querySelectorAll('link')),
+					].forEach((el: HTMLElement) => {
+						document.head.appendChild(el);
+					})
+				}
 
 				this._childNodes = Array.from(this.childNodes);
 				
@@ -249,24 +261,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				trackNode(contentNode, this, {
 					tracks,
 				});
-				
-				const {tagName, mode} = (this.constructor as CWCO.WebComponentConstructor);
-				
-				if (mode === 'none') {
-					[
-						...Array.from(contentNode.querySelectorAll('style')),
-						...Array.from(contentNode.querySelectorAll('link')),
-					].forEach((el: HTMLElement) => {
-						const existingEl: HTMLStyleElement | null = document.head.querySelector(`${el.nodeName.toLowerCase()}.${tagName}`);
-						
-						if (existingEl) {
-							existingEl.textContent = el.textContent;
-						} else {
-							document.head.appendChild(el);
-						}
-					})
-				}
-				
+
 				$.get(this).parsed = true;
 				root.appendChild(contentNode);
 			}
