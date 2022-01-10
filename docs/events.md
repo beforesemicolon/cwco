@@ -83,13 +83,13 @@ class MyButton extends WebComponent {
 }
 ```
 
-You can discard the `handleClick` event entirely by adding its logic directly in the template using curly braces.
+You can discard the `handleClick` event entirely by adding the event logic inline.
 
 ```js
 class MyButton extends WebComponent {
   get template() {
     return `
-      <button type="button" onclick="{this.dispatchEvent(new Event('click'))}"></button>
+      <button type="button" onclick="this.dispatchEvent(new Event('click'))"></button>
     `;
   }
 }
@@ -107,8 +107,8 @@ class MyButton extends WebComponent {
 }
 ```
 
-This feature is great for small code execution and should not be used for complex code logic. Think of the `{...}` as
-a place to put the body of the function.
+This feature is great for small code execution and should not be used for complex code logic. Think of inline handler as
+the body of the function.
 
 
 #### Next => [Errors](https://github.com/beforesemicolon/cwco/blob/master/docs/errors.md)

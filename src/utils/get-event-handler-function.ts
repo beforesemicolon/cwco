@@ -1,19 +1,31 @@
-import {getComponentNodeEventListener} from "./get-component-node-event-listener";
 import {CWCO} from "../cwco";
 
-export function getEventHandlerFunction(component: CWCO.WebComponent, nodeData: CWCO.ObjectLiteral, attribute: Attr): CWCO.EventListenerCallback | null {
+export function getEventHandlerFunction(component: CWCO.WebComponent, nodeData: CWCO.ObjectLiteral, attribute: Attr): CWCO.EventListenerCallback {
 	const props = Array.from(new Set([...Object.getOwnPropertyNames(nodeData), ...component.$properties]));
 	const values = props.map(k => {
 		return nodeData[k] ?? component[k] ?? null;
 	});
+	const value = attribute.value.trim()
+	const match = value.match(/^(?:((?:this\.)?([a-z$_][a-z0-9$_\\.]*)\s*\((.*)\))|\{(.*)\})$/i);
+	let func: Function;
 
-	const fn = getComponentNodeEventListener(component, attribute.name, attribute.value, props, values);
+	if (match) {
+		let [_, fn, fnName, fnArgs, executable] = match;
 
-	if (fn) {
-		return fn;
+		if (executable) {
+			func = new Function('$event', ...props, `"use strict";\n ${executable};`);
+		} else {
+			// @ts-ignore
+			if (typeof component[fnName] === 'function') {
+				fn = fn.replace(/^this\./, '');
+				func = new Function('$event', ...props, `"use strict";\n this.${fn}`);
+			} else {
+				func = new Function('$event', ...props, `"use strict";\n ${fn}`);
+			}
+		}
 	} else {
-		component.onError(new Error(`${component.constructor.name}: Invalid event handler for "${attribute.name}" >>> "${attribute.value}".`))
+		func = new Function('$event', ...props, `"use strict";\n ${value}`);
 	}
 
-	return null
+	return (event: Event) => func.call(component, event, ...values);
 }

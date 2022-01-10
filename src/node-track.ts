@@ -231,11 +231,7 @@ export class NodeTrack implements CWCO.NodeTrack {
 				(this.node as HTMLElement).removeAttribute(attribute.name);
 
 				if (!fn && !isRepeatedNode) {
-					fn = getEventHandlerFunction(this.component, this.$context, attribute) as CWCO.EventListenerCallback;
-
-					if (fn) {
-						this.node.addEventListener(eventName, fn);
-					}
+					this.node.addEventListener(eventName, getEventHandlerFunction(this.component, this.$context, attribute));
 				}
 			});
 
