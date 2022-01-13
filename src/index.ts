@@ -3,3 +3,5 @@
 export {WebComponent} from './web-component';
 export {ContextProviderComponent} from './context-provider-component';
 export {Directive} from './directive';
+export {CWCO} from './cwco';
+export {ShadowRootModeExtended} from './enums/ShadowRootModeExtended.enum';
