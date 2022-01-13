@@ -105,26 +105,26 @@ describe('WebComponent', () => {
 
 	describe('stylesheet', () => {
 		it('should be empty if not set', () => {
-			class ZComp extends WebComponent {
+			class AStyle extends WebComponent {
 			}
 
-			ZComp.register();
+			AStyle.register();
 
-			const z = new ZComp();
+			const z = new AStyle();
 
 			expect(z.stylesheet).toBe('')
 		});
 
 		it('should define style with CSS only', () => {
-			class FComp extends WebComponent {
+			class BStyle extends WebComponent {
 				get stylesheet() {
 					return ':host {display: inline-block;}'
 				}
 			}
 
-			FComp.register();
+			BStyle.register();
 
-			const f = new FComp();
+			const f = new BStyle();
 
 			document.body.appendChild(f);
 
@@ -132,15 +132,15 @@ describe('WebComponent', () => {
 		});
 
 		it('should define style with CSS inside style tag', () => {
-			class GComp extends WebComponent {
+			class CStyle extends WebComponent {
 				get stylesheet() {
 					return '<style>:host {display: inline-block;}</style>'
 				}
 			}
 
-			GComp.register();
+			CStyle.register();
 
-			const g = new GComp();
+			const g = new CStyle();
 
 			document.body.appendChild(g);
 
@@ -148,15 +148,15 @@ describe('WebComponent', () => {
 		});
 
 		it('should not set style if stylesheet is empty', () => {
-			class HComp extends WebComponent {
+			class DStyle extends WebComponent {
 				get stylesheet() {
 					return '  '
 				}
 			}
 
-			HComp.register();
+			DStyle.register();
 
-			const h = new HComp();
+			const h = new DStyle();
 
 			document.body.appendChild(h);
 
@@ -164,7 +164,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should put style in the head tag if mode is none', () => {
-			class IComp extends WebComponent {
+			class EStyle extends WebComponent {
 				static mode = ShadowRootModeExtended.NONE;
 
 				get stylesheet() {
@@ -172,9 +172,9 @@ describe('WebComponent', () => {
 				}
 			}
 
-			IComp.register();
+			EStyle.register();
 
-			const i = new IComp();
+			const i = new EStyle();
 
 			document.body.appendChild(i);
 
@@ -183,15 +183,15 @@ describe('WebComponent', () => {
 		});
 
 		it('should handle link stylesheet', () => {
-			class JComp extends WebComponent {
+			class FStyle extends WebComponent {
 				get stylesheet() {
 					return '<link rel="stylesheet " href="app.css">'
 				}
 			}
 
-			JComp.register();
+			FStyle.register();
 
-			const j = new JComp();
+			const j = new FStyle();
 
 			document.body.appendChild(j);
 
@@ -199,19 +199,56 @@ describe('WebComponent', () => {
 		});
 
 		it('should handle link and style tags', () => {
-			class KComp extends WebComponent {
+			class GStyle extends WebComponent {
 				get stylesheet() {
 					return '<style>:host {display: inline-block;}</style><link rel="stylesheet " href="app.css"> :host {display: inline-block;}'
 				}
 			}
 
-			KComp.register();
+			GStyle.register();
 
-			const k = new KComp();
+			const k = new GStyle();
 
 			document.body.appendChild(k);
 
 			expect(k.root?.innerHTML).toBe('<style>:host {display: inline-block;} :host {display: inline-block;}</style><link rel="stylesheet " href="app.css">')
+		});
+
+		it('should handle groped style with square brackets', () => {
+			class HStyle extends WebComponent {
+				colorVars = {
+					border: '#222'
+				}
+
+				get stylesheet() {
+					return `
+						:host([variant="text"]) .btn {
+							background: none;
+							border: none;
+							color: [this.colorVars.border];
+							font-weight: 700;
+						}
+						
+						:host([variant="outline"]) .btn:hover,
+						:host([variant="text"]) .btn:hover {
+							background: #f4f4f4;
+						}
+					`
+				}
+			}
+
+			HStyle.register();
+
+			const k = new HStyle();
+
+			document.body.appendChild(k);
+
+			expect(k.root?.innerHTML).toBe('<style>' +
+				':host([variant="text"]) .btn { ' +
+					'background: none; border: none; color: #222; font-weight: 700; ' +
+				'} :host([variant="outline"]) .btn:hover, :host([variant="text"]) .btn:hover { ' +
+					'background: #f4f4f4; ' +
+				'}</style>')
 		});
 
 		it.todo('should update style when data or context changes')

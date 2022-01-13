@@ -167,8 +167,8 @@ export class NodeTrack implements CWCO.NodeTrack {
 					executables: []
 				}
 			} else if (nodeName === 'STYLE') {
-				const selectorPattern = /[a-z:#\.*\[][^{}]*[^\s:]\s*(?={){/gmi;
-				const propValueStylePattern = /[a-z][a-z-]*:([^;]*)(;|})/gmi;
+				const selectorPattern = /[a-z:#\.*\[][^{}]*[^\s:]\s*(?={){/gsi;
+				const propValueStylePattern = /[a-z][a-z-]*:([^;]*)(;|})/gsi;
 				let styleText = (textContent ?? '');
 				let match: RegExpExecArray | null = null;
 				let executables: Array<CWCO.Executable> = [];
@@ -176,6 +176,7 @@ export class NodeTrack implements CWCO.NodeTrack {
 				while ((match = selectorPattern.exec(styleText)) !== null) {
 					let propValueMatch: RegExpExecArray | null = null;
 					let propValue = styleText.slice(selectorPattern.lastIndex);
+					propValue = propValue.slice(0, propValue.indexOf('}') + 1);
 
 					while ((propValueMatch = propValueStylePattern.exec(propValue)) !== null) {
 						executables.push(...extractExecutableSnippetFromString(propValueMatch[1], ['[', ']']))
