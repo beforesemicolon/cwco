@@ -1,11 +1,19 @@
 import selfClosingTags from './self-closing-tags.json';
+import {CWCO} from "../cwco";
+
+const NSURI: CWCO.ObjectLiteral = {
+	HTML: 'http://www.w3.org/1999/xhtml',
+	SVG: 'http://www.w3.org/2000/svg',
+}
 
 export function parse(markup: string) {
 	const tagCommentPattern = /<!--([^]*?)-->|<(\/|!)?([a-z][\w-.:]*)((?:\s*[a-z][\w-.:]*(?:\s*=\s*(?:"[^"]*"|'[^']*'))?)+\s*|\s*)(\/?)>/ig;
 	const root = document.createDocumentFragment();
-	const stack: Array<DocumentFragment | HTMLElement> = [root];
+	const stack: Array<DocumentFragment | HTMLElement | Element> = [root];
 	let match: RegExpExecArray | null = null;
 	let lastIndex = 0;
+	let isNSTag = false
+	let URI = ''
 
 	while ((match = tagCommentPattern.exec(markup)) !== null) {
 		let [fullMatch, comment, closeOrBangSymbol, tagName, attributes, selfCloseSlash] = match;
@@ -32,16 +40,28 @@ export function parse(markup: string) {
 			continue;
 		}
 
+		isNSTag = isNSTag || /SVG|HTML/i.test(tagName);
+
+		if (/SVG|HTML/i.test(tagName)) {
+			URI = NSURI[tagName.toUpperCase()];
+		}
+
 		if (selfCloseSlash || (selfClosingTags as {[key: string]: string})[tagName]) {
-			const node = document.createElement(tagName);
+			const node = isNSTag
+				? document.createElementNS(URI, tagName.toLowerCase())
+				: document.createElement(tagName);
 
 			setAttributes(node, attributes)
 
 			parentNode.appendChild(node);
 		} else if (closeOrBangSymbol === '/') {
+			isNSTag = /SVG|HTML/i.test(tagName) ? false : isNSTag;
+			URI = /SVG|HTML/i.test(tagName) ? '' : URI;
 			stack.pop();
 		} else if (!closeOrBangSymbol) {
-			const node = document.createElement(tagName);
+			const node = isNSTag
+				? document.createElementNS(URI, tagName.toLowerCase())
+				: document.createElement(tagName);
 
 			setAttributes(node, attributes)
 
@@ -60,7 +80,7 @@ export function parse(markup: string) {
 	return root;
 }
 
-function setAttributes(node: HTMLElement, attributes: string) {
+function setAttributes(node: Element | HTMLElement, attributes: string) {
 	const attrPattern = /([a-z][\w-.:]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|(\S+)))?/ig;
 	let match: RegExpExecArray | null = null;
 
