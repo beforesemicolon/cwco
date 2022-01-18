@@ -367,7 +367,6 @@ describe('WebComponent', () => {
 			expect(g.root?.innerHTML).toBe('<f-temp></f-temp>');
 			expect(f.root?.innerHTML).toBe('bar');
 		});
-
 	});
 
 	describe('liveCycles', () => {
@@ -588,12 +587,11 @@ describe('WebComponent', () => {
 		});
 
 		it('should update DOM when data attributes gets updated', () => {
-			n.dataset.x = 'test';
+			n.dataset.x = 'test-value';
 
-			expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="test">12 </strong>');
+			expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="test-value">12 </strong>');
 		});
-
-
+		
 	})
 
 	describe('data bind', () => {
@@ -744,6 +742,51 @@ describe('WebComponent', () => {
 				':host { --font-family: sans-serif; background: red } ' +
 				':host(.active) { background: green url(\'./sample.png\') no-repeat; color: #222; } ' +
 				'</style>')
+		});
+
+		it('should pass different data types via attributes', () => {
+			const updateSpy = jest.fn();
+
+			class BindingBox extends WebComponent {
+				static observedAttributes = ['data'];
+
+				onUpdate(name: string, oldValue: any, newValue: any) {
+					updateSpy(newValue);
+				}
+			}
+			class BindingH extends WebComponent {
+				data: any = null;
+
+				get template() {
+					return `<binding-box data="{data}"></binding-box>`;
+				}
+			}
+
+			BindingH.register();
+			BindingBox.register();
+			const s = new BindingH();
+
+			document.body.appendChild(s);
+
+			s.data = 12;
+
+			expect(updateSpy).toHaveBeenCalledWith(12);
+			updateSpy.mockClear()
+
+			s.data = {x: 12};
+
+			expect(updateSpy).toHaveBeenCalledWith({x: 12});
+			updateSpy.mockClear()
+
+			s.data = new Set([12]);
+
+			expect(updateSpy).toHaveBeenCalledWith(expect.any(Set));
+			updateSpy.mockClear()
+
+			s.data = () => 12
+
+			expect(updateSpy).toHaveBeenCalledWith(expect.any(Function));
+			updateSpy.mockClear()
 		});
 	})
 

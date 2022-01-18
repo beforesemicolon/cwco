@@ -1,12 +1,12 @@
 import {extractExecutableSnippetFromString} from "./utils/extract-executable-snippet-from-string";
 import {parseNodeDirective} from "./utils/parse-node-directive";
-import {resolveExecutable} from "./utils/resolve-executable";
+import {resolveExecutables} from "./utils/resolve-executables";
 import {getEventHandlerFunction} from "./utils/get-event-handler-function";
 import {directiveRegistry} from './directives/registry';
-import {evaluateStringInComponentContext} from "./utils/evaluate-string-in-component-context";
 import {$} from "./metadata";
 import {trackNode} from "./utils/track-node";
 import {CWCO} from "./cwco";
+import {evaluateStringInComponentContext} from "./utils/evaluate-string-in-component-context";
 
 /**
  * handles all logic related to tracking and updating a tracked node.
@@ -61,7 +61,7 @@ export class NodeTrack implements CWCO.NodeTrack {
 
 	updateNode() {
 		let updated = false;
-		let directiveNode: any = this.node;
+		let directiveNode: any = this.node;                    
 
 		for (let directive of this.directives) {
 			if (directive && directive.handler) {
@@ -69,24 +69,30 @@ export class NodeTrack implements CWCO.NodeTrack {
 					const {handler} = directive;
 
 					let val = handler.parseValue(directive.value, directive.prop);
-					extractExecutableSnippetFromString(val).forEach((exc) => {
-						val = resolveExecutable(this.component, this.$context, exc, val);
-					});
 
-					const value = evaluateStringInComponentContext(val, this.component, this.$context);
-					
+					let value = resolveExecutables(
+						val,
+						this.component,
+						this.$context,
+						extractExecutableSnippetFromString(val)
+					);
+
+					if (typeof value === 'string') {
+					    value = evaluateStringInComponentContext(value, this.component, this.$context);
+					}
+
 					// compare with previous directive value before rendering the directive
 					if (this.dirValues.get(directive) !== value) {
 						updated = true;
-						
+
 						directiveNode = handler.render(value, {
 							element: this.node,
 							anchorNode: this.dirAnchors.get(directive) ?? null,
 							rawElementOuterHTML: $.get(this.node).rawNodeString
 						} as CWCO.directiveRenderOptions);
-						
+
 						this.dirValues.set(directive, value);
-						
+
 						if (directiveNode !== this.node) {
 							this.dirAnchors.set(directive, directiveNode);
 							this.anchorDir = directive;
@@ -111,9 +117,12 @@ export class NodeTrack implements CWCO.NodeTrack {
 			this.anchor = this._switchNodeAndAnchor(directiveNode);
 
 			if (this.property?.executables.length) {
-				const newValue = this.property.executables.reduce((val, exc) => {
-					return resolveExecutable(this.component, this.$context, exc, val);
-				}, this.property.value)
+				const newValue = resolveExecutables(
+					this.property.value,
+					this.component,
+					this.$context,
+					this.property.executables
+				);
 
 				if (newValue !== (this.node as CWCO.ObjectLiteral)[this.property.name]) {
 					updated = true;
@@ -122,14 +131,28 @@ export class NodeTrack implements CWCO.NodeTrack {
 			}
 
 			for (let {name, value, executables} of this.attributes) {
-				if (executables.length) {
-					let newValue = executables.reduce((val, exc) => {
-						return resolveExecutable(this.component, this.$context, exc, val);
-					}, value);
 
-					if ((this.node as HTMLElement).getAttribute(name) !== newValue) {
-						updated = true;
-						(this.node as HTMLElement).setAttribute(name, newValue);
+				if (executables.length) {
+					let newValue = resolveExecutables(
+						value,
+						this.component,
+						this.$context,
+						executables
+					);
+
+					if (typeof newValue === 'string') {
+						if ((this.node as HTMLElement).getAttribute(name) !== newValue) {
+							updated = true;
+							(this.node as HTMLElement).setAttribute(name, newValue);
+						}
+					} else {
+						const {attrPropsMap} = $.get(this.node);
+						const attrProp = attrPropsMap ? attrPropsMap[name] : name;
+
+						if((this.node as CWCO.ObjectLiteral)[attrProp] !== newValue) {
+							updated = true;
+							(this.node as CWCO.ObjectLiteral)[attrProp] = newValue;
+						}
 					}
 				}
 			}
@@ -179,7 +202,13 @@ export class NodeTrack implements CWCO.NodeTrack {
 					propValue = propValue.slice(0, propValue.indexOf('}') + 1);
 
 					while ((propValueMatch = propValueStylePattern.exec(propValue)) !== null) {
-						executables.push(...extractExecutableSnippetFromString(propValueMatch[1], ['[', ']']))
+						executables.push(
+							...extractExecutableSnippetFromString(
+								propValueMatch[1],
+								['[', ']'],
+								selectorPattern.lastIndex + propValue.indexOf(propValueMatch[1])
+							)
+						);
 					}
 				}
 

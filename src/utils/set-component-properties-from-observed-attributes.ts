@@ -18,7 +18,7 @@ export function setComponentPropertiesFromObservedAttributes(
 
 		if (!directives.has(attr) && !(attr.startsWith('data-') || attr === 'class' || attr === 'style')) {
 			let prop = attrsMap[attr];
-			let value: any = comp.getAttribute(attr) ?? comp[prop] ?? '';
+			let value: any = comp[prop] ?? comp.getAttribute(attr) ?? '';
 
 			properties.push(prop);
 

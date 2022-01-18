@@ -8,15 +8,18 @@ export function evaluateStringInComponentContext(
 	if (!executable.trim()) {
 		return '';
 	}
-	
+
 	const ctx = component.$context;
 	const keys = Array.from(new Set([
 		...Object.getOwnPropertyNames(nodeData),
+		...component.$properties,
 		...Object.getOwnPropertyNames(ctx),
-		...component.$properties
 	]));
+	const values = keys.map((key: string) => {
+		return nodeData[key] ?? component[key] ?? ctx[key] ?? null
+	})
 
 	return (
 		new Function(...keys, `"use strict";\n return ${executable};`)
-	).apply(component, keys.map((key: string) => nodeData[key] ?? component[key] ?? ctx[key] ?? null)) ?? '';
+	).apply(component, values) ?? '';
 }
