@@ -63,7 +63,7 @@ You can then import the constructors class according to what you are building.
 const { WebComponent, ContextProviderComponent, Directive } = require('cwco');
 ```
 
-#### VSCode &&  IDEs
+### Code Editors & IDEs
 CWCO is just HTML and if you want syntax highlighting for VSCode you can use the inline-html
 
 #### VSCode
