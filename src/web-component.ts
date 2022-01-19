@@ -253,8 +253,8 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 
 				if (mode === 'none') {
 					[
-						...Array.from(contentNode.querySelectorAll('style')),
 						...Array.from(contentNode.querySelectorAll('link')),
+						...Array.from(contentNode.querySelectorAll('style')),
 					].forEach((el: HTMLElement) => {
 						document.head.appendChild(el);
 					})

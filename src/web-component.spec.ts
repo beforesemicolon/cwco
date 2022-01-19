@@ -180,7 +180,7 @@ describe('WebComponent', () => {
 			document.body.appendChild(i);
 
 			expect(i.root?.innerHTML).toBe('')
-			expect(document.head.innerHTML).toBe('<style class="e-style">e-style {display: inline-block;} e-style {display: inline-block;}</style><link rel="stylesheet " href="app.css">')
+			expect(document.head.innerHTML).toBe('<link rel="stylesheet " href="app.css"><style class="e-style"> e-style {display: inline-block;}</style><style class="e-style">e-style {display: inline-block;}</style>')
 		});
 
 		it('should handle link stylesheet', () => {
@@ -212,10 +212,11 @@ describe('WebComponent', () => {
 
 			document.body.appendChild(k);
 
-			expect(k.root?.innerHTML).toBe('<style>:host {display: inline-block;} :host {display: inline-block;}</style><link rel="stylesheet " href="app.css">')
+			expect(k.root?.innerHTML).toBe('<link rel="stylesheet " href="app.css"><style> :host {display: inline-block;}</style><style>:host {display: inline-block;}</style>')
 		});
 
-		it('should handle groped style with square brackets', () => {
+		it('should handle groped' +
+			' style with square brackets', () => {
 			class HStyle extends WebComponent {
 				colorVars = {
 					border: '#222'
@@ -268,6 +269,7 @@ describe('WebComponent', () => {
 
 			expect(a.root?.innerHTML).toBe('')
 		});
+
 
 		it('should set template in the shadow root if mode is not none', () => {
 			class BTemp extends WebComponent {

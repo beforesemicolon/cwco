@@ -136,6 +136,20 @@ describe('ContextProviderComponent', () => {
 							background: [colors.bg]
 						}
 						
+						:host *,
+						:host *::before,
+						:host *::after {
+							box-sizing: border-box;
+						}
+						
+						:host-context(h1) {
+						  font-weight: bold;
+						}
+						
+						:host-context(main article) {
+						  font-weight: bold;
+						}
+						
 						:host(.active) {
 							background: [colors.active] url('./sample.png') no-repeat;
 							color: [colors.dark];
@@ -151,6 +165,9 @@ describe('ContextProviderComponent', () => {
 
 		expect(document.head.innerHTML).toBe('<style class="binding-g"> ' +
 			'binding-g { --font-family: sans-serif; --font-size-h6: 12px; background: red } ' +
+			'binding-g *, binding-g *::before, binding-g *::after { box-sizing: border-box; } ' +
+			'h1 binding-g { font-weight: bold; } ' +
+			'main article binding-g { font-weight: bold; } ' +
 			'binding-g.active { background: green url(\'./sample.png\') no-repeat; color: #222; } ' +
 			'</style>')
 	});
