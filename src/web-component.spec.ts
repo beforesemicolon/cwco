@@ -1,5 +1,6 @@
 import {WebComponent} from './web-component';
 import {ShadowRootModeExtended} from "./enums/ShadowRootModeExtended.enum";
+import {ContextProviderComponent} from "./context-provider-component";
 
 describe('WebComponent', () => {
 
@@ -715,11 +716,16 @@ describe('WebComponent', () => {
 					active: 'green',
 					dark: '#222',
 				}
+				font = 'sans-serif';
 
 				get stylesheet() {
 					return `
 					<style>
-						:host {background: [colors.bg]}
+						
+						:host {
+							--font-family: [this.font];
+							background: [colors.bg]
+						}
 						
 						:host(.active) {
 							background: [colors.active] url('./sample.png') no-repeat;
@@ -734,9 +740,10 @@ describe('WebComponent', () => {
 
 			document.body.appendChild(s);
 
-			expect(s.root?.innerHTML).toBe("<style> " +
-				":host {background: red} " +
-				":host(.active) { background: green url('./sample.png') no-repeat; color: #222; } </style>")
+			expect(s.root?.innerHTML).toBe('<style> ' +
+				':host { --font-family: sans-serif; background: red } ' +
+				':host(.active) { background: green url(\'./sample.png\') no-repeat; color: #222; } ' +
+				'</style>')
 		});
 	})
 

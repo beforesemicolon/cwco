@@ -24,11 +24,8 @@ export function getStyleString(stylesheet: string, tagName: string, hasShadowRoo
 
 	if (!hasShadowRoot) {
 		styleTag.classList.add(tagName);
-		styleTag.textContent = (styleTag.innerHTML).replace(/(:host)((\s*\(.*\)|))?/g, (_, h, s) => {
-			if (s) {
-				return tagName + s.trim().slice(1, -1).trim();
-			}
-			return tagName;
+		styleTag.textContent = (styleTag.innerHTML).replace(/(:host)(?:\s*\((.*)\))?\s*{/gsi, (_, h, s) => {
+			return `${tagName}${(s || '').trim()} {`;
 		})
 	}
 

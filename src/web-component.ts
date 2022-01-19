@@ -243,6 +243,14 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 
 				const contentNode = parse(resolveHtmlEntities(style + temp));
 
+				this._childNodes = Array.from(this.childNodes);
+				
+				if (this.customSlot) {
+					this.innerHTML = '';
+				}
+				
+				trackNode(contentNode, this, {tracks});
+
 				if (mode === 'none') {
 					[
 						...Array.from(contentNode.querySelectorAll('style')),
@@ -251,16 +259,6 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 						document.head.appendChild(el);
 					})
 				}
-
-				this._childNodes = Array.from(this.childNodes);
-				
-				if (this.customSlot) {
-					this.innerHTML = '';
-				}
-				
-				trackNode(contentNode, this, {
-					tracks,
-				});
 
 				$.get(this).parsed = true;
 				root.appendChild(contentNode);

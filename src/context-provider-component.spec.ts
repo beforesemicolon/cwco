@@ -104,4 +104,41 @@ describe('ContextProviderComponent', () => {
 		expect(r.root?.innerHTML).toBe('<z-comp></z-comp>');
 		expect(t.root?.innerHTML).toBe('bar');
 	});
+
+	it('should bind data to style', () => {
+		document.head.innerHTML = '';
+		class BindingG extends ContextProviderComponent {
+			colors = {
+				bg: 'red',
+				active: 'green',
+				dark: '#222',
+			}
+			font = 'sans-serif';
+
+			get stylesheet() {
+				return `
+					<style>
+						:host {
+							--font-family: [this.font];
+							background: [colors.bg]
+						}
+						
+						:host(.active) {
+							background: [colors.active] url('./sample.png') no-repeat;
+							color: [colors.dark];
+						}
+					</style>`
+			}
+		}
+
+		BindingG.register();
+		const s = new BindingG();
+
+		document.body.appendChild(s);
+
+		expect(document.head.innerHTML).toBe('<style class="binding-g"> ' +
+			'binding-g { --font-family: sans-serif; background: red } ' +
+			'binding-g.active { background: green url(\'./sample.png\') no-repeat; color: #222; } ' +
+			'</style>')
+	});
 });
