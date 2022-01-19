@@ -4,6 +4,7 @@ import {directives} from "../directives";
 import {jsonParse} from "./json-parse";
 import {$} from "../metadata";
 import {CWCO} from "../cwco";
+import {isPrimitive} from "./is-primitive";
 
 export function setComponentPropertiesFromObservedAttributes(
 	comp: CWCO.WebComponent,
@@ -40,7 +41,7 @@ export function setComponentPropertiesFromObservedAttributes(
 					return value;
 				},
 				set(newValue) {
-					if (comp.hasAttribute(attr) && typeof newValue === 'object') {
+					if (comp.hasAttribute(attr) && !isPrimitive(newValue)) {
 						$.get(comp).clearAttr = true;
 						comp.removeAttribute(attr);
 					}

@@ -7,6 +7,7 @@ import {$} from "./metadata";
 import {trackNode} from "./utils/track-node";
 import {CWCO} from "./cwco";
 import {evaluateStringInComponentContext} from "./utils/evaluate-string-in-component-context";
+import {isPrimitive} from "./utils/is-primitive";
 
 /**
  * handles all logic related to tracking and updating a tracked node.
@@ -140,7 +141,7 @@ export class NodeTrack implements CWCO.NodeTrack {
 						executables
 					);
 
-					if (typeof newValue === 'string') {
+					if (isPrimitive(newValue)) {
 						if ((this.node as HTMLElement).getAttribute(name) !== newValue) {
 							updated = true;
 							(this.node as HTMLElement).setAttribute(name, newValue);
