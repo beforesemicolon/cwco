@@ -114,13 +114,25 @@ describe('ContextProviderComponent', () => {
 				active: 'green',
 				dark: '#222',
 			}
-			font = 'sans-serif';
+			font = {
+				family: 'sans-serif'
+			};
+			theme = {
+				font: {
+					size: {
+						headings: {
+							h6: '12px'
+						}
+					}
+				}
+			}
 
 			get stylesheet() {
 				return `
 					<style>
 						:host {
-							--font-family: [this.font];
+							--font-family: [this.font && this.font.family];
+							--font-size-h6: [this.theme && this.theme.font.size.headings.h6];
 							background: [colors.bg]
 						}
 						
@@ -138,7 +150,7 @@ describe('ContextProviderComponent', () => {
 		document.body.appendChild(s);
 
 		expect(document.head.innerHTML).toBe('<style class="binding-g"> ' +
-			'binding-g { --font-family: sans-serif; background: red } ' +
+			'binding-g { --font-family: sans-serif; --font-size-h6: 12px; background: red } ' +
 			'binding-g.active { background: green url(\'./sample.png\') no-repeat; color: #222; } ' +
 			'</style>')
 	});

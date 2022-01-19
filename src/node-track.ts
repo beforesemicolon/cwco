@@ -62,7 +62,7 @@ export class NodeTrack implements CWCO.NodeTrack {
 
 	updateNode() {
 		let updated = false;
-		let directiveNode: any = this.node;                    
+		let directiveNode: any = this.node;
 
 		for (let directive of this.directives) {
 			if (directive && directive.handler) {
@@ -192,7 +192,7 @@ export class NodeTrack implements CWCO.NodeTrack {
 				}
 			} else if (nodeName === 'STYLE') {
 				const selectorPattern = /[a-z:#\.*\[][^{}]*[^\s:]\s*(?={){/gsi;
-				const propValueStylePattern = /[a-z][a-z-]*:([^;]*)(;|})/gsi;
+				const propValueStylePattern = /(?:--)?[a-z][^:]*:([^;]*)(;|})/gsi;
 				let styleText = (textContent ?? '');
 				let match: RegExpExecArray | null = null;
 				let executables: Array<CWCO.Executable> = [];
