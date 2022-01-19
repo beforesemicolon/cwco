@@ -63,6 +63,33 @@ You can then import the constructors class according to what you are building.
 const { WebComponent, ContextProviderComponent, Directive } = require('cwco');
 ```
 
+#### VSCode &&  IDEs
+CWCO is just HTML and if you want syntax highlighting for VSCode you can use the inline-html
+
+#### VSCode
+For syntax highlighting of HTML and CSS in javascript use [inline-html](https://github.com/pushqrdx/vscode-inline-html) 
+or [lit-html](https://marketplace.visualstudio.com/items?itemName=bierner.lit-html) plugins.
+
+You can import `html` from `cwco` which is just a help for VSCode which does nothing special
+to the HTML string you use it with.
+
+```js
+import {html, WebComponent} from "./cwco";
+
+class MyButton extends WebComponent {
+  get template() {
+    return html`<button><slot></slot></button>`
+  }
+  
+  get stylesheet() {
+    return html`<style>button {color: #222}</style>`
+  }
+}
+```
+
+#### Jet Brain IDEs
+These IDEs have built-in HTML-in-Javascript syntax highlighting which can be useful when developing CWCO web components.
+
 ### Documentation
 
 - [Getting Started](https://github.com/beforesemicolon/cwco/blob/master/docs/getting-started.md)

@@ -367,6 +367,32 @@ describe('WebComponent', () => {
 			expect(g.root?.innerHTML).toBe('<f-temp></f-temp>');
 			expect(f.root?.innerHTML).toBe('bar');
 		});
+
+		it('should handle array of string template', () => {
+			const html = (x: TemplateStringsArray) => x.join('');
+
+			class HTemp extends WebComponent {
+				bar = {
+					value: 'bar'
+				};
+
+				get template() {
+					return html`<div>text</div>`
+				}
+
+				get stylesheet() {
+					return html`<style> {color: #222}</style>`
+				}
+			}
+
+			HTemp.register();
+
+			const h = new HTemp();
+
+			document.body.appendChild(h);
+
+			expect(h.root?.innerHTML).toBe('<style> {color: #222}</style><div>text</div>');
+		});
 	});
 
 	describe('liveCycles', () => {

@@ -1,0 +1,1 @@
+export const html = (x: TemplateStringsArray) => x.join('');
