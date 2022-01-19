@@ -80,10 +80,10 @@ describe('ContextProviderComponent', () => {
 
 	it('should remove component tag object  observed attributes before render', () => {
 		class ZComp extends WebComponent {
-			static observedAttributes = ['foo'];
+			static observedAttributes = ['foo', 'bar'];
 
 			get template() {
-				return "{foo.value}"
+				return "{foo.value} {bar}"
 			}
 		}
 
@@ -91,18 +91,19 @@ describe('ContextProviderComponent', () => {
 			bar = {
 				value: 'bar'
 			};
+			value = 12;
 		}
 
 		ZComp.register();
 		RComp.register();
 
-		document.body.innerHTML = "<r-comp><z-comp foo='{bar}'></z-comp></r-comp>";
+		document.body.innerHTML = `<r-comp><z-comp foo="{bar}" bar="{value}"></z-comp></r-comp>`;
 
 		const r = document.body.children[0] as WebComponent;
 		const t = r.root?.children[0] as WebComponent;
 
-		expect(r.root?.innerHTML).toBe('<z-comp></z-comp>');
-		expect(t.root?.innerHTML).toBe('bar');
+		expect(r.root?.innerHTML).toBe('<z-comp bar="12"></z-comp>');
+		expect(t.root?.innerHTML).toBe('bar 12');
 	});
 
 	it('should bind data to style', () => {

@@ -1,3 +1,5 @@
+import {isPrimitive} from "./is-primitive";
+
 const TypedArray = Object.getPrototypeOf(Uint8Array);
 
 export function proxify(name: string, object: any, notify: (name: string, o: any) => void = () => {
@@ -7,7 +9,8 @@ export function proxify(name: string, object: any, notify: (name: string, o: any
 	if (
 		!object ||
 		object.__isProxy || // ignore objects already gone through proxify
-		/number|function|string|bigint|boolean|symbol/.test(typeof object) || // ignore primitives
+		isPrimitive(object) || // ignore primitives
+		typeof object === 'function' || // ignore functions
 		(
 			// ignore any object that is not in this array or an object literal
 			![Array, Map, Set, TypedArray].some(o => object instanceof o) &&

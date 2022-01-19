@@ -2,17 +2,18 @@ import {turnCamelToKebabCasing} from "./turn-camel-to-kebab-casing";
 import {directives} from "../directives";
 import {proxify} from "./proxify";
 import {CWCO} from "../cwco";
+import {$} from "../metadata";
 
-export function setupComponentPropertiesForAutoUpdate(component: CWCO.WebComponent, onUpdate: CWCO.onUpdateCallback): string[] {
+export function setupComponentPropertiesForAutoUpdate(comp: CWCO.WebComponent, onUpdate: CWCO.onUpdateCallback): string[] {
 	const properties: string[] = [];
 
-	for (let property of Object.getOwnPropertyNames(component)) {
+	for (let property of Object.getOwnPropertyNames(comp)) {
 		const attr = turnCamelToKebabCasing(property);
 
 		// ignore private properties and $ properties as well as attribute properties
-		if (!directives.has(property) && !/\$|_/.test(property[0]) && !(component.constructor as CWCO.WebComponentConstructor).observedAttributes.includes(attr)) {
+		if (!directives.has(property) && !/\$|_/.test(property[0]) && !(comp.constructor as CWCO.WebComponentConstructor).observedAttributes.includes(attr)) {
 			// @ts-ignore
-			let value = component[property];
+			let value = comp[property];
 
 			properties.push(property);
 
@@ -20,7 +21,7 @@ export function setupComponentPropertiesForAutoUpdate(component: CWCO.WebCompone
 				onUpdate(property, value, value);
 			})
 
-			Object.defineProperty(component, property, {
+			Object.defineProperty(comp, property, {
 				get() {
 					return value;
 				},
