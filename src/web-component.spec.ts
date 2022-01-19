@@ -1,5 +1,6 @@
 import {WebComponent} from './web-component';
 import {ShadowRootModeExtended} from "./enums/ShadowRootModeExtended.enum";
+import {ContextProviderComponent} from "./context-provider-component";
 
 describe('WebComponent', () => {
 
@@ -105,26 +106,26 @@ describe('WebComponent', () => {
 
 	describe('stylesheet', () => {
 		it('should be empty if not set', () => {
-			class ZComp extends WebComponent {
+			class AStyle extends WebComponent {
 			}
 
-			ZComp.register();
+			AStyle.register();
 
-			const z = new ZComp();
+			const z = new AStyle();
 
 			expect(z.stylesheet).toBe('')
 		});
 
 		it('should define style with CSS only', () => {
-			class FComp extends WebComponent {
+			class BStyle extends WebComponent {
 				get stylesheet() {
 					return ':host {display: inline-block;}'
 				}
 			}
 
-			FComp.register();
+			BStyle.register();
 
-			const f = new FComp();
+			const f = new BStyle();
 
 			document.body.appendChild(f);
 
@@ -132,15 +133,15 @@ describe('WebComponent', () => {
 		});
 
 		it('should define style with CSS inside style tag', () => {
-			class GComp extends WebComponent {
+			class CStyle extends WebComponent {
 				get stylesheet() {
 					return '<style>:host {display: inline-block;}</style>'
 				}
 			}
 
-			GComp.register();
+			CStyle.register();
 
-			const g = new GComp();
+			const g = new CStyle();
 
 			document.body.appendChild(g);
 
@@ -148,15 +149,15 @@ describe('WebComponent', () => {
 		});
 
 		it('should not set style if stylesheet is empty', () => {
-			class HComp extends WebComponent {
+			class DStyle extends WebComponent {
 				get stylesheet() {
 					return '  '
 				}
 			}
 
-			HComp.register();
+			DStyle.register();
 
-			const h = new HComp();
+			const h = new DStyle();
 
 			document.body.appendChild(h);
 
@@ -164,7 +165,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should put style in the head tag if mode is none', () => {
-			class IComp extends WebComponent {
+			class EStyle extends WebComponent {
 				static mode = ShadowRootModeExtended.NONE;
 
 				get stylesheet() {
@@ -172,26 +173,26 @@ describe('WebComponent', () => {
 				}
 			}
 
-			IComp.register();
+			EStyle.register();
 
-			const i = new IComp();
+			const i = new EStyle();
 
 			document.body.appendChild(i);
 
 			expect(i.root?.innerHTML).toBe('')
-			expect(document.head.innerHTML).toBe('<style class="i-comp">i-comp {display: inline-block;} i-comp {display: inline-block;}</style><link rel="stylesheet " href="app.css">')
+			expect(document.head.innerHTML).toBe('<style class="e-style">e-style {display: inline-block;} e-style {display: inline-block;}</style><link rel="stylesheet " href="app.css">')
 		});
 
 		it('should handle link stylesheet', () => {
-			class JComp extends WebComponent {
+			class FStyle extends WebComponent {
 				get stylesheet() {
 					return '<link rel="stylesheet " href="app.css">'
 				}
 			}
 
-			JComp.register();
+			FStyle.register();
 
-			const j = new JComp();
+			const j = new FStyle();
 
 			document.body.appendChild(j);
 
@@ -199,19 +200,56 @@ describe('WebComponent', () => {
 		});
 
 		it('should handle link and style tags', () => {
-			class KComp extends WebComponent {
+			class GStyle extends WebComponent {
 				get stylesheet() {
 					return '<style>:host {display: inline-block;}</style><link rel="stylesheet " href="app.css"> :host {display: inline-block;}'
 				}
 			}
 
-			KComp.register();
+			GStyle.register();
 
-			const k = new KComp();
+			const k = new GStyle();
 
 			document.body.appendChild(k);
 
 			expect(k.root?.innerHTML).toBe('<style>:host {display: inline-block;} :host {display: inline-block;}</style><link rel="stylesheet " href="app.css">')
+		});
+
+		it('should handle groped style with square brackets', () => {
+			class HStyle extends WebComponent {
+				colorVars = {
+					border: '#222'
+				}
+
+				get stylesheet() {
+					return `
+						:host([variant="text"]) .btn {
+							background: none;
+							border: none;
+							color: [this.colorVars.border];
+							font-weight: 700;
+						}
+						
+						:host([variant="outline"]) .btn:hover,
+						:host([variant="text"]) .btn:hover {
+							background: #f4f4f4;
+						}
+					`
+				}
+			}
+
+			HStyle.register();
+
+			const k = new HStyle();
+
+			document.body.appendChild(k);
+
+			expect(k.root?.innerHTML).toBe('<style>' +
+				':host([variant="text"]) .btn { ' +
+					'background: none; border: none; color: #222; font-weight: 700; ' +
+				'} :host([variant="outline"]) .btn:hover, :host([variant="text"]) .btn:hover { ' +
+					'background: #f4f4f4; ' +
+				'}</style>')
 		});
 
 		it.todo('should update style when data or context changes')
@@ -330,6 +368,31 @@ describe('WebComponent', () => {
 			expect(f.root?.innerHTML).toBe('bar');
 		});
 
+		it('should handle array of string template', () => {
+			const html = (x: TemplateStringsArray) => x.join('');
+
+			class HTemp extends WebComponent {
+				bar = {
+					value: 'bar'
+				};
+
+				get template() {
+					return html`<div>text</div>`
+				}
+
+				get stylesheet() {
+					return html`<style> {color: #222}</style>`
+				}
+			}
+
+			HTemp.register();
+
+			const h = new HTemp();
+
+			document.body.appendChild(h);
+
+			expect(h.root?.innerHTML).toBe('<style> {color: #222}</style><div>text</div>');
+		});
 	});
 
 	describe('liveCycles', () => {
@@ -550,12 +613,11 @@ describe('WebComponent', () => {
 		});
 
 		it('should update DOM when data attributes gets updated', () => {
-			n.dataset.x = 'test';
+			n.dataset.x = 'test-value';
 
-			expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="test">12 </strong>');
+			expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="test-value">12 </strong>');
 		});
-
-
+		
 	})
 
 	describe('data bind', () => {
@@ -678,11 +740,16 @@ describe('WebComponent', () => {
 					active: 'green',
 					dark: '#222',
 				}
+				font = 'sans-serif';
 
 				get stylesheet() {
 					return `
 					<style>
-						:host {background: [colors.bg]}
+						
+						:host {
+							--font-family: [this.font];
+							background: [colors.bg]
+						}
 						
 						:host(.active) {
 							background: [colors.active] url('./sample.png') no-repeat;
@@ -697,9 +764,55 @@ describe('WebComponent', () => {
 
 			document.body.appendChild(s);
 
-			expect(s.root?.innerHTML).toBe("<style> " +
-				":host {background: red} " +
-				":host(.active) { background: green url('./sample.png') no-repeat; color: #222; } </style>")
+			expect(s.root?.innerHTML).toBe('<style> ' +
+				':host { --font-family: sans-serif; background: red } ' +
+				':host(.active) { background: green url(\'./sample.png\') no-repeat; color: #222; } ' +
+				'</style>')
+		});
+
+		it('should pass different data types via attributes', () => {
+			const updateSpy = jest.fn();
+
+			class BindingBox extends WebComponent {
+				static observedAttributes = ['data'];
+
+				onUpdate(name: string, oldValue: any, newValue: any) {
+					updateSpy(newValue);
+				}
+			}
+			class BindingH extends WebComponent {
+				data: any = null;
+
+				get template() {
+					return `<binding-box data="{data}"></binding-box>`;
+				}
+			}
+
+			BindingH.register();
+			BindingBox.register();
+			const s = new BindingH();
+
+			document.body.appendChild(s);
+
+			s.data = 12;
+
+			expect(updateSpy).toHaveBeenCalledWith(12);
+			updateSpy.mockClear()
+
+			s.data = {x: 12};
+
+			expect(updateSpy).toHaveBeenCalledWith({x: 12});
+			updateSpy.mockClear()
+
+			s.data = new Set([12]);
+
+			expect(updateSpy).toHaveBeenCalledWith(expect.any(Set));
+			updateSpy.mockClear()
+
+			s.data = () => 12
+
+			expect(updateSpy).toHaveBeenCalledWith(expect.any(Function));
+			updateSpy.mockClear()
 		});
 	})
 

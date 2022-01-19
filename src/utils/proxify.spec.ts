@@ -1,41 +1,47 @@
 import {proxify} from "./proxify";
 
 describe('proxify', () => {
-  describe('should ignore', () => {
-    it('proxy', () => {
-      const prx = new Proxy({}, {});
-
-      expect(proxify('sample', prx)).toEqual(prx);
-    });
-
-    it('function', () => {
-      const fn1 = () => null;
-      const fn2 = function sample() {};
-
-      expect(proxify('sample', fn1)).toEqual(fn1);
-      expect(proxify('sample', fn2)).toEqual(fn2);
-    });
-
-    it('number', () => {
-      expect(proxify('sample', 12)).toEqual(12);
-      expect(proxify('sample', new Number('21'))).toEqual(new Number('21'));
-    });
-
-    it('string', () => {
-      expect(proxify('sample', 'str')).toEqual('str');
-      expect(proxify('sample', new String('str'))).toEqual(new String('str'));
-    });
-
-    it('boolean', () => {
-      expect(proxify('sample', true)).toEqual(true);
-      expect(proxify('sample', false)).toEqual(false);
-      expect(proxify('sample', new Boolean('true'))).toEqual(new Boolean('true'));
-    });
-
-    it('bigint', () => {
-      expect(proxify('sample', 1n)).toEqual(1n);
-      expect(proxify('sample', BigInt('12'))).toEqual(12n);
-    });
+  it('should ignore', () => {
+    expect(proxify('sample', () => null).__isProxy).toBeUndefined();
+    expect(proxify('sample', function sample() {}).__isProxy).toBeUndefined();
+    expect(proxify('sample', 12).__isProxy).toBeUndefined();
+    expect(proxify('sample', new Number('21')).__isProxy).toBeUndefined();
+    expect(proxify('sample', 'str').__isProxy).toBeUndefined();
+    expect(proxify('sample', new String('str')).__isProxy).toBeUndefined();
+    expect(proxify('sample', true).__isProxy).toBeUndefined();
+    expect(proxify('sample', false).__isProxy).toBeUndefined();
+    expect(proxify('sample', new Boolean('true')).__isProxy).toBeUndefined();
+    expect(proxify('sample', 1n).__isProxy).toBeUndefined();
+    expect(proxify('sample', BigInt('12')).__isProxy).toBeUndefined();
+    expect(proxify('sample', Symbol('12')).__isProxy).toBeUndefined();
+    expect(proxify('sample', document.createElement('div')).__isProxy).toBeUndefined();
+    expect(proxify('sample', document.createTextNode('value')).__isProxy).toBeUndefined();
+    expect(proxify('sample', document.createTextNode('value')).__isProxy).toBeUndefined();
+    expect(proxify('sample', document.createDocumentFragment()).__isProxy).toBeUndefined();
+    expect(proxify('sample', new Event('')).__isProxy).toBeUndefined()
+    expect(proxify('sample', document).__isProxy).toBeUndefined()
+  });
+  
+  it('should proxify', () => {
+    expect(proxify('sample', new Int8Array(2)).__isProxy).toBeTruthy();
+    expect(proxify('sample', new Uint8Array(2)).__isProxy).toBeTruthy();
+    expect(proxify('sample', new Uint8ClampedArray(2)).__isProxy).toBeTruthy();
+    expect(proxify('sample', new Int16Array(2)).__isProxy).toBeTruthy();
+    expect(proxify('sample', new Uint16Array(2)).__isProxy).toBeTruthy();
+    expect(proxify('sample', new Int32Array(2)).__isProxy).toBeTruthy();
+    expect(proxify('sample', new Uint32Array(2)).__isProxy).toBeTruthy();
+    expect(proxify('sample', new Float32Array(2)).__isProxy).toBeTruthy();
+    expect(proxify('sample', new Float64Array(2)).__isProxy).toBeTruthy();
+    expect(proxify('sample', new BigInt64Array(2)).__isProxy).toBeTruthy();
+    expect(proxify('sample', new BigUint64Array(2)).__isProxy).toBeTruthy();
+    expect(proxify('sample', new Array(2)).__isProxy).toBeTruthy();
+    expect(proxify('sample', []).__isProxy).toBeTruthy();
+    expect(proxify('sample', {}).__isProxy).toBeTruthy();
+    expect(proxify('sample', Object.create({})).__isProxy).toBeTruthy();
+    expect(proxify('sample', Object.create(null)).__isProxy).toBeTruthy();
+    expect(proxify('sample', new Object({})).__isProxy).toBeTruthy();
+    expect(proxify('sample', new Set()).__isProxy).toBeTruthy();
+    expect(proxify('sample', new Map()).__isProxy).toBeTruthy();
   });
 
   describe('Array', () => {

@@ -56,8 +56,6 @@ describe('ContextProviderComponent', () => {
 
 		it('should render named slot content WITHOUT shadow root', () => {
 			class SlotF extends ContextProviderComponent {
-				static mode = ShadowRootModeExtended.NONE;
-
 				get template() {
 					return '<slot name="content"></slot>'
 				}
@@ -75,16 +73,17 @@ describe('ContextProviderComponent', () => {
 
 			s = document.body.children[0] as WebComponent;
 
-			expect(s.innerHTML).toBe('<style class="slot-f">slot-f { display: block; }</style><p slot="content">one</p>');
+			expect(s.innerHTML).toBe('<p slot="content">one</p>');
+			expect(document.head.querySelector(`.${s.tagName}`.toLowerCase())?.outerHTML).toEqual('<style class="slot-f">slot-f { display: block; }</style>');
 		});
 	})
 
 	it('should remove component tag object  observed attributes before render', () => {
 		class ZComp extends WebComponent {
-			static observedAttributes = ['foo'];
+			static observedAttributes = ['foo', 'bar'];
 
 			get template() {
-				return "{foo.value}"
+				return "{foo.value} {bar}"
 			}
 		}
 
@@ -92,17 +91,55 @@ describe('ContextProviderComponent', () => {
 			bar = {
 				value: 'bar'
 			};
+			value = 12;
 		}
 
 		ZComp.register();
 		RComp.register();
 
-		document.body.innerHTML = "<r-comp><z-comp foo='{bar}'></z-comp></r-comp>";
+		document.body.innerHTML = `<r-comp><z-comp foo="{bar}" bar="{value}"></z-comp></r-comp>`;
 
 		const r = document.body.children[0] as WebComponent;
 		const t = r.root?.children[0] as WebComponent;
 
-		expect(r.root?.innerHTML).toBe('<z-comp></z-comp>');
-		expect(t.root?.innerHTML).toBe('bar');
+		expect(r.root?.innerHTML).toBe('<z-comp bar="12"></z-comp>');
+		expect(t.root?.innerHTML).toBe('bar 12');
+	});
+
+	it('should bind data to style', () => {
+		document.head.innerHTML = '';
+		class BindingG extends ContextProviderComponent {
+			colors = {
+				bg: 'red',
+				active: 'green',
+				dark: '#222',
+			}
+			font = 'sans-serif';
+
+			get stylesheet() {
+				return `
+					<style>
+						:host {
+							--font-family: [this.font];
+							background: [colors.bg]
+						}
+						
+						:host(.active) {
+							background: [colors.active] url('./sample.png') no-repeat;
+							color: [colors.dark];
+						}
+					</style>`
+			}
+		}
+
+		BindingG.register();
+		const s = new BindingG();
+
+		document.body.appendChild(s);
+
+		expect(document.head.innerHTML).toBe('<style class="binding-g"> ' +
+			'binding-g { --font-family: sans-serif; background: red } ' +
+			'binding-g.active { background: green url(\'./sample.png\') no-repeat; color: #222; } ' +
+			'</style>')
 	});
 });
