@@ -141,8 +141,8 @@ describe('ContextProviderComponent', () => {
 					return `
 					<style>
 						:host {
-							--font-family: [this.font && this.font.family];
-							--font-size-h6: [this.theme && this.theme.font.size.headings.h6];
+							--font-family: [this.font?.family];
+							--font-size-h6: [this.theme.font?.size.headings['h6']];
 							background: [colors.bg]
 						}
 						

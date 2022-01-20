@@ -25,7 +25,7 @@ export function extractExecutableSnippetFromString(
 				for (let j = 0; j < snippets.length; j++) {
 					const snippet = snippets[j];
 
-					if (snippet.from > startingCurlyIndex && snippet.to < match.index) {
+					if ((snippet.from - offset) > startingCurlyIndex && (snippet.to - offset) < match.index) {
 						snippets.splice(j, 1)
 					}
 				}
