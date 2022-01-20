@@ -183,6 +183,11 @@ describe('ContextProviderComponent', () => {
 		});
 
 		it('should update tracked style tag and links on data changes', () => {
+			jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+				cb(0);
+				return 0;
+			})
+
 			class StyleB extends ContextProviderComponent {
 				color = 'blue';
 				static initialContext = {
