@@ -300,7 +300,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	}
 	
 	attributeChangedCallback(name: string, oldValue: any, newValue: any) {
-		if (newValue === null && !this.hasAttribute(name) && $.get(this).clearAttr) {
+		if ($.get(this).clearAttr) {
 			$.get(this).clearAttr = false;
 		} else if (this.mounted) {
 			try {

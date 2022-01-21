@@ -19,21 +19,13 @@ export function setComponentPropertiesFromObservedAttributes(
 
 		if (!directives.has(attr) && !(attr.startsWith('data-') || attr === 'class' || attr === 'style')) {
 			let prop = attrsMap[attr];
-			let value: any = comp[prop] ?? comp.getAttribute(attr) ?? '';
+			let value: any = (comp.getAttribute(attr) ?? comp[prop]) ?? '';
 
 			properties.push(prop);
 
-			value = proxify(prop, jsonParse(value), (name, val) => {
-				cb(name, val, val);
-			});
-			
 			if ((boolAttr).hasOwnProperty(prop)) {
 				value = comp.hasAttribute(attr);
 				prop = (boolAttr as CWCO.booleanAttributes)[prop].name;
-			}
-
-			if (value && typeof value === 'object') {
-				comp.removeAttribute(attr);
 			}
 
 			Object.defineProperty(comp, prop, {
@@ -41,17 +33,22 @@ export function setComponentPropertiesFromObservedAttributes(
 					return value;
 				},
 				set(newValue) {
-					if (comp.hasAttribute(attr) && !isPrimitive(newValue)) {
-						$.get(comp).clearAttr = true;
-						comp.removeAttribute(attr);
-					}
+					const oldValue = value;
 
-					if (value !== newValue) {
-						const oldValue = value;
+					if (!isPrimitive(newValue)) {
+						if (comp.hasAttribute(attr)) {
+							$.get(comp).clearAttr = true;
+							comp.removeAttribute(attr);
+						}
+
 						value = proxify(prop, newValue, () => {
-							cb(prop, oldValue, value);
+							cb(prop, oldValue, newValue);
 						});
-						cb(prop, oldValue, newValue);
+
+						cb(prop, oldValue, value);
+					} else if(oldValue !== newValue) {
+						value = newValue;
+						cb(prop, oldValue, value);
 					}
 				}
 			})

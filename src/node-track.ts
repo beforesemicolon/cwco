@@ -125,7 +125,7 @@ export class NodeTrack implements CWCO.NodeTrack {
 					this.property.executables
 				);
 
-				if (newValue !== (this.node as CWCO.ObjectLiteral)[this.property.name]) {
+				if (!isPrimitive(newValue) || newValue !== (this.node as CWCO.ObjectLiteral)[this.property.name]) {
 					updated = true;
 					(this.node as CWCO.ObjectLiteral)[this.property.name] = newValue;
 				}
@@ -150,10 +150,13 @@ export class NodeTrack implements CWCO.NodeTrack {
 						const {attrPropsMap} = $.get(this.node);
 						const attrProp = attrPropsMap ? attrPropsMap[name] : name;
 
-						if((this.node as CWCO.ObjectLiteral)[attrProp] !== newValue) {
-							updated = true;
-							(this.node as CWCO.ObjectLiteral)[attrProp] = newValue;
+						if ((this.node as HTMLElement).hasAttribute(name)) {
+							$.get(this.node).clearAttr = true;
+							(this.node as HTMLElement).removeAttribute(name);
 						}
+
+						updated = true;
+						(this.node as CWCO.ObjectLiteral)[attrProp] = newValue;
 					}
 				}
 			}
