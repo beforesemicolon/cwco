@@ -134,6 +134,10 @@ describe('ContextProviderComponent', () => {
 								h6: '12px'
 							}
 						}
+					},
+					colors: {
+						red: '#900',
+						green: '#090'
 					}
 				}
 
@@ -145,7 +149,7 @@ describe('ContextProviderComponent', () => {
 							--font-size-h6: [this.theme.font?.size.headings['h6']];
 							background: [colors.bg]
 						}
-						
+					
 						:host *,
 						:host *::before,
 						:host *::after {
@@ -154,6 +158,13 @@ describe('ContextProviderComponent', () => {
 						
 						:host-context(h1) {
 						  font-weight: bold;
+						}
+						
+						:host .btn.btn-outline {
+							background: none;
+							color: [this.theme.colors.red];
+							border: 1px solid [this.theme.colors.red];
+							font-weight: 700;
 						}
 						
 						:host-context(main article) {
@@ -173,13 +184,14 @@ describe('ContextProviderComponent', () => {
 
 			document.body.appendChild(s);
 
-			expect(document.head.innerHTML).toBe('<style class="style-a"> ' +
-				'style-a { --font-family: sans-serif; --font-size-h6: 12px; background: red } ' +
-				'style-a *, style-a *::before, style-a *::after { box-sizing: border-box; } ' +
-				'h1 style-a { font-weight: bold; } ' +
-				'main article style-a { font-weight: bold; } ' +
-				'style-a.active { background: green url(\'./sample.png\') no-repeat; color: #222; } ' +
-				'</style>')
+			expect(document.head.innerHTML).toBe("<style class=\"style-a\"> " +
+				"style-a { --font-family: sans-serif; --font-size-h6: 12px; background: red } " +
+				"style-a *, style-a *::before, style-a *::after { box-sizing: border-box; } " +
+				"h1 style-a { font-weight: bold; } " +
+				"style-a .btn.btn-outline { background: none; color: #900; border: 1px solid #900; font-weight: 700; } " +
+				"main article style-a { font-weight: bold; } " +
+				"style-a.active { background: green url('./sample.png') no-repeat; color: #222; } " +
+				"</style>");
 		});
 
 		it('should update tracked style tag and links on data changes', () => {

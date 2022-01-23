@@ -194,23 +194,22 @@ export class NodeTrack implements CWCO.NodeTrack {
 					executables: []
 				}
 			} else if (nodeName === 'STYLE') {
-				const selectorPattern = /[a-z:#\.*\[][^{}]*[^\s:]\s*(?={){/gsi;
-				const propValueStylePattern = /(?:--)?[a-z][^:]*:([^;]*)(;|})/gsi;
-				let styleText = (textContent ?? '');
 				let match: RegExpExecArray | null = null;
-				let executables: Array<CWCO.Executable> = [];
+				const executables: Array<CWCO.Executable> = [];
+				const css = (textContent ?? '');
+				const selectorBodyPattern = /{([^}]+)}/gmi;
+				const proValuePattern = /(?:--)?[a-z][^:]*\s*:\s*([^;]*)(;|$)/gmi;
 
-				while ((match = selectorPattern.exec(styleText)) !== null) {
-					let propValueMatch: RegExpExecArray | null = null;
-					let propValue = styleText.slice(selectorPattern.lastIndex);
-					propValue = propValue.slice(0, propValue.indexOf('}') + 1);
+				while((match = selectorBodyPattern.exec(css)) !== null) {
+					const body = match[1];
+					let m: RegExpExecArray | null = null;
 
-					while ((propValueMatch = propValueStylePattern.exec(propValue)) !== null) {
+					while((m = proValuePattern.exec(body)) !== null) {
 						executables.push(
 							...extractExecutableSnippetFromString(
-								propValueMatch[1],
+								m[1],
 								['[', ']'],
-								selectorPattern.lastIndex + propValue.indexOf(propValueMatch[1])
+								match.index + body.indexOf(m[1]) + 1
 							)
 						);
 					}
@@ -219,7 +218,7 @@ export class NodeTrack implements CWCO.NodeTrack {
 				if (executables.length) {
 					this.property = {
 						name: 'textContent',
-						value: styleText,
+						value: css,
 						executables
 					}
 				}
