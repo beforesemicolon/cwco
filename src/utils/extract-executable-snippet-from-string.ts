@@ -1,10 +1,6 @@
 import {CWCO} from "../cwco";
 
-export function extractExecutableSnippetFromString(
-	str: string,
-	[start, end] = ['{', '}'],
-	offset = 0
-) {
+export function extractExecutableSnippetFromString(str: string, [start, end] = ['{', '}'], offset = 0) {
 	const stack = [];
 	const pattern = new RegExp(`[\\${start}\\${end}]`, 'g');
 	let snippets: CWCO.Executable[] = [];
@@ -19,23 +15,25 @@ export function extractExecutableSnippetFromString(
 		} else if (char === end && stack.length) {
 			startingCurlyIndex = stack.pop() as number;
 
-			const matchStr = str.slice(startingCurlyIndex + 1, match.index);
+			if(!stack.length) {
+				const matchStr = str.slice(startingCurlyIndex + 1, match.index);
 
-			if (matchStr) {
-				for (let j = 0; j < snippets.length; j++) {
-					const snippet = snippets[j];
+				if (matchStr) {
+					for (let j = 0; j < snippets.length; j++) {
+						const snippet = snippets[j];
 
-					if ((snippet.from - offset) > startingCurlyIndex && (snippet.to - offset) < match.index) {
-						snippets.splice(j, 1)
+						if ((snippet.from - offset) > startingCurlyIndex && (snippet.to - offset) < match.index) {
+							snippets.splice(j, 1)
+						}
 					}
-				}
 
-				snippets.push({
-					from: startingCurlyIndex + offset,
-					to: match.index + offset,
-					match: `${start}${matchStr}${end}`,
-					executable: matchStr
-				});
+					snippets.push({
+						from: startingCurlyIndex + offset,
+						to: match.index + offset,
+						match: `${start}${matchStr}${end}`,
+						executable: matchStr
+					});
+				}
 			}
 		}
 	}

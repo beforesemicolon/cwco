@@ -40,6 +40,7 @@ describe('extractExecutableSnippetFromString', () => {
       ['[sample - test] []', 'sample - test'],
       ['([my [work]])', 'my [work]'],
       ['[theme.color["100"]]', 'theme.color["100"]'],
+      ["[({name: ['good']}).name[0]]", "({name: ['good']}).name[0]"],
     ].forEach(([str, ...execs]) => {
       extractExecutableSnippetFromString(str, ['[', ']']).forEach((res, i) => {
         const executable = execs[i];

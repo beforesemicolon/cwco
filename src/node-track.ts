@@ -8,6 +8,7 @@ import {trackNode} from "./utils/track-node";
 import {CWCO} from "./cwco";
 import {evaluateStringInComponentContext} from "./utils/evaluate-string-in-component-context";
 import {isPrimitive} from "./utils/is-primitive";
+import {extractExecutableSnippetFromCSS} from "./utils/extract-executable-snippet-from-css";
 
 /**
  * handles all logic related to tracking and updating a tracked node.
@@ -194,26 +195,8 @@ export class NodeTrack implements CWCO.NodeTrack {
 					executables: []
 				}
 			} else if (nodeName === 'STYLE') {
-				let match: RegExpExecArray | null = null;
-				const executables: Array<CWCO.Executable> = [];
 				const css = (textContent ?? '');
-				const selectorBodyPattern = /{([^}]+)}/gmi;
-				const proValuePattern = /(?:--)?[a-z][^:]*\s*:\s*([^;]*)(;|$)/gmi;
-
-				while((match = selectorBodyPattern.exec(css)) !== null) {
-					const body = match[1];
-					let m: RegExpExecArray | null = null;
-
-					while((m = proValuePattern.exec(body)) !== null) {
-						executables.push(
-							...extractExecutableSnippetFromString(
-								m[1],
-								['[', ']'],
-								match.index + body.indexOf(m[1]) + 1
-							)
-						);
-					}
-				}
+				const executables: Array<CWCO.Executable> = extractExecutableSnippetFromCSS(css);
 
 				if (executables.length) {
 					this.property = {
