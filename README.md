@@ -30,7 +30,7 @@ an extensive list of examples of everything this library can do.
 [Watch Live Video Introduction](https://www.youtube.com/watch?v=yv3BeEssw9E)
 
 ## Get Started
-Learn about how [create a project or starting to explore CWCO](https://github.com/beforesemicolon/cwco/blob/master/docs/getting-started.md)
+Learn about how to [create a project or starting to explore CWCO](https://github.com/beforesemicolon/cwco/blob/master/docs/getting-started.md)
 as soon as possible.
 
 ### Install
