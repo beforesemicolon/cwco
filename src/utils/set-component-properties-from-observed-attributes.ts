@@ -23,6 +23,12 @@ export function setComponentPropertiesFromObservedAttributes(
 
 			properties.push(prop);
 
+			if (typeof value === 'string') {
+				value = proxify(prop, jsonParse(value), (name, val) => {
+					cb(name, val, val);
+				});
+			}
+			
 			if ((boolAttr).hasOwnProperty(prop)) {
 				value = comp.hasAttribute(attr);
 				prop = (boolAttr as CWCO.booleanAttributes)[prop].name;
