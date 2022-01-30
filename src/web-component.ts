@@ -44,6 +44,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 		meta.mounted = false;
 		meta.parsed = false;
 		meta.clearAttr = false;
+		meta.externalNodes = []; // nodes moved outside of the component that needs to be updated on ctx change
 		meta.tracks = new Map();
 		meta.unsubscribeCtx = () => {};
 		meta.attrPropsMap = observedAttributes.reduce((map, attr) => ({
@@ -181,6 +182,10 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	
 	updateContext(ctx: CWCO.ObjectLiteral) {
 		$.get(this).updateContext(ctx);
+
+		$.get(this).externalNodes.forEach((el: HTMLElement) => {
+			$.get(el).updateContext(ctx);
+		})
 	}
 	
 	connectedCallback() {
@@ -253,10 +258,11 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 
 				if (mode === 'none') {
 					[
-						...Array.from(contentNode.querySelectorAll('style')),
 						...Array.from(contentNode.querySelectorAll('link')),
+						...Array.from(contentNode.querySelectorAll('style')),
 					].forEach((el: HTMLElement) => {
 						document.head.appendChild(el);
+						$.get(this).externalNodes.push(el);
 					})
 				}
 
@@ -294,7 +300,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	}
 	
 	attributeChangedCallback(name: string, oldValue: any, newValue: any) {
-		if (newValue === null && !this.hasAttribute(name) && $.get(this).clearAttr) {
+		if ($.get(this).clearAttr) {
 			$.get(this).clearAttr = false;
 		} else if (this.mounted) {
 			try {

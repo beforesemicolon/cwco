@@ -8,6 +8,7 @@ import {trackNode} from "./utils/track-node";
 import {CWCO} from "./cwco";
 import {evaluateStringInComponentContext} from "./utils/evaluate-string-in-component-context";
 import {isPrimitive} from "./utils/is-primitive";
+import {extractExecutableSnippetFromCSS} from "./utils/extract-executable-snippet-from-css";
 
 /**
  * handles all logic related to tracking and updating a tracked node.
@@ -62,7 +63,7 @@ export class NodeTrack implements CWCO.NodeTrack {
 
 	updateNode() {
 		let updated = false;
-		let directiveNode: any = this.node;                    
+		let directiveNode: any = this.node;
 
 		for (let directive of this.directives) {
 			if (directive && directive.handler) {
@@ -125,7 +126,7 @@ export class NodeTrack implements CWCO.NodeTrack {
 					this.property.executables
 				);
 
-				if (newValue !== (this.node as CWCO.ObjectLiteral)[this.property.name]) {
+				if (!isPrimitive(newValue) || newValue !== (this.node as CWCO.ObjectLiteral)[this.property.name]) {
 					updated = true;
 					(this.node as CWCO.ObjectLiteral)[this.property.name] = newValue;
 				}
@@ -150,10 +151,13 @@ export class NodeTrack implements CWCO.NodeTrack {
 						const {attrPropsMap} = $.get(this.node);
 						const attrProp = attrPropsMap ? attrPropsMap[name] : name;
 
-						if((this.node as CWCO.ObjectLiteral)[attrProp] !== newValue) {
-							updated = true;
-							(this.node as CWCO.ObjectLiteral)[attrProp] = newValue;
+						if ((this.node as HTMLElement).hasAttribute(name)) {
+							$.get(this.node).clearAttr = true;
+							(this.node as HTMLElement).removeAttribute(name);
 						}
+
+						updated = true;
+						(this.node as CWCO.ObjectLiteral)[attrProp] = newValue;
 					}
 				}
 			}
@@ -191,32 +195,13 @@ export class NodeTrack implements CWCO.NodeTrack {
 					executables: []
 				}
 			} else if (nodeName === 'STYLE') {
-				const selectorPattern = /[a-z:#\.*\[][^{}]*[^\s:]\s*(?={){/gsi;
-				const propValueStylePattern = /[a-z][a-z-]*:([^;]*)(;|})/gsi;
-				let styleText = (textContent ?? '');
-				let match: RegExpExecArray | null = null;
-				let executables: Array<CWCO.Executable> = [];
-
-				while ((match = selectorPattern.exec(styleText)) !== null) {
-					let propValueMatch: RegExpExecArray | null = null;
-					let propValue = styleText.slice(selectorPattern.lastIndex);
-					propValue = propValue.slice(0, propValue.indexOf('}') + 1);
-
-					while ((propValueMatch = propValueStylePattern.exec(propValue)) !== null) {
-						executables.push(
-							...extractExecutableSnippetFromString(
-								propValueMatch[1],
-								['[', ']'],
-								selectorPattern.lastIndex + propValue.indexOf(propValueMatch[1])
-							)
-						);
-					}
-				}
+				const css = (textContent ?? '');
+				const executables: Array<CWCO.Executable> = extractExecutableSnippetFromCSS(css);
 
 				if (executables.length) {
 					this.property = {
 						name: 'textContent',
-						value: styleText,
+						value: css,
 						executables
 					}
 				}

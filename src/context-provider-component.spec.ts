@@ -106,22 +106,69 @@ describe('ContextProviderComponent', () => {
 		expect(t.root?.innerHTML).toBe('bar 12');
 	});
 
-	it('should bind data to style', () => {
-		document.head.innerHTML = '';
-		class BindingG extends ContextProviderComponent {
-			colors = {
-				bg: 'red',
-				active: 'green',
-				dark: '#222',
-			}
-			font = 'sans-serif';
+	describe('style', () => {
+		jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+			cb(0);
+			return 0;
+		})
 
-			get stylesheet() {
-				return `
+		beforeEach(() => {
+			document.head.innerHTML = '';
+			jest.resetAllMocks()
+		})
+
+		it('should bind data to style', () => {
+			class StyleA extends ContextProviderComponent {
+				colors = {
+					bg: 'red',
+					active: 'green',
+					dark: '#222',
+				}
+				font = {
+					family: 'sans-serif'
+				};
+				theme = {
+					font: {
+						size: {
+							headings: {
+								h6: '12px'
+							}
+						}
+					},
+					colors: {
+						red: '#900',
+						green: '#090'
+					}
+				}
+
+				get stylesheet() {
+					return `
 					<style>
 						:host {
-							--font-family: [this.font];
+							--font-family: [this.font?.family];
+							--font-size-h6: [this.theme.font?.size.headings['h6']];
 							background: [colors.bg]
+						}
+					
+						:host *,
+						:host *::before,
+						:host *::after {
+							box-sizing: border-box;
+						}
+						
+						:host-context(h1) {
+						  font-weight: bold;
+						}
+						
+						:host .btn.btn-outline {
+							background: none;
+							color: [this.theme.colors.red];
+							border: 1px solid [this.theme.colors.red];
+							font-weight: 700;
+						}
+						
+						:host-context(main article) {
+						  font-weight: bold;
 						}
 						
 						:host(.active) {
@@ -129,17 +176,106 @@ describe('ContextProviderComponent', () => {
 							color: [colors.dark];
 						}
 					</style>`
+				}
 			}
-		}
 
-		BindingG.register();
-		const s = new BindingG();
+			StyleA.register();
+			const s = new StyleA();
 
-		document.body.appendChild(s);
+			document.body.appendChild(s);
 
-		expect(document.head.innerHTML).toBe('<style class="binding-g"> ' +
-			'binding-g { --font-family: sans-serif; background: red } ' +
-			'binding-g.active { background: green url(\'./sample.png\') no-repeat; color: #222; } ' +
-			'</style>')
+			expect(document.head.innerHTML).toBe("<style class=\"style-a\"> " +
+				"style-a { --font-family: sans-serif; --font-size-h6: 12px; background: red } " +
+				"style-a *, style-a *::before, style-a *::after { box-sizing: border-box; } " +
+				"h1 style-a { font-weight: bold; } " +
+				"style-a .btn.btn-outline { background: none; color: #900; border: 1px solid #900; font-weight: 700; } " +
+				"main article style-a { font-weight: bold; } " +
+				"style-a.active { background: green url('./sample.png') no-repeat; color: #222; } " +
+				"</style>");
+		});
+
+		it('should update tracked style tag and links on data changes', () => {
+			jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+				cb(0);
+				return 0;
+			})
+
+			class StyleB extends ContextProviderComponent {
+				color = 'blue';
+				static initialContext = {
+					theme: {
+						fontFamily: 'sans-serif'
+					}
+				}
+
+				get stylesheet() {
+					return `
+					<style>
+						:host {
+							color: [color];
+							font-family: [theme.fontFamily];
+						}
+					</style>`
+				}
+			}
+
+			StyleB.register();
+			const s = new StyleB();
+
+			document.body.appendChild(s);
+
+			expect(document.head.innerHTML).toBe('<style class="style-b"> ' +
+				'style-b { color: blue; font-family: sans-serif; } ' +
+				'</style>');
+
+			s.color = 'red';
+
+			expect(document.head.innerHTML).toBe('<style class="style-b"> ' +
+				'style-b { color: red; font-family: sans-serif; } ' +
+				'</style>');
+
+			s.updateContext({
+				theme: {fontFamily: 'Aria'}
+			});
+
+			expect(document.head.innerHTML).toBe('<style class="style-b"> ' +
+				'style-b { color: red; font-family: Aria; } ' +
+				'</style>');
+		});
+
+		it('should work with directives on style', () => {
+			jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+				cb(0);
+				return 0;
+			})
+
+			class StyleC extends ContextProviderComponent {
+				visible = true;
+
+				get stylesheet() {
+					return `
+					<style if="visible">
+						:host {
+							color: red;
+						}
+					</style>`
+				}
+			}
+
+			StyleC.register();
+			const s = new StyleC();
+
+			document.body.appendChild(s);
+
+			expect(document.head.innerHTML).toBe('<style class="style-c"> style-c { color: red; } </style>')
+
+			s.visible = false;
+
+			expect(document.head.innerHTML).toBe('<!-- if: false -->')
+
+			s.visible = true;
+
+			expect(document.head.innerHTML).toBe('<style class="style-c"> style-c { color: red; } </style>')
+		});
 	});
 });

@@ -2,37 +2,40 @@ import {turnCamelToKebabCasing} from "./turn-camel-to-kebab-casing";
 import {directives} from "../directives";
 import {proxify} from "./proxify";
 import {CWCO} from "../cwco";
-import {$} from "../metadata";
+import {isPrimitive} from "./is-primitive";
 
 export function setupComponentPropertiesForAutoUpdate(comp: CWCO.WebComponent, onUpdate: CWCO.onUpdateCallback): string[] {
 	const properties: string[] = [];
 
-	for (let property of Object.getOwnPropertyNames(comp)) {
-		const attr = turnCamelToKebabCasing(property);
+	for (let prop of Object.getOwnPropertyNames(comp)) {
+		const attr = turnCamelToKebabCasing(prop);
 
 		// ignore private properties and $ properties as well as attribute properties
-		if (!directives.has(property) && !/\$|_/.test(property[0]) && !(comp.constructor as CWCO.WebComponentConstructor).observedAttributes.includes(attr)) {
+		if (!directives.has(prop) && !/\$|_/.test(prop[0]) && !(comp.constructor as CWCO.WebComponentConstructor).observedAttributes.includes(attr)) {
 			// @ts-ignore
-			let value = comp[property];
+			let value = comp[prop];
 
-			properties.push(property);
+			properties.push(prop);
 
-			value = proxify(property, value, () => {
-				onUpdate(property, value, value);
+			value = proxify(prop, value, () => {
+				onUpdate(prop, value, value);
 			})
 
-			Object.defineProperty(comp, property, {
+			Object.defineProperty(comp, prop, {
 				get() {
 					return value;
 				},
 				set(newValue) {
 					const oldValue = value;
-					value = proxify(property, newValue, () => {
-						onUpdate(property, oldValue, value);
-					});
 
-					if (newValue !== oldValue) {
-						onUpdate(property, oldValue, newValue);
+					if (!isPrimitive(newValue)) {
+						value = proxify(prop, newValue, () => {
+							onUpdate(prop, oldValue, newValue);
+						});
+						onUpdate(prop, oldValue, value);
+					} else if(oldValue !== newValue) {
+						value = newValue;
+						onUpdate(prop, oldValue, value);
 					}
 				}
 			})

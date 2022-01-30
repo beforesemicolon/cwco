@@ -1,6 +1,5 @@
 import {WebComponent} from './web-component';
 import {ShadowRootModeExtended} from "./enums/ShadowRootModeExtended.enum";
-import {ContextProviderComponent} from "./context-provider-component";
 
 describe('WebComponent', () => {
 
@@ -180,7 +179,7 @@ describe('WebComponent', () => {
 			document.body.appendChild(i);
 
 			expect(i.root?.innerHTML).toBe('')
-			expect(document.head.innerHTML).toBe('<style class="e-style">e-style {display: inline-block;} e-style {display: inline-block;}</style><link rel="stylesheet " href="app.css">')
+			expect(document.head.innerHTML).toBe('<link rel="stylesheet " href="app.css"><style class="e-style"> e-style {display: inline-block;}</style><style class="e-style">e-style {display: inline-block;}</style>')
 		});
 
 		it('should handle link stylesheet', () => {
@@ -212,10 +211,11 @@ describe('WebComponent', () => {
 
 			document.body.appendChild(k);
 
-			expect(k.root?.innerHTML).toBe('<style>:host {display: inline-block;} :host {display: inline-block;}</style><link rel="stylesheet " href="app.css">')
+			expect(k.root?.innerHTML).toBe('<link rel="stylesheet " href="app.css"><style> :host {display: inline-block;}</style><style>:host {display: inline-block;}</style>')
 		});
 
-		it('should handle groped style with square brackets', () => {
+		it('should handle groped' +
+			' style with square brackets', () => {
 			class HStyle extends WebComponent {
 				colorVars = {
 					border: '#222'
@@ -774,7 +774,7 @@ describe('WebComponent', () => {
 			const updateSpy = jest.fn();
 
 			class BindingBox extends WebComponent {
-				static observedAttributes = ['data'];
+				static observedAttributes = ['data', 'disabled'];
 
 				onUpdate(name: string, oldValue: any, newValue: any) {
 					updateSpy(newValue);
@@ -784,7 +784,7 @@ describe('WebComponent', () => {
 				data: any = null;
 
 				get template() {
-					return `<binding-box data="{data}"></binding-box>`;
+					return `<binding-box data="{data}" disabled></binding-box>`;
 				}
 			}
 
@@ -794,9 +794,17 @@ describe('WebComponent', () => {
 
 			document.body.appendChild(s);
 
+			// @ts-ignore
+			expect(s.root?.children[0].disabled).toEqual(true);
+
 			s.data = 12;
 
 			expect(updateSpy).toHaveBeenCalledWith(12);
+			updateSpy.mockClear()
+
+			s.data = '{"x": 12}';
+
+			expect(updateSpy).toHaveBeenCalledWith({x: 12});
 			updateSpy.mockClear()
 
 			s.data = {x: 12};
@@ -929,6 +937,10 @@ describe('WebComponent', () => {
 			const comp = app.root?.querySelector('ctx-comp') as Element;
 
 			expect(comp.shadowRoot?.innerHTML).toBe('1')
+		});
+
+		it('should ', () => {
+			
 		});
 	});
 
@@ -1807,5 +1819,113 @@ describe('WebComponent', () => {
 		expect(l.root?.innerHTML).toBe('12');
 
 		jest.resetAllMocks()
+	});
+
+	describe('should deeply propagate changes', () => {
+		const updateSpy = jest.fn();
+
+		class ParentComp extends WebComponent {
+			val: any = ['simple'];
+			static initialContext = {
+				simple: 'value'
+			}
+
+			onUpdate(name: string, oldValue: unknown, newValue: unknown) {
+				updateSpy(this.tagName, newValue);
+			}
+
+			get template() {
+				return '<child-comp val="{val}"></child-comp>';
+			}
+		}
+
+		class ChildComp extends WebComponent {
+			static observedAttributes = ['val'];
+
+			onUpdate(name: string, oldValue: unknown, newValue: unknown) {
+				updateSpy(this.tagName, newValue);
+			}
+
+			get template() {
+				return '{val}: {$context.simple}';
+			}
+		}
+
+		ParentComp.register();
+		ChildComp.register();
+
+		let top: ParentComp;
+		let child: ChildComp;
+
+		beforeEach(() => {
+			updateSpy.mockClear();
+
+			top = new ParentComp();
+
+			document.body.appendChild(top);
+			child = top.root?.children[0] as ChildComp;
+		})
+
+		it('when property is re-assigned with primitive value', () => {
+			top.val = 'nice val';
+
+			expect(updateSpy).toHaveBeenCalledTimes(2);
+			expect(updateSpy).toHaveBeenCalledWith("CHILD-COMP", "nice val");
+			expect(updateSpy).toHaveBeenCalledWith("PARENT-COMP", "nice val");
+			expect(child.root?.innerHTML).toBe('nice val: value');
+		});
+
+		it('when property is re-assigned with object literal and deep updated', () => {
+			top.val = {value: 'nice val'};
+
+			expect(updateSpy).toHaveBeenCalledTimes(2);
+			expect(updateSpy.mock.calls[0]).toEqual(["CHILD-COMP", {"value": "nice val"}]);
+			expect(updateSpy.mock.calls[1]).toEqual(["PARENT-COMP", {"value": "nice val"}]);
+			expect(child.root?.innerHTML).toBe('{"value":"nice val"}: value');
+
+			updateSpy.mockClear()
+
+			top.val.value = 'new';
+
+			expect(updateSpy).toHaveBeenCalledTimes(2);
+			expect(updateSpy.mock.calls[0]).toEqual(["CHILD-COMP", {"value": "new"}]);
+			expect(updateSpy.mock.calls[1]).toEqual(["PARENT-COMP", {"value": "new"}]);
+			expect(child.root?.innerHTML).toBe('{"value":"new"}: value');
+		});
+
+		it('when property is re-assigned with Set and deep updated', () => {
+			top.val = new Set(['nice val'])
+
+			expect(updateSpy).toHaveBeenCalledTimes(2);
+			expect(updateSpy.mock.calls[0][0]).toBe("CHILD-COMP");
+			expect(updateSpy.mock.calls[0][1]).toBeInstanceOf(Set);
+			expect(updateSpy.mock.calls[0][1].size).toBe(1);
+			expect(updateSpy.mock.calls[1][0]).toEqual("PARENT-COMP");
+			expect(updateSpy.mock.calls[1][1]).toBeInstanceOf(Set);
+			expect(child.root?.innerHTML).toBe('{}: value');
+
+			updateSpy.mockClear()
+
+			top.val.add('new');
+
+			expect(updateSpy).toHaveBeenCalledTimes(2);
+			expect(updateSpy.mock.calls[0][0]).toBe("CHILD-COMP");
+			expect(updateSpy.mock.calls[0][1]).toBeInstanceOf(Set);
+			expect(updateSpy.mock.calls[0][1].size).toBe(2);
+			expect(updateSpy.mock.calls[1][0]).toEqual("PARENT-COMP");
+			expect(updateSpy.mock.calls[1][1]).toBeInstanceOf(Set);
+			expect(child.root?.innerHTML).toBe('{}: value');
+		});
+
+		it('when context changes', () => {
+			top.updateContext({
+				simple: 'new'
+			});
+
+			expect(updateSpy).toHaveBeenCalledTimes(2);
+			expect(updateSpy).toHaveBeenCalledWith("CHILD-COMP", ["simple"]);
+			expect(updateSpy).toHaveBeenCalledWith("PARENT-COMP", {simple: 'new'});
+			expect(child.root?.innerHTML).toBe('["simple"]: new');
+		});
 	});
 });
