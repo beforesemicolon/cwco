@@ -59,7 +59,7 @@ export function trackNode(node: Node | HTMLElement | DocumentFragment, component
 				return;
 			}
 		}
-
-		Array.from(childNodes).forEach(c => trackNode(c, component, {...opt, trackOnly, tracks}));
 	}
+	
+	Array.from(childNodes).forEach(c => trackNode(c, component, {...opt, trackOnly, tracks}));
 }

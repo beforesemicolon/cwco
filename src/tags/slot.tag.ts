@@ -11,15 +11,12 @@ export const slotTag = (node: HTMLElement, {component}: CWCO.ObjectLiteral = {},
 function renderSlot(node: HTMLElement, cb: (c: Node[]) => void) {
 	const onSlotChange = () => {
 		const nodes = (node as HTMLSlotElement).assignedNodes();
-		
 		cb(nodes);
 		
 		node.removeEventListener('slotchange', onSlotChange, false);
 	};
 	
 	node.addEventListener('slotchange', onSlotChange, false);
-	
-	cb(Array.from(node.childNodes));
 }
 
 function renderCustomSlot(node: HTMLElement, childNodes: Array<Node>) {
