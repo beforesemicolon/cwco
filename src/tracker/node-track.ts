@@ -2,7 +2,7 @@ import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
 import {$} from "../core/metadata";
 import {resolveExecutables} from "./utils/resolve-executables";
 import {isPrimitive} from "../utils/is-primitive";
-import {CWCO} from "./../cwco";
+import {CWCO} from "../cwco";
 import {extractExecutableSnippetFromString} from "./utils/extract-executable-snippet-from-string";
 import {evaluateStringInComponentContext} from "./utils/evaluate-string-in-component-context";
 import Track = CWCO.Track;

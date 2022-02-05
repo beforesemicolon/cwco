@@ -1,4 +1,4 @@
-import {CWCO} from "./../cwco";
+import {CWCO} from "../cwco";
 import {$} from "../core/metadata";
 import {extractExecutableSnippetFromCSS} from "./utils/extract-executable-snippet-from-css";
 import {directiveRegistry} from "../directives/registry";

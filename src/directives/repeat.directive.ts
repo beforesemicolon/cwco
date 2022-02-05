@@ -1,6 +1,6 @@
 import {Directive} from "../core/directive";
 import {parse} from "../parser/parse";
-import {CWCO} from "./../cwco";
+import {CWCO} from "../cwco";
 
 export class Repeat extends Directive {
 	parseValue(value: string): string {
