@@ -1,19 +1,20 @@
 // simply importing directive here will automatically register them and make them available for
 // anything later on
-import './directives';
-import booleanAttr from './utils/boolean-attributes.json';
+import '../directives';
+import booleanAttr from './boolean-attributes.json';
 import {$} from "./metadata";
-import {parse} from './utils/parse';
+import {parse} from '../parser/parse';
 import {setComponentPropertiesFromObservedAttributes} from './utils/set-component-properties-from-observed-attributes';
 import {setupComponentPropertiesForAutoUpdate} from './utils/setup-component-properties-for-auto-update';
-import {turnCamelToKebabCasing} from './utils/turn-camel-to-kebab-casing';
-import {turnKebabToCamelCasing} from './utils/turn-kebab-to-camel-casing';
+import {turnCamelToKebabCasing} from '../utils/turn-camel-to-kebab-casing';
+import {turnKebabToCamelCasing} from '../utils/turn-kebab-to-camel-casing';
 import {getStyleString} from './utils/get-style-string';
-import {ShadowRootModeExtended} from "./enums/ShadowRootModeExtended.enum";
-import {jsonParse} from "./utils/json-parse";
-import {resolveHtmlEntities} from "./utils/resolve-html-entities";
-import {CWCO} from "./cwco";
-import {NodeTrack, trackNodeTree} from "./tracker/nt";
+import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
+import {jsonParse} from "../utils/json-parse";
+import {resolveHtmlEntities} from "../utils/resolve-html-entities";
+import {CWCO} from "../cwco";
+import {NodeTrack} from "../tracker/node-track";
+import {trackNodeTree} from "../tracker/track-node-tree";
 
 /**
  * a extension on the native web component API to simplify and automate most of the pain points
@@ -179,10 +180,6 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	updateContext(ctx: CWCO.ObjectLiteral) {
 		const {oldCtx, newCtx} = $.get(this).updateContext(ctx);
 
-		// $.get(this).externalNodes.forEach((el: HTMLElement) => {
-		// 	$.get(el).updateContext(ctx);
-		// });
-
 		$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
 			t.updateNode(true);
 		})
@@ -200,8 +197,12 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 
 		const onPropUpdate = (prop: string, oldValue: any, newValue: any) => {
 			if (this.mounted) {
-				this.forceUpdate();
-				this.onUpdate(prop, oldValue, newValue);
+				try {
+					this.forceUpdate();
+					this.onUpdate(prop, oldValue, newValue);
+				} catch(e) {
+					this.onError(e as ErrorEvent);
+				}
 			} else if(this.parsed) {
 				this.onError(new Error(`[Possibly a memory leak]: Cannot set property "${prop}" on unmounted component.`));
 			}

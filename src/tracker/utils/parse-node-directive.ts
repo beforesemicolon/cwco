@@ -1,4 +1,4 @@
-import {CWCO} from "../cwco";
+import {CWCO} from "../../cwco";
 
 export function parseNodeDirective(node: Element, name: string, value: string): CWCO.DirectiveValue {
 	const dot = name.indexOf('.');

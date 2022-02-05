@@ -1,5 +1,5 @@
-import {Directive} from "../directive";
-import {parse} from "../utils/parse";
+import {Directive} from "../core/directive";
+import {parse} from "../parser/parse";
 import {CWCO} from "../cwco";
 
 export class Repeat extends Directive {

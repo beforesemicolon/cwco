@@ -1,5 +1,5 @@
 import {Ref} from "./ref.directive";
-import {WebComponent} from "../web-component";
+import {WebComponent} from "../core/web-component";
 
 describe('Ref Directive', () => {
 	class TestComp extends WebComponent {}

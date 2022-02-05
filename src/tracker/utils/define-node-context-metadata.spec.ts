@@ -1,8 +1,5 @@
 import {defineNodeContextMetadata} from "./define-node-context-metadata";
-import {$} from "../metadata";
-import {WebComponent} from "../web-component";
-import {parse} from "./parse";
-import {trackNode} from "./track-node";
+import {$} from "../../core/metadata";
 
 describe('defineNodeContextMetadata', () => {
 	let node: HTMLElement;
@@ -88,29 +85,10 @@ describe('defineNodeContextMetadata', () => {
 
 		expect($.get(node).$context.some).toEqual("new content");
 
-		let subSpy = jest.fn();
-
-		const unsub = $.get(node).subscribe((parentCtx: any) => {
-			subSpy();
-			expect(parentCtx.some).toEqual("updated content");
-			expect($.get(node).$context.some).toEqual("updated content");
-		})
-
-		$.get(newParent).updateContext({
-			some: 'updated content'
-		});
-
-		expect(subSpy).toHaveBeenCalled();
-
-		subSpy.mockClear();
-
-		unsub();
-
 		$.get(newParent).updateContext({
 			some: 'newly updated content'
 		});
 
-		expect(subSpy).not.toHaveBeenCalled()
 		expect($.get(node).$context.some).toEqual("newly updated content");
 	});
 
