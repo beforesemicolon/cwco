@@ -1,25 +1,23 @@
+import {CWCO} from "../cwco";
 import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
 import {$} from "../core/metadata";
 import {resolveExecutables} from "./utils/resolve-executables";
 import {isPrimitive} from "../utils/is-primitive";
-import {CWCO} from "../cwco";
 import {extractExecutableSnippetFromString} from "./utils/extract-executable-snippet-from-string";
 import {evaluateStringInComponentContext} from "./utils/evaluate-string-in-component-context";
-import Track = CWCO.Track;
-import WebComponent = CWCO.WebComponent;
 import {trackNodeTree} from "./track-node-tree";
 
 export class NodeTrack {
 	childNodeTracks = new Set<NodeTrack>();
 	anchor: HTMLElement | Node | Comment | Array<Element>;
 	anchorNodeTrack: NodeTrack | null = null;
-	anchorTrack: Track | null = null;
+	anchorTrack: CWCO.Track | null = null;
 	readonly dirs = new WeakMap();
 	readonly dirAnchors = new WeakMap();
 
 	constructor(
-		public node: Node | HTMLElement | WebComponent,
-		public component: WebComponent,
+		public node: Node | HTMLElement | CWCO.WebComponent,
+		public component: CWCO.WebComponent,
 		public tracks: CWCO.TracksMapByType = {directive: [], attribute: [], property: []}
 	) {
 		if (node.nodeType !== 8) {
@@ -79,7 +77,7 @@ export class NodeTrack {
 			// there is nothing that will trigger update inside the
 			// component like attribute tracks would
 			if (empty && force && this.node.nodeName.includes('-')) {
-				(this.node as WebComponent).forceUpdate();
+				(this.node as CWCO.WebComponent).forceUpdate();
 			}
 
 			this.childNodeTracks.forEach(t => {
@@ -94,7 +92,7 @@ export class NodeTrack {
 		}
 	}
 
-	private _updateNodeProperty(track: Track) {
+	private _updateNodeProperty(track: CWCO.Track) {
 		const newValue = resolveExecutables(
 			track.value,
 			this.component,
@@ -110,7 +108,7 @@ export class NodeTrack {
 		return false;
 	}
 
-	private _updateNodeAttribute(track: Track) {
+	private _updateNodeAttribute(track: CWCO.Track) {
 		let newValue = resolveExecutables(
 			track.value,
 			this.component,
@@ -140,7 +138,7 @@ export class NodeTrack {
 		return false;
 	}
 
-	private _updateNodeDirective(track: Track) {
+	private _updateNodeDirective(track: CWCO.Track) {
 		if (track.handler) {
 			const {handler} = track;
 			const dir = this.dirs.get(track) || new handler(this.component);

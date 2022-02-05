@@ -1,7 +1,7 @@
+import {CWCO} from "../cwco";
 import {$} from "../core/metadata";
 import {slotTag} from "../tags/slot.tag";
 import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
-import {CWCO} from "../cwco";
 import {NodeTrack} from "./node-track";
 import {trackNode} from "./track-node";
 

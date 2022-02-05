@@ -1,6 +1,5 @@
 import {evaluateStringInComponentContext} from "./evaluate-string-in-component-context";
 import {CWCO} from "../../cwco";
-import {jsonParse} from "../../utils/json-parse";
 import {jsonStringify} from "../../utils/json-stringify";
 
 export function resolveExecutables(
