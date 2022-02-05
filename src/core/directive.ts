@@ -1,7 +1,7 @@
-import {directiveRegistry} from "./directives/registry";
+import {directiveRegistry} from "../directives/registry";
 import {$} from "./metadata";
-import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
-import {CWCO} from "./cwco";
+import {defineNodeContextMetadata} from "../tracker/utils/define-node-context-metadata";
+import {CWCO} from "../cwco";
 
 export class Directive implements CWCO.Directive  {
 	constructor(component: CWCO.WebComponent) {

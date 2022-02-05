@@ -1,4 +1,4 @@
-import {CWCO} from "../cwco";
+import {CWCO} from "../../cwco";
 
 export function evaluateStringInComponentContext(
 	executable: string,
