@@ -1,4 +1,4 @@
-import {CWCO} from "./../cwco";
+import {CWCO} from "../cwco";
 import Executable = CWCO.Executable;
 import DirectiveConstructor = CWCO.DirectiveConstructor;
 import {TrackType} from "../enums/track-type";

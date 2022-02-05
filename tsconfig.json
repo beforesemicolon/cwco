@@ -77,7 +77,6 @@
     "./src/**/*"
   ],
   "exclude": [
-    "src/**/*.spec.ts",
-    "jest.config.js"
+    "src/**/*.spec.ts"
   ]
 }

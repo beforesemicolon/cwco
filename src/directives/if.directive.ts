@@ -1,5 +1,5 @@
 import {Directive} from "../core/directive";
-import {CWCO} from "./../cwco";
+import {CWCO} from "../cwco";
 
 export class If extends Directive {
 	render(condition: boolean, {element, anchorNode}: CWCO.directiveRenderOptions) {
