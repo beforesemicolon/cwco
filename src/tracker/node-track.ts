@@ -20,9 +20,9 @@ export class NodeTrack {
 		public component: CWCO.WebComponent,
 		public tracks: CWCO.TracksMapByType = {directive: [], attribute: [], property: []}
 	) {
-		if (node.nodeType !== 8) {
-			defineNodeContextMetadata(node);
+		defineNodeContextMetadata(node);
 
+		if (node.nodeType !== 8) {
 			this.anchorNodeTrack = new NodeTrack(document.createComment($.get(node).rawNodeString), component)
 		}
 
@@ -34,7 +34,11 @@ export class NodeTrack {
 		// otherwise the anchor context will reflect its ancestor's context
 		return (this.anchor === this.node
 			? $.get(this.node).$context
-			: $.get(Array.isArray(this.anchor) ? (this.anchor as Array<Element>)[0] : this.anchor)?.$context) || {};
+			: $.get(
+				Array.isArray(this.anchor)
+					? (this.anchor as Array<Element>)[0]
+					: this.anchor
+			)?.$context) || {};
 	}
 
 	updateNode(force = false) {
@@ -192,7 +196,7 @@ export class NodeTrack {
 
 		// clear previous child node tracks before pushing all new ones
 		// to ensure that the updates will only be applied to these new tracks
-		(this.anchorNodeTrack as NodeTrack).childNodeTracks.clear();
+		(this.anchorNodeTrack as NodeTrack)?.childNodeTracks.clear();
 
 		// since new nodes are not initially tracked by the component
 		// we need to track them as part of the anchor node branch

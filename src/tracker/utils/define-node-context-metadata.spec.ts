@@ -41,15 +41,13 @@ describe('defineNodeContextMetadata', () => {
 		defineNodeContextMetadata(node);
 		
 		expect($.get(node).$context).toEqual({});
-		
-		$.get(node).subscribe((parentCtx: any) => {
-			expect(parentCtx.some).toEqual("content");
-			expect($.get(node).$context.some).toEqual("content");
-		})
 
 		$.get(parent).updateContext({
 			some: 'content'
 		});
+
+		expect($.get(parent).$context.some).toEqual("content");
+		expect($.get(node).$context.some).toEqual("content");
 	});
 	
 	it('should unsubscribe and subscribe when remove and attached to element',  () => {
