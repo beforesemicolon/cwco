@@ -1,8 +1,8 @@
-import {turnCamelToKebabCasing} from "./turn-camel-to-kebab-casing";
-import {directives} from "../directives";
-import {proxify} from "./proxify";
-import {CWCO} from "../cwco";
-import {isPrimitive} from "./is-primitive";
+import {turnCamelToKebabCasing} from "../../utils/turn-camel-to-kebab-casing";
+import {directives} from "../../directives";
+import {proxify} from "../../utils/proxify";
+import {CWCO} from "../../cwco";
+import {isPrimitive} from "../../utils/is-primitive";
 
 export function setupComponentPropertiesForAutoUpdate(comp: CWCO.WebComponent, onUpdate: CWCO.onUpdateCallback): string[] {
 	const properties: string[] = [];

@@ -1,5 +1,5 @@
 import {evaluateStringInComponentContext} from './evaluate-string-in-component-context';
-import {WebComponent} from "../web-component";
+import {WebComponent} from "../../core/web-component";
 
 describe('evaluateStringInComponentContext', () => {
 	class EvalApp extends WebComponent {

@@ -1,6 +1,6 @@
-import {ShadowRootModeExtended} from "./enums/ShadowRootModeExtended.enum";
+import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
 import {WebComponent} from "./web-component";
-import {CWCO} from "./cwco";
+import {CWCO} from "../cwco";
 
 /**
  * a special WebComponent that handles slot tag differently allowing for render template right into HTML files

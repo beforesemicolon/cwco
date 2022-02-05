@@ -1,5 +1,5 @@
 import {getEventHandlerFunction} from "./get-event-handler-function";
-import {WebComponent} from "../web-component";
+import {WebComponent} from "../../core/web-component";
 
 describe('getEventHandlerFunction', () => {
 	const errorSpy = jest.fn();

@@ -23,17 +23,15 @@ class ActionButton extends WebComponent {
 		"readonly",
 		"sub-type"
 	];
+	/**
+	* Inside the component is a safe place to define your
+	 * attribute default values
+	*/
+    subType = "primary";
+    type = "button";
 	
 	
 	get template() {
-		/**
-		 * Inside the template is a safe place to define your
-		 * attribute default values since it won't trigger the
-		 * onUpdate lifecycle callback
-		 */
-		this.subType = this.subType || "primary";
-		this.type = this.type || "button";
-		
 		/**
 		 * Every attribute with value will be parsed to
 		 * their respective Javascript object or primitive value

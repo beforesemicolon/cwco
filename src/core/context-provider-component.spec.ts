@@ -1,6 +1,6 @@
 import {ContextProviderComponent} from "./context-provider-component";
 import {WebComponent} from "./web-component";
-import {ShadowRootModeExtended} from "./enums/ShadowRootModeExtended.enum";
+import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
 
 describe('ContextProviderComponent', () => {
 	describe('slot', () => {
