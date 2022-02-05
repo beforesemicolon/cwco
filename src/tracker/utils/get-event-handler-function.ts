@@ -1,4 +1,4 @@
-import {CWCO} from "../cwco";
+import {CWCO} from "../../cwco";
 
 export function getEventHandlerFunction(component: CWCO.WebComponent, nodeData: CWCO.ObjectLiteral, attribute: Attr): CWCO.EventListenerCallback {
 	const props = Array.from(new Set([...Object.getOwnPropertyNames(nodeData), ...component.$properties]));

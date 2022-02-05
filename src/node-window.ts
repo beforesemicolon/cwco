@@ -1,3 +1,5 @@
+// cwco, copyright (c) by Elson Correia / Before Semicolon
+// Distributed under an MIT license: https://github.com/beforesemicolon/cwco/blob/master/LICENSE
 import {JSDOM} from 'jsdom';
 
 const dom = new JSDOM()

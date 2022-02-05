@@ -9,3 +9,4 @@ coverage
 examples
 jest.config.js
 .github
+**.js.map

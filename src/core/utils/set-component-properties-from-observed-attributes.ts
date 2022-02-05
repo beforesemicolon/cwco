@@ -1,10 +1,10 @@
-import {proxify} from './proxify';
-import boolAttr from './boolean-attributes.json';
-import {directives} from "../directives";
-import {jsonParse} from "./json-parse";
+import {proxify} from '../../utils/proxify';
+import boolAttr from '../boolean-attributes.json';
+import {directives} from "../../directives";
+import {jsonParse} from "../../utils/json-parse";
 import {$} from "../metadata";
-import {CWCO} from "../cwco";
-import {isPrimitive} from "./is-primitive";
+import {CWCO} from "../../cwco";
+import {isPrimitive} from "../../utils/is-primitive";
 
 export function setComponentPropertiesFromObservedAttributes(
 	comp: CWCO.WebComponent,

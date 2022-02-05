@@ -1,4 +1,4 @@
-import {CWCO} from "../cwco";
+import {CWCO} from "../../cwco";
 
 export function extractExecutableSnippetFromString(str: string, [start, end] = ['{', '}'], offset = 0) {
 	const stack = [];

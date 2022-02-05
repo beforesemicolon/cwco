@@ -1,4 +1,4 @@
-import {CWCO} from "../cwco";
+import {CWCO} from "../../cwco";
 import {extractExecutableSnippetFromString} from "./extract-executable-snippet-from-string";
 
 export function extractExecutableSnippetFromCSS(

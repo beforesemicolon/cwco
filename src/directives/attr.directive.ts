@@ -1,7 +1,7 @@
-import {Directive} from "../directive";
+import {Directive} from "../core/directive";
 import {turnKebabToCamelCasing} from "../utils/turn-kebab-to-camel-casing";
 import {turnCamelToKebabCasing} from "../utils/turn-camel-to-kebab-casing";
-import booleanAttr from "../utils/boolean-attributes.json";
+import booleanAttr from "../core/boolean-attributes.json";
 import {CWCO} from "../cwco";
 
 export class Attr extends Directive {

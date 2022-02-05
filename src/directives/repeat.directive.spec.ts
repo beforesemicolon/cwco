@@ -1,5 +1,5 @@
 import {Repeat} from './repeat.directive';
-import {WebComponent} from "../web-component";
+import {WebComponent} from "../core/web-component";
 
 describe('Repeat Directive', () => {
 	class TestComp extends WebComponent {}
@@ -33,9 +33,9 @@ describe('Repeat Directive', () => {
 		expect(res).toEqual(expect.any(Array));
 		expect(res.length).toBe(3)
 		expect(element.outerHTML).toBe('<div class="item-{$key}" if="true" repeat="3">item {$item}</div>')
-		expect(res[0].outerHTML).toBe('<div class="item-{$key}">item {$item}</div>')
-		expect(res[1].outerHTML).toBe('<div class="item-{$key}">item {$item}</div>')
-		expect(res[2].outerHTML).toBe('<div class="item-{$key}">item {$item}</div>')
+		expect(res[0].outerHTML).toBe('<div class="item-{$key}" if="true" repeat="3">item {$item}</div>')
+		expect(res[1].outerHTML).toBe('<div class="item-{$key}" if="true" repeat="3">item {$item}</div>')
+		expect(res[2].outerHTML).toBe('<div class="item-{$key}" if="true" repeat="3">item {$item}</div>')
 		expect(setContextSpy).toHaveBeenCalledTimes(3)
 		expect(dir.getContext(res[0])).toEqual({$item: 1, $key: 0})
 		expect(dir.getContext(res[1])).toEqual({$item: 2, $key: 1})
@@ -49,9 +49,9 @@ describe('Repeat Directive', () => {
 		expect(res).toEqual(expect.any(Array));
 		expect(res.length).toBe(3)
 		expect(element.outerHTML).toBe('<div class="item-{$key}" if="true" repeat="[2, 4, 6]">item {$item}</div>')
-		expect(res[0].outerHTML).toBe('<div class="item-{$key}">item {$item}</div>')
-		expect(res[1].outerHTML).toBe('<div class="item-{$key}">item {$item}</div>')
-		expect(res[2].outerHTML).toBe('<div class="item-{$key}">item {$item}</div>')
+		expect(res[0].outerHTML).toBe('<div class="item-{$key}" if="true" repeat="[2, 4, 6]">item {$item}</div>')
+		expect(res[1].outerHTML).toBe('<div class="item-{$key}" if="true" repeat="[2, 4, 6]">item {$item}</div>')
+		expect(res[2].outerHTML).toBe('<div class="item-{$key}" if="true" repeat="[2, 4, 6]">item {$item}</div>')
 		expect(setContextSpy).toHaveBeenCalledTimes(3)
 		expect(dir.getContext(res[0])).toEqual({$item: 2, $key: "0"})
 		expect(dir.getContext(res[1])).toEqual({$item: 4, $key: "1"})
@@ -65,9 +65,9 @@ describe('Repeat Directive', () => {
 		expect(res).toEqual(expect.any(Array));
 		expect(res.length).toBe(3)
 		expect(element.outerHTML).toBe('<div class="item-{$key}" if="true" repeat="{a: 100, b: 200, c: 300}">item {$item}</div>')
-		expect(res[0].outerHTML).toBe('<div class="item-{$key}">item {$item}</div>')
-		expect(res[1].outerHTML).toBe('<div class="item-{$key}">item {$item}</div>')
-		expect(res[2].outerHTML).toBe('<div class="item-{$key}">item {$item}</div>')
+		expect(res[0].outerHTML).toBe('<div class="item-{$key}" if="true" repeat="{a: 100, b: 200, c: 300}">item {$item}</div>')
+		expect(res[1].outerHTML).toBe('<div class="item-{$key}" if="true" repeat="{a: 100, b: 200, c: 300}">item {$item}</div>')
+		expect(res[2].outerHTML).toBe('<div class="item-{$key}" if="true" repeat="{a: 100, b: 200, c: 300}">item {$item}</div>')
 		expect(setContextSpy).toHaveBeenCalledTimes(3)
 		// @ts-ignore
 		expect(dir.getContext(res[0])).toEqual({$item: 100, $key: "a"})

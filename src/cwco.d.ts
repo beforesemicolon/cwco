@@ -1,4 +1,5 @@
 import {ShadowRootModeExtended} from "./enums/ShadowRootModeExtended.enum";
+import {TrackType} from "./enums/track-type";
 
 declare namespace CWCO {
 	export interface booleanAttributes {
@@ -49,25 +50,21 @@ declare namespace CWCO {
 		match: string;
 		executable: string;
 	}
-	
-	export interface NodeTrack {
-		node: HTMLElement | Node | WebComponent;
-		anchor: HTMLElement | Node | Array<Element>;
-		tracks: Map<Node, NodeTrack>;
-		attributes: Array<{
-			name: string;
-			value: string;
-			executables: Array<Executable>;
-		}>;
-		empty: boolean;
-		directives: Array<DirectiveValue>;
-		property: null | {
-			name: string;
-			value: string;
-			executables: Array<Executable>;
-		};
-		updateNode: () => void;
-		$context: ObjectLiteral;
+
+	export interface Track {
+		name: string;
+		value: string;
+		executables: Executable[];
+		handler: DirectiveConstructor | null;
+		prop: string | null;
+		prevValue: any;
+		type: TrackType;
+	}
+
+	export interface TracksMapByType {
+		attribute: Track[];
+		directive: Track[];
+		property: Track[];
 	}
 	
 	export type ObjectLiteral = {[key: string]: any};
@@ -77,11 +74,6 @@ declare namespace CWCO {
 	export type onUpdateCallback = (property: string, oldValue: unknown, newValue: unknown) => void;
 	
 	export type Refs = {[key: string]: HTMLElement | HTMLElement[]};
-	
-	export interface trackerOptions {
-		trackOnly?: boolean;
-		tracks: Map<Node, NodeTrack>;
-	}
 	
 	export interface WebComponent extends HTMLElement {
 		templateId: string;
@@ -119,14 +111,5 @@ declare namespace CWCO {
 		registerAll: (components: Array<WebComponentConstructor>) => void;
 		isRegistered: boolean;
 		initialContext: ObjectLiteral;
-	}
-	
-	export interface WebComponentMetadata {
-		root: WebComponent | ShadowRoot;
-		mounted: boolean;
-		parsed: boolean;
-		contextSource: WebComponent | null;
-		contextSubscribers: Array<(ctx: object) => void>;
-		unsubscribeCtx: (ctx: object) => void;
 	}
 }

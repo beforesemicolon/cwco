@@ -1,20 +1,20 @@
 // simply importing directive here will automatically register them and make them available for
 // anything later on
-import './directives';
-import booleanAttr from './utils/boolean-attributes.json';
+import '../directives';
+import booleanAttr from './boolean-attributes.json';
 import {$} from "./metadata";
-import {parse} from './utils/parse';
+import {parse} from '../parser/parse';
 import {setComponentPropertiesFromObservedAttributes} from './utils/set-component-properties-from-observed-attributes';
 import {setupComponentPropertiesForAutoUpdate} from './utils/setup-component-properties-for-auto-update';
-import {turnCamelToKebabCasing} from './utils/turn-camel-to-kebab-casing';
-import {turnKebabToCamelCasing} from './utils/turn-kebab-to-camel-casing';
+import {turnCamelToKebabCasing} from '../utils/turn-camel-to-kebab-casing';
+import {turnKebabToCamelCasing} from '../utils/turn-kebab-to-camel-casing';
 import {getStyleString} from './utils/get-style-string';
-import {ShadowRootModeExtended} from "./enums/ShadowRootModeExtended.enum";
-import {trackNode} from "./utils/track-node";
-import {jsonParse} from "./utils/json-parse";
-import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
-import {resolveHtmlEntities} from "./utils/resolve-html-entities";
-import {CWCO} from "./cwco";
+import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
+import {jsonParse} from "../utils/json-parse";
+import {resolveHtmlEntities} from "../utils/resolve-html-entities";
+import {CWCO} from "../cwco";
+import {NodeTrack} from "../tracker/node-track";
+import {trackNodeTree} from "../tracker/track-node-tree";
 
 /**
  * a extension on the native web component API to simplify and automate most of the pain points
@@ -34,18 +34,15 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 
 		let {mode, observedAttributes, delegatesFocus} = this.constructor as CWCO.WebComponentConstructor;
 
-		if (!$.has(this)) {
-			$.set(this, {})
-		}
-
+		const selfTrack = new NodeTrack(this, this)
 		const meta = $.get(this);
 
 		meta.root = this;
 		meta.mounted = false;
 		meta.parsed = false;
 		meta.clearAttr = false;
-		meta.externalNodes = []; // nodes moved outside of the component that needs to be updated on ctx change
-		meta.tracks = new Map();
+		meta.selfTrack = selfTrack;
+		meta.externalNodes = []; // nodes moved outside the component that needs to be updated on ctx change
 		meta.unsubscribeCtx = () => {};
 		meta.attrPropsMap = observedAttributes.reduce((map, attr) => ({
 			...map,
@@ -181,37 +178,37 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	}
 	
 	updateContext(ctx: CWCO.ObjectLiteral) {
-		$.get(this).updateContext(ctx);
+		const {oldCtx, newCtx} = $.get(this).updateContext(ctx);
 
-		$.get(this).externalNodes.forEach((el: HTMLElement) => {
-			$.get(el).updateContext(ctx);
+		$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
+			t.updateNode(true);
 		})
+
+		this.onUpdate('$context', oldCtx, newCtx);
 	}
 	
 	connectedCallback() {
-		defineNodeContextMetadata(this);
 		const {initialContext, observedAttributes, tagName, mode} = this.constructor as CWCO.WebComponentConstructor;
-		const {parsed, tracks, root, attrPropsMap} = $.get(this);
+		const {parsed, selfTrack, root, attrPropsMap} = $.get(this);
 
 		if (Object.keys(initialContext).length) {
 			$.get(this).updateContext(initialContext);
 		}
 
-		const onPropUpdate = (prop: string, oldValue: any, newValue: any, update = true) => {
+		const onPropUpdate = (prop: string, oldValue: any, newValue: any) => {
 			if (this.mounted) {
-				if (update) {
+				try {
 					this.forceUpdate();
+					this.onUpdate(prop, oldValue, newValue);
+				} catch(e) {
+					this.onError(e as ErrorEvent);
 				}
-				this.onUpdate(prop, oldValue, newValue);
 			} else if(this.parsed) {
 				this.onError(new Error(`[Possibly a memory leak]: Cannot set property "${prop}" on unmounted component.`));
 			}
 		};
 
 		try {
-			$.get(this).unsubscribeCtx = $.get(this).subscribe((newContext: CWCO.ObjectLiteral) => {
-				onPropUpdate('$context', newContext, newContext, false);
-			})
 
 			$.get(this).mounted = true;
 
@@ -253,8 +250,12 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				if (this.customSlot) {
 					this.innerHTML = '';
 				}
-				
-				trackNode(contentNode, this, {tracks});
+
+				trackNodeTree(contentNode, selfTrack, this);
+
+				selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
+					t.updateNode();
+				})
 
 				if (mode === 'none') {
 					[
@@ -331,18 +332,12 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	 * updates any already tracked node with current component data including context and node level data.
 	 */
 	forceUpdate() {
-		if (this.mounted) {
-			cancelAnimationFrame($.get(this).updateFrame);
-			$.get(this).updateFrame = requestAnimationFrame(() => {
-				$.get(this).tracks.forEach((t: CWCO.NodeTrack) => {
-					t.updateNode();
-				});
-			});
-
-			return true;
-		}
-
-		return false;
+		cancelAnimationFrame($.get(this).updateFrame);
+		$.get(this).updateFrame = requestAnimationFrame(() => {
+			$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
+				t.updateNode();
+			})
+		});
 	}
 	
 	adoptedCallback() {
