@@ -43,7 +43,7 @@ export class Repeat extends Directive {
 					continue
 				}
 
-				const el = this.cloneRepeatedNode(rawElementOuterHTML);
+				const el = parse(rawElementOuterHTML).children[0];
 				this.updateNodeContext(el, index, vAs, kAs, repeatData)
 				list.push(el);
 			}
@@ -59,18 +59,6 @@ export class Repeat extends Directive {
 			[vAs || '$item']: value,
             [kAs || '$key']: key
 		});
-	}
-
-	cloneRepeatedNode(rawElementOuterHTML: string): Element {
-		const clone = parse(rawElementOuterHTML).children[0];
-		// remove the repeat node to avoid infinite loop where the clone node also repeat
-		clone.removeAttribute('repeat');
-		// remove the if because the if directive is execute before any directive
-		// which means if the node reached the repeat, it was already processed by possibly
-		// existing if directive
-		clone.removeAttribute('if');
-		
-		return clone;
 	}
 }
 

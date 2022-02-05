@@ -18,18 +18,13 @@ export function defineNodeContextMetadata(node: Node) {
 	}
 
 	dt.updateContext = (newCtx: CWCO.ObjectLiteral | null = null) => {
-		if (newCtx && typeof newCtx === 'object') {
+		const oldCtx = ctx;
+
+		if (newCtx && typeof newCtx === 'object' && Object.keys(newCtx).length) {
 			ctx = {...ctx, ...newCtx};
 		}
-		
-		// if the node is not tracked (contains no bound prop or attr)
-		// or is a component node which calling updateNode ended up not changing anything
-		// we can continue to propagate the context
-		// this is because if a track node ends up updated, it will automatically
-		// update all its inner tracker which will read the context just fine
-		if (!$.get(node).track || (!$.get(node).track.updateNode() && node.nodeName.includes('-'))) {
-			notify();
-		}
+
+		return {oldCtx, newCtx: ctx};
 	}
 
 	Object.defineProperty(dt, '$context', {
@@ -37,19 +32,6 @@ export function defineNodeContextMetadata(node: Node) {
 			return {...$.get(getParent(node))?.$context, ...ctx};
 		}
 	})
-
-	function notify() {
-		((node as CWCO.WebComponent).root ?? node).childNodes
-			.forEach((n) => {
-				if (typeof $.get(n)?.updateContext === 'function') {
-					$.get(n).updateContext();
-				}
-			});
-
-		subs.forEach((cb) => {
-			cb(dt.$context);
-		});
-	}
 
 	$.set(node, dt);
 }
