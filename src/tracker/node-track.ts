@@ -60,9 +60,6 @@ export class NodeTrack {
 					this.anchor = dirNode;
 
 					if (dirNode !== this.node) {
-						this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
-							t.updateNode();
-						})
 						return;
 					}
 				}
@@ -210,6 +207,12 @@ export class NodeTrack {
 		} else {
 			this._removeNodeDirectiveAttribute(dirNode);
 			trackNodeTree(dirNode as Node, this.anchorNodeTrack as NodeTrack, this.component)
+		}
+
+		if (dirNode !== this.node) {
+			this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
+				t.updateNode();
+			})
 		}
 
 		let dirIsArray = Array.isArray(dirNode);
