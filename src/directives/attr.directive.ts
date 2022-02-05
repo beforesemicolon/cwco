@@ -2,7 +2,7 @@ import {Directive} from "../core/directive";
 import {turnKebabToCamelCasing} from "../utils/turn-kebab-to-camel-casing";
 import {turnCamelToKebabCasing} from "../utils/turn-camel-to-kebab-casing";
 import booleanAttr from "../core/boolean-attributes.json";
-import {CWCO} from "../cwco";
+import {CWCO} from "./../cwco";
 
 export class Attr extends Directive {
 	parseValue(value: string, prop: string | null): string {
