@@ -7,15 +7,7 @@ export function defineNodeContextMetadata(node: Node) {
 	}
 
 	let ctx: CWCO.ObjectLiteral = {};
-	let subs: Array<CWCO.ObserverCallback> = [];
 	const dt: CWCO.ObjectLiteral = $.get(node) || {};
-
-	dt.subscribe = (cb: CWCO.ObserverCallback) => {
-		subs.push(cb);
-		return () => {
-			subs = subs.filter((c) => c !== cb);
-		}
-	}
 
 	dt.updateContext = (newCtx: CWCO.ObjectLiteral | null = null) => {
 		const oldCtx = ctx;

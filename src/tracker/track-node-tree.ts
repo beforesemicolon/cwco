@@ -14,6 +14,10 @@ export const trackNodeTree = (node: Node | CWCO.WebComponent | HTMLElement, ance
 		return;
 	}
 
+	if (nodeType !== 11) {
+		defineNodeContextMetadata(node);
+	}
+
 	// skip comments and empty text nodes to save unnecessary processing
 	if (nodeName === '#comment' || (nodeName === '#text' && !nodeValue?.trim())) {
 		return;
@@ -31,7 +35,6 @@ export const trackNodeTree = (node: Node | CWCO.WebComponent | HTMLElement, ance
 			})
 		})
 	} else if ((nodeType === 1 || nodeType === 3)) {
-		defineNodeContextMetadata(node);
 		const tracks = trackNode(node, component);
 		const isComponentNode = nodeName.includes('-');
 
