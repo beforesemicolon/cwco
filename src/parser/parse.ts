@@ -1,5 +1,5 @@
 import selfClosingTags from './self-closing-tags.json';
-import {CWCO} from "../cwco";
+import {CWCO} from "./../cwco";
 
 const NSURI: CWCO.ObjectLiteral = {
 	HTML: 'http://www.w3.org/1999/xhtml',

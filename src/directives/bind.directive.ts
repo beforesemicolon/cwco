@@ -1,5 +1,5 @@
 import {Directive} from "../core/directive";
-import {CWCO} from "../cwco";
+import {CWCO} from "./../cwco";
 
 export class Bind extends Directive {
 	parseValue(value: string, prop: string | null) {

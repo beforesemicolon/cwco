@@ -12,7 +12,7 @@ import {getStyleString} from './utils/get-style-string';
 import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
 import {jsonParse} from "../utils/json-parse";
 import {resolveHtmlEntities} from "../utils/resolve-html-entities";
-import {CWCO} from "../cwco";
+import {CWCO} from "./../cwco";
 import {NodeTrack} from "../tracker/node-track";
 import {trackNodeTree} from "../tracker/track-node-tree";
 

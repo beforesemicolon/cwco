@@ -1,7 +1,7 @@
 {
   "name": "cwco",
   "version": "1.4.8",
-  "description": "Contextful Web Component Library",
+  "description": "Powerful and Fast Web Component Library with a Simple API",
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
@@ -32,11 +32,11 @@
   "devDependencies": {
     "@types/jest": "^27.0.3",
     "@types/jsdom": "^16.2.13",
-    "esbuild": "^0.14.2",
+    "esbuild": "^0.14.18",
     "jest": "^27.4.4",
     "jest-environment-jsdom": "^27.4.4",
     "nodemon": "^2.0.13",
     "ts-jest": "^27.1.1",
-    "typescript": "^4.5.3"
+    "typescript": "^4.5.5"
   }
 }
