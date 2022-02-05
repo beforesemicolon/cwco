@@ -5,13 +5,12 @@ import {directiveRegistry} from "../directives/registry";
 import {parseNodeDirective} from "./utils/parse-node-directive";
 import {getEventHandlerFunction} from "./utils/get-event-handler-function";
 import {extractExecutableSnippetFromString} from "./utils/extract-executable-snippet-from-string";
-import TracksMapByType = CWCO.TracksMapByType;
 import {TrackType} from "../enums/track-type";
 import {Track} from "./track";
 import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
 
-export const trackNode = (node: Node | HTMLElement, component: CWCO.WebComponent): TracksMapByType => {
-	const tracks: TracksMapByType = {
+export const trackNode = (node: Node | HTMLElement, component: CWCO.WebComponent): CWCO.TracksMapByType => {
+	const tracks: CWCO.TracksMapByType = {
 		directive: [],
 		attribute: [],
 		property: [],
