@@ -77,7 +77,7 @@ export class NodeTrack {
 			// be force updated if force is True since
 			// there is nothing that will trigger update inside the
 			// component like attribute tracks would
-			if (empty && force && this.node.nodeName.includes('-')) {
+			if (empty && force && this.node.nodeName.includes('-') && typeof (this.node as CWCO.WebComponent).forceUpdate == 'function') {
 				(this.node as CWCO.WebComponent).forceUpdate();
 			}
 
