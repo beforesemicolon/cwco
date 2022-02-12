@@ -16,7 +16,6 @@
 - ✅ Built-in Context Data Handling
 - ✅ Event and Data Binding in HTML and CSS
 - ✅ Build view directly in HTML file
-- ✅ Built-in Context
 - ✅ Simple API
 - ✅ Fast rendering
 - ✅ Lightweight package
