@@ -29,3 +29,5 @@ jobs:
     - run: npm ci
     - run: npm run build
     - run: npm test
+    # update the website
+    - run: curl -X POST -d {} https://api.netlify.com/build_hooks/62107be45ee3975b2c00d9fb
