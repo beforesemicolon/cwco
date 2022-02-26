@@ -20,17 +20,22 @@
 - ✅ Fast rendering
 - ✅ Lightweight package
 
-## Learn by Examples
+### Documentation ([cwco.io](https://cwco.io/))
 
-**Learn More From The [Documentation](https://github.com/beforesemicolon/cwco/blob/master/docs/getting-started.md)** or 
-visit **[Examples Playground Page](https://beforesemicolon.github.io/cwco/?example=create-component.html&theme=neo&file=app.js)** for
-an extensive list of examples of everything this library can do.
-
-[Watch Live Video Introduction](https://www.youtube.com/watch?v=yv3BeEssw9E)
-
-## Get Started
-Learn about how to [create a project or starting to explore CWCO](https://github.com/beforesemicolon/cwco/blob/master/docs/getting-started.md)
-as soon as possible.
+- [Getting Started](https://cwco.io/documentation/getting-started)
+- [WebComponent](https://cwco.io/documentation/web-component)
+- [ContextProviderComponent](https://cwco.io/documentation/context-provider-component)
+- [Configurations](https://cwco.io/documentation/configurations)
+- [Template](https://cwco.io/documentation/template)
+- [Styling](https://cwco.io/documentation/stylesheet)
+- [Events](https://cwco.io/documentation/events)
+- [Attributes](https://cwco.io/documentation/observed-attributes)
+- [Properties](https://cwco.io/documentation/properties)
+- [Context](https://cwco.io/documentation/context)
+- [Directives](https://cwco.io/documentation/if-directive)
+- [Custom Directives](https://cwco.io/documentation/custom-directive)
+- [LiveCycles](https://cwco.io/documentation/on-mount)
+- [Error Handling](https://cwco.io/documentation/on-error)
 
 ### Install
 
@@ -88,23 +93,6 @@ class MyButton extends WebComponent {
 
 #### Jet Brain IDEs
 These IDEs have built-in HTML-in-Javascript syntax highlighting which can be useful when developing CWCO web components.
-
-### Documentation
-
-- [Getting Started](https://github.com/beforesemicolon/cwco/blob/master/docs/getting-started.md)
-- [WebComponent](https://github.com/beforesemicolon/cwco/blob/master/docs/WebComponent.md)
-- [ContextProviderComponent](https://github.com/beforesemicolon/cwco/blob/master/docs/ContextProviderComponent.md)
-- [Configurations](https://github.com/beforesemicolon/cwco/blob/master/docs/configurations.md)
-- [Template](https://github.com/beforesemicolon/cwco/blob/master/docs/template.md)
-- [Events](https://github.com/beforesemicolon/cwco/blob/master/docs/events.md)
-- [Attributes](https://github.com/beforesemicolon/cwco/blob/master/docs/attributes.md)
-- [Properties](https://github.com/beforesemicolon/cwco/blob/master/docs/properties.md)
-- [Context](https://github.com/beforesemicolon/cwco/blob/master/docs/context.md)
-- [Directives](https://github.com/beforesemicolon/cwco/blob/master/docs/directives.md)
-- [Custom Directives](https://github.com/beforesemicolon/cwco/blob/master/docs/custom-directives.md)
-- [LiveCycles](https://github.com/beforesemicolon/cwco/blob/master/docs/livecycles.md)
-- [Styling](https://github.com/beforesemicolon/cwco/blob/master/docs/stylesheet.md)
-- [Error Handling](https://github.com/beforesemicolon/cwco/blob/master/docs/errors.md)
 
 ### Want to Help?
 
