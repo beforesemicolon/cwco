@@ -842,7 +842,7 @@ describe('WebComponent', () => {
 						'onfocus="{this.focused = true}"></button>'
 				}
 
-				handleClick(event: Event, numb: number) {
+				handleClick = (event: Event, numb: number) => {
 					clickHandlerSpy(event, numb);
 				}
 			}
@@ -859,6 +859,12 @@ describe('WebComponent', () => {
 			s.root?.querySelector('button')?.focus();
 
 			expect(updateSpy).toHaveBeenCalledWith("focused", false, true);
+			
+			updateSpy.mockClear();
+			
+			s.handleClick = () => {};
+			
+			expect(updateSpy).not.toHaveBeenCalled();
 
 		});
 	});
@@ -940,7 +946,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should ', () => {
-			
+		
 		});
 	});
 
