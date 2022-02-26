@@ -57,6 +57,22 @@ describe('Repeat Directive', () => {
 		expect(dir.getContext(res[1])).toEqual({$item: 4, $key: "1"})
 		expect(dir.getContext(res[2])).toEqual({$item: 6, $key: "2"})
 	});
+	
+	it('should repeat element with typed array', () => {
+		element.setAttribute('repeat', '[2, 4, 6]');
+		const res = dir.render([new Int8Array([2, 4, 6])], {element, rawElementOuterHTML: element.outerHTML} as any);
+		
+		expect(res).toEqual(expect.any(Array));
+		expect(res.length).toBe(3)
+		expect(element.outerHTML).toBe('<div class="item-{$key}" if="true" repeat="[2, 4, 6]">item {$item}</div>')
+		expect(res[0].outerHTML).toBe('<div class="item-{$key}" if="true" repeat="[2, 4, 6]">item {$item}</div>')
+		expect(res[1].outerHTML).toBe('<div class="item-{$key}" if="true" repeat="[2, 4, 6]">item {$item}</div>')
+		expect(res[2].outerHTML).toBe('<div class="item-{$key}" if="true" repeat="[2, 4, 6]">item {$item}</div>')
+		expect(setContextSpy).toHaveBeenCalledTimes(3)
+		expect(dir.getContext(res[0])).toEqual({$item: 2, $key: "0"})
+		expect(dir.getContext(res[1])).toEqual({$item: 4, $key: "1"})
+		expect(dir.getContext(res[2])).toEqual({$item: 6, $key: "2"})
+	});
 
 	it('should repeat element with object', () => {
 		element.setAttribute('repeat', '{a: 100, b: 200, c: 300}');
