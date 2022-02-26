@@ -545,6 +545,36 @@ describe('WebComponent', () => {
 
 			expect(updateFn).toHaveBeenCalledTimes(1);
 		});
+		
+		it('should call onUpdate once when multiple properties change at once', () => {
+			const updateSpy = jest.fn();
+			
+			class UComp extends WebComponent {
+				prop1 = 12;
+				prop2 = 300;
+				prop3 = 0;
+				
+				onUpdate(...args: string[]) {
+					updateSpy(...args)
+				}
+				
+				do() {
+					this.prop1 = 21;
+					this.prop2 = 3;
+					this.prop3 = 100;
+				}
+			}
+			
+			UComp.register();
+			
+			const u = new UComp();
+			
+			document.body.appendChild(u);
+			
+			u.do();
+			
+			expect(updateSpy).toHaveBeenCalledTimes(3);
+		});
 	});
 
 	describe('update DOM', () => {
