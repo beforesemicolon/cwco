@@ -8,6 +8,7 @@ import {evaluateStringInComponentContext} from "./utils/evaluate-string-in-compo
 import {trackNodeTree} from "./track-node-tree";
 
 export class NodeTrack {
+	#compiled = false;
 	childNodeTracks = new Set<NodeTrack>();
 	anchor: HTMLElement | Node | Comment | Array<Element>;
 	anchorNodeTrack: NodeTrack | null = null;
@@ -39,6 +40,10 @@ export class NodeTrack {
 					? (this.anchor as Array<Element>)[0]
 					: this.anchor
 			)?.$context) || {};
+	}
+	
+	get compiled() {
+		return this.#compiled;
 	}
 
 	updateNode(force = false) {
@@ -85,6 +90,8 @@ export class NodeTrack {
 				t.updateNode(force);
 			})
 		}
+		
+		this.#compiled = true;
 	}
 
 	private _removeNodeDirectiveAttribute(n: Node | HTMLElement) {
