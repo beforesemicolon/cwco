@@ -1136,7 +1136,7 @@ describe('WebComponent', () => {
 			});
 		});
 
-		describe('should handle attr', () => {
+		describe('attr', () => {
 			it('should handle class attribute', () => {
 				class AttrA extends WebComponent {
 					check1 = true;
@@ -1277,7 +1277,7 @@ describe('WebComponent', () => {
 			});
 		});
 
-		describe('should handle if', () => {
+		describe('if', () => {
 			it('should render element and react to changes after', () => {
 				class IfA extends WebComponent {
 					check = true;
@@ -1408,7 +1408,7 @@ describe('WebComponent', () => {
 			it.todo('should handle nested component ifs');
 		});
 
-		describe('should handle repeat', () => {
+		describe('repeat', () => {
 			it('should repeat element based on number', () => {
 				class RepeatA extends WebComponent {
 					count: any = 3;
