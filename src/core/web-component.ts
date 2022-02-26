@@ -330,12 +330,9 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	 * updates any already tracked node with current component data including context and node level data.
 	 */
 	forceUpdate() {
-		cancelAnimationFrame($.get(this).updateFrame);
-		$.get(this).updateFrame = requestAnimationFrame(() => {
-			$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
-				t.updateNode();
-			})
-		});
+		$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
+			t.updateNode();
+		})
 	}
 	
 	adoptedCallback() {
