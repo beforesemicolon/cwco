@@ -43,7 +43,6 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 		meta.clearAttr = false;
 		meta.selfTrack = selfTrack;
 		meta.externalNodes = []; // nodes moved outside the component that needs to be updated on ctx change
-		meta.unsubscribeCtx = () => {};
 		meta.attrPropsMap = observedAttributes.reduce((map, attr) => ({
 			...map,
 			[attr]: turnKebabToCamelCasing(attr)
@@ -287,7 +286,6 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	disconnectedCallback() {
 		try {
 			$.get(this).mounted = false;
-			$.get(this).unsubscribeCtx();
 			this.onDestroy();
 		} catch (e) {
 			this.onError(e as Error)
