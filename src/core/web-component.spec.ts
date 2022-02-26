@@ -1037,6 +1037,30 @@ describe('WebComponent', () => {
 
 			expect(sSlot?.outerHTML).toBe('<slot>content</slot>')
 		})
+		
+		it('should handle nested', (done) => {
+			class SlotD extends WebComponent {
+				one = 10;
+				
+				get template() {
+					return '<slot></slot>'
+				}
+			}
+			
+			SlotD.register()
+			
+			document.body.innerHTML = '<slot-d>\n{one}\n</slot-d>';
+			
+			setTimeout(() => {
+				const s = document.body.children[0] as WebComponent;
+				const sSlot = s.root?.children[0];
+				
+				expect(sSlot?.outerHTML).toBe('<slot></slot>');
+				expect((s.childNodes[0] as Element).assignedSlot).toEqual(sSlot);
+				expect(s.childNodes[0].textContent?.trim()).toEqual('10');
+				done()
+			}, 0)
+		});
 	})
 
 	describe('directives', () => {

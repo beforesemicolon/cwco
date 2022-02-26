@@ -1,4 +1,5 @@
 import {CWCO} from "../cwco";
+import {$} from "../core/metadata";
 
 export const slotTag = (node: HTMLSlotElement, {component}: CWCO.ObjectLiteral = {}, cb: (n: Node[]) => void): void => {
 	if (component.type === 'context') {
@@ -12,6 +13,16 @@ function renderSlot(node: HTMLSlotElement, cb: (c: Node[]) => void) {
 	const onSlotChange = () => {
 		const nodes = node.assignedNodes();
 		cb(nodes);
+		// because the event listener gets called way after the component
+		// finishes parsing, the node never gets parsed because its track is
+		// not known about so this will update it if never done already
+		nodes.forEach(n => {
+			const track = $.get(n)?.track;
+			
+			if (track && !track.compiled) {
+				track.updateNode()
+			}
+		})
 		
 		node.removeEventListener('slotchange', onSlotChange, false);
 	};
