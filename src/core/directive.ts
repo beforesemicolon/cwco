@@ -1,5 +1,5 @@
 import {directiveRegistry} from "../directives/registry";
-import {$} from "./metadata";
+import {$} from "./$";
 import {defineNodeContextMetadata} from "../tracker/utils/define-node-context-metadata";
 import {CWCO} from "../cwco";
 

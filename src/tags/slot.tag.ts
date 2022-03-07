@@ -1,5 +1,5 @@
 import {CWCO} from "../cwco";
-import {$} from "../core/metadata";
+import {$} from "../core/$";
 
 export const slotTag = (node: HTMLSlotElement, {component}: CWCO.ObjectLiteral = {}, cb: (n: Node[]) => void): void => {
 	if (component.type === 'context') {

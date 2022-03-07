@@ -1,5 +1,5 @@
 import {defineNodeContextMetadata} from "./define-node-context-metadata";
-import {$} from "../../core/metadata";
+import {$} from "../../core/$";
 
 describe('defineNodeContextMetadata', () => {
 	let node: HTMLElement;
