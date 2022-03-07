@@ -1,5 +1,5 @@
 import {CWCO} from "../../cwco";
-import {$} from "../../core/metadata";
+import {$} from "../../core/$";
 
 export function defineNodeContextMetadata(node: Node) {
 	if ($.has(node) && $.get(node)?.$context) {
