@@ -2,7 +2,7 @@ import {proxify} from '../../utils/proxify';
 import boolAttr from '../boolean-attributes.json';
 import {directives} from "../../directives";
 import {jsonParse} from "../../utils/json-parse";
-import {$} from "../metadata";
+import {$} from "../$";
 import {CWCO} from "../../cwco";
 import {isPrimitive} from "../../utils/is-primitive";
 

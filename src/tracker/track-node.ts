@@ -1,5 +1,5 @@
 import {CWCO} from "../cwco";
-import {$} from "../core/metadata";
+import {$} from "../core/$";
 import {extractExecutableSnippetFromCSS} from "./utils/extract-executable-snippet-from-css";
 import {directiveRegistry} from "../directives/registry";
 import {parseNodeDirective} from "./utils/parse-node-directive";
