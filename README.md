@@ -9,9 +9,9 @@
 ![Build](https://github.com/beforesemicolon/cwco/actions/workflows/node.js.yml/badge.svg)
 
 **Contextfull Web Component Library** created to improve native Web Component APIs user experience with:
-- ✅ No Build Required!
-- ✅ Works with other library and frameworks
-- ✅ Reactive Template
+- ✅ No Build Required (Plug and Play)!
+- ✅ Works with other library and frameworks like React, Angular, Vue, Svelte, etc;
+- ✅ Truly Reactive Template
 - ✅ Powerful built-in Directives(including ability to create your own)
 - ✅ Built-in Context Data Handling
 - ✅ Event and Data Binding in HTML and CSS
