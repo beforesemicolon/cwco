@@ -248,7 +248,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 					temp = t?.nodeName === 'TEMPLATE' ? t.innerHTML : temp;
 				}
 
-				if (mode !== 'none' || !document.head.querySelectorAll(`.${tagName}`.toLowerCase()).length) {
+				if (mode !== 'none' || !getLinkAndStyleTagsFromHead(tagName).length) {
 					style = getStyleString(this.stylesheet, tagName.toLowerCase(), hasShadowRoot);
 				}
 
@@ -279,8 +279,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				$.get(this).parsed = true;
 				root.appendChild(contentNode);
 			}
-
-
+			
 			this.onMount();
 		} catch (e) {
 			this.onError(e as ErrorEvent);
@@ -365,5 +364,12 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	onError(error: ErrorEvent | Error) {
 		console.error(this.constructor.name, error);
 	}
+}
+
+function getLinkAndStyleTagsFromHead(tagName: string) {
+	return [
+		...Array.from(document.head.querySelectorAll(`link.${tagName}`.toLowerCase())),
+		...Array.from(document.head.querySelectorAll(`style.${tagName}`.toLowerCase()))
+	]
 }
 

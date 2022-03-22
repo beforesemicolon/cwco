@@ -179,7 +179,7 @@ describe('WebComponent', () => {
 			document.body.appendChild(i);
 
 			expect(i.root?.innerHTML).toBe('')
-			expect(document.head.innerHTML).toBe('<link rel="stylesheet " href="app.css"><style class="e-style"> e-style {display: inline-block;}</style><style class="e-style">e-style {display: inline-block;}</style>')
+			expect(document.head.innerHTML).toBe('<link rel="stylesheet " href="app.css" class="e-style"><style class="e-style"> e-style {display: inline-block;}</style><style class="e-style">e-style {display: inline-block;}</style>')
 		});
 
 		it('should handle link stylesheet', () => {
