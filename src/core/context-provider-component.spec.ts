@@ -277,5 +277,58 @@ describe('ContextProviderComponent', () => {
 
 			expect(document.head.innerHTML).toBe('<style class="style-c"> style-c { color: red; } </style>')
 		});
+		
+		it('should only add link tag to the head if not there already', () => {
+			class StyleD extends ContextProviderComponent {
+				visible = true;
+				
+				get stylesheet() {
+					return `<link href="./some/style.css" rel="stylesheet"/>`
+				}
+			}
+			
+			StyleD.register();
+			
+			document.body.innerHTML = `
+				<style-d></style-d>
+				<style-d></style-d>
+				<style-d></style-d>
+				<style-d></style-d>
+				<style-d></style-d>
+			`;
+			
+			expect(document.head.innerHTML).toBe('<link href="./some/style.css" rel="stylesheet" class="style-d">')
+		});
+		
+		it('should allow link and style mix in the stylesheet', () => {
+			class StyleE extends ContextProviderComponent {
+				visible = true;
+				
+				get stylesheet() {
+					return `
+						<link href="./some/style.css" rel="stylesheet"/>
+						<style>
+							:host {
+								box-sizing: border-box;
+							}
+						</style>
+						<style></style>
+					`
+				}
+			}
+			
+			StyleE.register();
+			
+			document.body.innerHTML = `
+				<style-e></style-e>
+				<style-e></style-e>
+			`;
+			
+			expect(document.head.innerHTML).toBe(
+				'<link href="./some/style.css" rel="stylesheet" class="style-e">' +
+				'<style class="style-e"> style-e { box-sizing: border-box; } </style>'
+			);
+		});
+		
 	});
 });

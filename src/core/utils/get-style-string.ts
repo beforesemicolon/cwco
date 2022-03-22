@@ -23,6 +23,10 @@ export function getStyleString(stylesheet: string, tagName: string, hasShadowRoo
 	});
 
 	if (!hasShadowRoot) {
+		links.forEach(link => {
+			link.classList.add(tagName);
+		})
+		
 		for (let style of styles) {
 			style.classList.add(tagName);
 			style.textContent = (style.innerHTML).replace(/:(host-context|host)(?:\s*\((.*?)\))?/gmi, (_, h, s) => {
@@ -35,5 +39,5 @@ export function getStyleString(stylesheet: string, tagName: string, hasShadowRoo
 		}
 	}
 
-	return links.map(el => el.outerHTML).join('') + styles.map(el => el.textContent && el.outerHTML).join('');
+	return links.map(el => el.outerHTML).join('') + styles.filter(el => (el.textContent || '').trim()).map(el => el.outerHTML).join('');
 }
