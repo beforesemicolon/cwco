@@ -63,6 +63,10 @@ export class NodeTrack {
 				if (dirNode) {
 					this._swapNodeAndDirNode(dirNode);
 					this.anchor = dirNode;
+
+					if (dirNode !== this.node) {
+						return;
+					}
 				}
 			}
 
