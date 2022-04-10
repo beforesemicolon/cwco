@@ -15,6 +15,7 @@ import {resolveHtmlEntities} from "../utils/resolve-html-entities";
 import {CWCO} from "../cwco";
 import {NodeTrack} from "../tracker/node-track";
 import {trackNodeTree} from "../tracker/track-node-tree";
+import {JSONToCSS} from "./utils/json-to-css";
 
 /**
  * a extension on the native web component API to simplify and automate most of the pain points
@@ -149,12 +150,12 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	/**
 	 * style for the component whether inside the style tag, as object or straight CSS string
 	 */
-	get stylesheet(): string {
+	get stylesheet(): CWCO.Stylesheet {
 		return '';
 	};
 	
 	/**
-	 * whether or not the component should use the real slot element or mimic its behavior
+	 * whether the component should use the real slot element or mimic its behavior
 	 * when rendering template
 	 */
 	get customSlot() {
@@ -239,7 +240,8 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				Object.freeze(this.$properties);
 				
 				const hasShadowRoot = (this.constructor as CWCO.WebComponentConstructor).mode !== 'none';
-				let temp: string = this.template;
+				const stylesheet = this.stylesheet;
+				let temp = this.template;
 				let style = '';
 
 				if (!temp && this.templateId) {
@@ -248,8 +250,10 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 					temp = t?.nodeName === 'TEMPLATE' ? t.innerHTML : temp;
 				}
 
-				if (mode !== 'none' || !getLinkAndStyleTagsFromHead(tagName).length) {
-					style = getStyleString(this.stylesheet, tagName.toLowerCase(), hasShadowRoot);
+				if (stylesheet && mode !== 'none' || !getLinkAndStyleTagsFromHead(tagName).length) {
+					style = typeof stylesheet === 'object'
+						? `<style class="${tagName}">${JSONToCSS(stylesheet)}</style>`
+						: getStyleString(stylesheet, tagName.toLowerCase(), hasShadowRoot);
 				}
 
 				const contentNode = parse(resolveHtmlEntities(style + temp));
