@@ -220,6 +220,12 @@ export class NodeTrack {
 			t.updateNode();
 		})
 
+		if (dirNode !== this.node) {
+			this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
+				t.updateNode();
+			})
+		}
+
 		let dirIsArray = Array.isArray(dirNode);
 
 		// in case we have an empty array of nodes or simply that
