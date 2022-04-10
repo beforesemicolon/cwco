@@ -19,6 +19,31 @@ describe('JSONToCSS', () => {
 			'*, *::before, *::after {box-sizing: border-box;}')
 	});
 	
+	it('should allow merging', () => {
+		const style = {
+			':host': {
+				display: 'inline-block',
+				opacity: 0.5,
+				backgroundColor: '[bg]',
+				'& button': {
+					opacity: "[disabled ? 0 : 1]"
+				}
+			}
+		}
+		expect(JSONToCSS({
+			...style,
+			':host': {
+				...style[':host'],
+				display: 'block',
+			},
+			'*, *::before, *::after': {
+				boxSizing: 'border-box',
+			}
+		})).toBe(':host {display: block;opacity: 0.5;background-color: [bg];} ' +
+			':host button {opacity: [disabled ? 0 : 1];} ' +
+			'*, *::before, *::after {box-sizing: border-box;}')
+	});
+	
 	it('should handle @ declarations', () => {
 		expect(JSONToCSS({
 			'@media screen and (max-width: 760px)': {
