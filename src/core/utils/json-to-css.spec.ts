@@ -7,7 +7,7 @@ describe('JSONToCSS', () => {
 				display: 'inline-block',
 				opacity: 0.5,
 				backgroundColor: '[bg]',
-				'& button': {
+				button: {
 					opacity: "[disabled ? 0 : 1]"
 				}
 			},
@@ -25,7 +25,7 @@ describe('JSONToCSS', () => {
 				display: 'inline-block',
 				opacity: 0.5,
 				backgroundColor: '[bg]',
-				'& button': {
+				button: {
 					opacity: "[disabled ? 0 : 1]"
 				}
 			}
