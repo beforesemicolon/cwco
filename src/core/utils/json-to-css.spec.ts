@@ -6,17 +6,17 @@ describe('JSONToCSS', () => {
 			':host': {
 				display: 'inline-block',
 				opacity: 0.5,
-				backgroundColor: '[bg]'
+				backgroundColor: '[bg]',
+				'& button': {
+					opacity: "[disabled ? 0 : 1]"
+				}
 			},
 			'*, *::before, *::after': {
 				boxSizing: 'border-box',
-			},
-			button: {
-				opacity: "[disabled ? 0 : 1]"
 			}
 		})).toBe(':host {display: inline-block;opacity: 0.5;background-color: [bg];} ' +
-			'*, *::before, *::after {box-sizing: border-box;} ' +
-			'button {opacity: [disabled ? 0 : 1];}')
+			':host button {opacity: [disabled ? 0 : 1];} ' +
+			'*, *::before, *::after {box-sizing: border-box;}')
 	});
 	
 	it('should handle @ declarations', () => {
@@ -45,9 +45,9 @@ describe('JSONToCSS', () => {
 			button: {
 				opacity: "[disabled ? 0 : 1]",
 				backgroundColor: '#222',
-				'& :hover': {
+				'&:hover': {
 					backgroundColor: '#000',
-					'& :active': {
+					'&:active': {
 						backgroundColor: '#666',
 					}
 				},

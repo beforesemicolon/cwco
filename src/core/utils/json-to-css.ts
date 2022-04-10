@@ -11,7 +11,7 @@ function getPropertyCSS(prop: string, value: CWCO.StylesheetObject, parentProp: 
 	prop = prop.trim();
 	
 	if(prop.startsWith('&')) {
-		cb(null, createPropertyBody(parentProp + prop.slice(1).trim(), value));
+		cb(null, createPropertyBody(parentProp + prop.slice(1), value));
 	} else if(prop.startsWith('@')) {
 		cb(null, createPropertyBody(prop, value))
 	} else if(typeof value === 'object') {
