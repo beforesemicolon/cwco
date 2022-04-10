@@ -11,13 +11,13 @@ function getPropertyCSS(prop: string, value: CWCO.StylesheetObject, parentProp: 
 	prop = prop.trim();
 	
 	if(prop.startsWith('&')) {
-		cb(null, createPropertyBody(parentProp + prop.slice(1).trim(), value));
+		cb(null, createPropertyBody(prop.replace(/&/g, parentProp), value));
 	} else if(prop.startsWith('@')) {
 		cb(null, createPropertyBody(prop, value))
 	} else if(typeof value === 'object') {
 		if (parentProp.startsWith('@')) {
 			cb(createPropertyBody(prop, value))
-		} else {
+		} else if(/^[^+~>]/i.test(prop)) {
 			cb(null, createPropertyBody(`${parentProp} ${prop}`, value))
 		}
 	} else {
