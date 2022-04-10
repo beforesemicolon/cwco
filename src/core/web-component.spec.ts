@@ -214,8 +214,7 @@ describe('WebComponent', () => {
 			expect(k.root?.innerHTML).toBe('<link rel="stylesheet " href="app.css"><style> :host {display: inline-block;}</style><style>:host {display: inline-block;}</style>')
 		});
 
-		it('should handle groped' +
-			' style with square brackets', () => {
+		it('should handle groped style with square brackets', () => {
 			class HStyle extends WebComponent {
 				colorVars = {
 					border: '#222'
@@ -251,7 +250,40 @@ describe('WebComponent', () => {
 					'background: #f4f4f4; ' +
 				'}</style>')
 		});
-
+		
+		it('should render object CSS and update on data changes', () => {
+			class IStyle extends WebComponent {
+				radius = 5;
+				
+				get stylesheet() {
+					return {
+						':host': {
+							display: 'inline-block'
+						},
+						button: {
+							boxSizing: 'border-box',
+							borderRadius: '[radius]px',
+							'&:disabled': {
+								opacity: 0.5,
+							}
+						}
+					}
+				}
+			}
+			
+			IStyle.register();
+			
+			const i = new IStyle();
+			
+			document.body.appendChild(i);
+			
+			expect(i.root?.innerHTML).toBe('<style class="i-style">:host {display: inline-block;} button {box-sizing: border-box;border-radius: 5px;} button:disabled {opacity: 0.5;}</style>');
+			
+			i.radius = 3;
+			
+			expect(i.root?.innerHTML).toBe('<style class="i-style">:host {display: inline-block;} button {box-sizing: border-box;border-radius: 3px;} button:disabled {opacity: 0.5;}</style>');
+		});
+		
 		it.todo('should update style when data or context changes')
 	});
 

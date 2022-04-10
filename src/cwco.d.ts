@@ -10,10 +10,10 @@ declare namespace CWCO {
 	}
 	
 	export interface StylesheetObject {
-		[k: string]: Partial<CSSStyleDeclaration> | StyleObject | number
+		[k: string]: Partial<CSSStyleDeclaration> | StylesheetObject | number
 	}
 	
-	export type Stylesheet = StylesheetObject | CSSRule['cssText'];
+	export type Stylesheet = StylesheetObject | string;
 	
 	export interface DirectiveValue {
 		name: string;
