@@ -132,6 +132,9 @@ describe('JSONToCSS', () => {
 					'&.loading': {
 						padding: '12px'
 					},
+					span: {
+						display: 'inline-block'
+					}
 				}
 			},
 			'*, *::before, *::after': {
@@ -142,6 +145,7 @@ describe('JSONToCSS', () => {
 			':host button:hover {background-color: #000;} ' +
 			':host button:hover:active {background-color: #666;} ' +
 			':host button.loading {padding: 12px;} ' +
+			':host button span {display: inline-block;} ' +
 			'*, *::before, *::after {box-sizing: border-box;}')
 	});
 })
