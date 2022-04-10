@@ -15,7 +15,11 @@ function getPropertyCSS(prop: string, value: CWCO.StylesheetObject, parentProp: 
 	} else if(prop.startsWith('@')) {
 		cb(null, createPropertyBody(prop, value))
 	} else if(typeof value === 'object') {
-		cb(createPropertyBody(prop, value))
+		if (parentProp.startsWith('@')) {
+			cb(createPropertyBody(prop, value))
+		} else {
+			cb(null, createPropertyBody(`${parentProp} ${prop}`, value))
+		}
 	} else {
 		cb(`${turnCamelToKebabCasing(prop)}: ${value};`);
 	}
