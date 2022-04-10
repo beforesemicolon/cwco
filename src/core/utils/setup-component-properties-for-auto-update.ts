@@ -8,13 +8,18 @@ export function setupComponentPropertiesForAutoUpdate(comp: CWCO.WebComponent, o
 	const properties: string[] = [];
 
 	for (let prop of Object.getOwnPropertyNames(comp)) {
+		// should not watch function properties
+		if (typeof comp[prop] === 'function') {
+			break;
+		}
+		
 		const attr = turnCamelToKebabCasing(prop);
 
 		// ignore private properties and $ properties as well as attribute properties
 		if (!directives.has(prop) && !/\$|_/.test(prop[0]) && !(comp.constructor as CWCO.WebComponentConstructor).observedAttributes.includes(attr)) {
 			// @ts-ignore
 			let value = comp[prop];
-
+			
 			properties.push(prop);
 
 			value = proxify(prop, value, () => {

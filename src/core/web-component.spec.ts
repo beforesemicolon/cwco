@@ -179,7 +179,7 @@ describe('WebComponent', () => {
 			document.body.appendChild(i);
 
 			expect(i.root?.innerHTML).toBe('')
-			expect(document.head.innerHTML).toBe('<link rel="stylesheet " href="app.css"><style class="e-style"> e-style {display: inline-block;}</style><style class="e-style">e-style {display: inline-block;}</style>')
+			expect(document.head.innerHTML).toBe('<link rel="stylesheet " href="app.css" class="e-style"><style class="e-style"> e-style {display: inline-block;}</style><style class="e-style">e-style {display: inline-block;}</style>')
 		});
 
 		it('should handle link stylesheet', () => {
@@ -214,8 +214,7 @@ describe('WebComponent', () => {
 			expect(k.root?.innerHTML).toBe('<link rel="stylesheet " href="app.css"><style> :host {display: inline-block;}</style><style>:host {display: inline-block;}</style>')
 		});
 
-		it('should handle groped' +
-			' style with square brackets', () => {
+		it('should handle groped style with square brackets', () => {
 			class HStyle extends WebComponent {
 				colorVars = {
 					border: '#222'
@@ -251,7 +250,40 @@ describe('WebComponent', () => {
 					'background: #f4f4f4; ' +
 				'}</style>')
 		});
-
+		
+		it('should render object CSS and update on data changes', () => {
+			class IStyle extends WebComponent {
+				radius = 5;
+				
+				get stylesheet() {
+					return {
+						':host': {
+							display: 'inline-block'
+						},
+						button: {
+							boxSizing: 'border-box',
+							borderRadius: '[radius]px',
+							'&:disabled': {
+								opacity: 0.5,
+							}
+						}
+					}
+				}
+			}
+			
+			IStyle.register();
+			
+			const i = new IStyle();
+			
+			document.body.appendChild(i);
+			
+			expect(i.root?.innerHTML).toBe('<style class="i-style">:host {display: inline-block;} button {box-sizing: border-box;border-radius: 5px;} button:disabled {opacity: 0.5;}</style>');
+			
+			i.radius = 3;
+			
+			expect(i.root?.innerHTML).toBe('<style class="i-style">:host {display: inline-block;} button {box-sizing: border-box;border-radius: 3px;} button:disabled {opacity: 0.5;}</style>');
+		});
+		
 		it.todo('should update style when data or context changes')
 	});
 
@@ -545,6 +577,36 @@ describe('WebComponent', () => {
 
 			expect(updateFn).toHaveBeenCalledTimes(1);
 		});
+		
+		it('should call onUpdate once when multiple properties change at once', () => {
+			const updateSpy = jest.fn();
+			
+			class UComp extends WebComponent {
+				prop1 = 12;
+				prop2 = 300;
+				prop3 = 0;
+				
+				onUpdate(...args: string[]) {
+					updateSpy(...args)
+				}
+				
+				do() {
+					this.prop1 = 21;
+					this.prop2 = 3;
+					this.prop3 = 100;
+				}
+			}
+			
+			UComp.register();
+			
+			const u = new UComp();
+			
+			document.body.appendChild(u);
+			
+			u.do();
+			
+			expect(updateSpy).toHaveBeenCalledTimes(3);
+		});
 	});
 
 	describe('update DOM', () => {
@@ -800,27 +862,27 @@ describe('WebComponent', () => {
 			s.data = 12;
 
 			expect(updateSpy).toHaveBeenCalledWith(12);
-			// updateSpy.mockClear()
-			//
-			// s.data = '{"x": 12}';
-			//
-			// expect(updateSpy).toHaveBeenCalledWith({x: 12});
-			// updateSpy.mockClear()
-			//
-			// s.data = {x: 12};
-			//
-			// expect(updateSpy).toHaveBeenCalledWith({x: 12});
-			// updateSpy.mockClear()
-			//
-			// s.data = new Set([12]);
-			//
-			// expect(updateSpy).toHaveBeenCalledWith(expect.any(Set));
-			// updateSpy.mockClear()
-			//
-			// s.data = () => 12
-			//
-			// expect(updateSpy).toHaveBeenCalledWith(expect.any(Function));
-			// updateSpy.mockClear()
+			updateSpy.mockClear()
+
+			s.data = '{"x": 12}';
+
+			expect(updateSpy).toHaveBeenCalledWith({x: 12});
+			updateSpy.mockClear()
+
+			s.data = {x: 12};
+
+			expect(updateSpy).toHaveBeenCalledWith({x: 12});
+			updateSpy.mockClear()
+
+			s.data = new Set([12]);
+
+			expect(updateSpy).toHaveBeenCalledWith(expect.any(Set));
+			updateSpy.mockClear()
+
+			s.data = () => 12
+
+			expect(updateSpy).toHaveBeenCalledWith(expect.any(Function));
+			updateSpy.mockClear()
 		});
 	})
 
@@ -842,7 +904,7 @@ describe('WebComponent', () => {
 						'onfocus="{this.focused = true}"></button>'
 				}
 
-				handleClick(event: Event, numb: number) {
+				handleClick = (event: Event, numb: number) => {
 					clickHandlerSpy(event, numb);
 				}
 			}
@@ -859,6 +921,12 @@ describe('WebComponent', () => {
 			s.root?.querySelector('button')?.focus();
 
 			expect(updateSpy).toHaveBeenCalledWith("focused", false, true);
+			
+			updateSpy.mockClear();
+			
+			s.handleClick = () => {};
+			
+			expect(updateSpy).not.toHaveBeenCalled();
 
 		});
 	});
@@ -940,7 +1008,7 @@ describe('WebComponent', () => {
 		});
 
 		it('should ', () => {
-			
+		
 		});
 	});
 
@@ -1001,6 +1069,30 @@ describe('WebComponent', () => {
 
 			expect(sSlot?.outerHTML).toBe('<slot>content</slot>')
 		})
+		
+		it('should handle nested', (done) => {
+			class SlotD extends WebComponent {
+				one = 10;
+				
+				get template() {
+					return '<slot></slot>'
+				}
+			}
+			
+			SlotD.register()
+			
+			document.body.innerHTML = '<slot-d>\n{one}\n</slot-d>';
+			
+			setTimeout(() => {
+				const s = document.body.children[0] as WebComponent;
+				const sSlot = s.root?.children[0];
+				
+				expect(sSlot?.outerHTML).toBe('<slot></slot>');
+				expect((s.childNodes[0] as Element).assignedSlot).toEqual(sSlot);
+				expect(s.childNodes[0].textContent?.trim()).toEqual('10');
+				done()
+			}, 0)
+		});
 	})
 
 	describe('directives', () => {
@@ -1100,7 +1192,7 @@ describe('WebComponent', () => {
 			});
 		});
 
-		describe('should handle attr', () => {
+		describe('attr', () => {
 			it('should handle class attribute', () => {
 				class AttrA extends WebComponent {
 					check1 = true;
@@ -1241,7 +1333,7 @@ describe('WebComponent', () => {
 			});
 		});
 
-		describe('should handle if', () => {
+		describe('if', () => {
 			it('should render element and react to changes after', () => {
 				class IfA extends WebComponent {
 					check = true;
@@ -1372,7 +1464,7 @@ describe('WebComponent', () => {
 			it.todo('should handle nested component ifs');
 		});
 
-		describe('should handle repeat', () => {
+		describe('repeat', () => {
 			it('should repeat element based on number', () => {
 				class RepeatA extends WebComponent {
 					count: any = 3;

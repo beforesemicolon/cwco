@@ -1,4 +1,4 @@
-import {$} from "../core/metadata";
+import {$} from "../core/$";
 import {WebComponent} from "../core/web-component";
 import {NodeTrack} from "./node-track";
 import {trackNode} from "./track-node";

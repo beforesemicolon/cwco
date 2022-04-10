@@ -2,7 +2,7 @@
 // anything later on
 import '../directives';
 import booleanAttr from './boolean-attributes.json';
-import {$} from "./metadata";
+import {$} from "./$";
 import {parse} from '../parser/parse';
 import {setComponentPropertiesFromObservedAttributes} from './utils/set-component-properties-from-observed-attributes';
 import {setupComponentPropertiesForAutoUpdate} from './utils/setup-component-properties-for-auto-update';
@@ -15,6 +15,7 @@ import {resolveHtmlEntities} from "../utils/resolve-html-entities";
 import {CWCO} from "../cwco";
 import {NodeTrack} from "../tracker/node-track";
 import {trackNodeTree} from "../tracker/track-node-tree";
+import {JSONToCSS} from "./utils/json-to-css";
 
 /**
  * a extension on the native web component API to simplify and automate most of the pain points
@@ -43,7 +44,6 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 		meta.clearAttr = false;
 		meta.selfTrack = selfTrack;
 		meta.externalNodes = []; // nodes moved outside the component that needs to be updated on ctx change
-		meta.unsubscribeCtx = () => {};
 		meta.attrPropsMap = observedAttributes.reduce((map, attr) => ({
 			...map,
 			[attr]: turnKebabToCamelCasing(attr)
@@ -102,25 +102,35 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	 * @param tagName
 	 */
 	static register(tagName?: string | undefined) {
-		tagName = typeof tagName === 'string' && tagName
-			? tagName
-			: typeof this.tagName === 'string' && this.tagName
-				? this.tagName
-				: turnCamelToKebabCasing(this.name);
-		
-		this.tagName = tagName;
-		
-		if (!customElements.get(tagName)) {
-			customElements.define(tagName, this);
+		if (this.name !== 'WebComponent') {
+			tagName = typeof tagName === 'string' && tagName
+				? tagName
+				: typeof this.tagName === 'string' && this.tagName
+					? this.tagName
+					: turnCamelToKebabCasing(this.name);
+			
+			this.tagName = tagName;
+			
+			if (!customElements.get(tagName)) {
+				customElements.define(tagName, this);
+			}
+			
+			return;
 		}
+		
+		console.warn("Can't 'register' 'WebComponent' class itself")
 	}
 	
 	/**
 	 * registers a list of provided web component classes
-	 * @param components
+	 * @param comps
 	 */
-	static registerAll(components: Array<CWCO.WebComponentConstructor>) {
-		components.forEach(comp => comp.register());
+	static registerAll(comps: Array<CWCO.WebComponentConstructor>) {
+		if (this.name === 'WebComponent') {
+			return comps.forEach(comp => comp.register());
+		}
+		
+		console.warn("Please use 'WebComponent' to 'registerAll'")
 	}
 	
 	/**
@@ -140,12 +150,12 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	/**
 	 * style for the component whether inside the style tag, as object or straight CSS string
 	 */
-	get stylesheet(): string {
+	get stylesheet(): CWCO.Stylesheet {
 		return '';
 	};
 	
 	/**
-	 * whether or not the component should use the real slot element or mimic its behavior
+	 * whether the component should use the real slot element or mimic its behavior
 	 * when rendering template
 	 */
 	get customSlot() {
@@ -230,7 +240,8 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				Object.freeze(this.$properties);
 				
 				const hasShadowRoot = (this.constructor as CWCO.WebComponentConstructor).mode !== 'none';
-				let temp: string = this.template;
+				const stylesheet = this.stylesheet;
+				let temp = this.template;
 				let style = '';
 
 				if (!temp && this.templateId) {
@@ -239,8 +250,10 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 					temp = t?.nodeName === 'TEMPLATE' ? t.innerHTML : temp;
 				}
 
-				if (mode !== 'none' || !document.head.querySelectorAll(`.${tagName}`.toLowerCase()).length) {
-					style = getStyleString(this.stylesheet, tagName.toLowerCase(), hasShadowRoot);
+				if (stylesheet && mode !== 'none' || !getLinkAndStyleTagsFromHead(tagName).length) {
+					style = typeof stylesheet === 'object'
+						? `<style class="${tagName}">${JSONToCSS(stylesheet)}</style>`
+						: getStyleString(stylesheet, tagName.toLowerCase(), hasShadowRoot);
 				}
 
 				const contentNode = parse(resolveHtmlEntities(style + temp));
@@ -270,8 +283,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				$.get(this).parsed = true;
 				root.appendChild(contentNode);
 			}
-
-
+			
 			this.onMount();
 		} catch (e) {
 			this.onError(e as ErrorEvent);
@@ -287,7 +299,6 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	disconnectedCallback() {
 		try {
 			$.get(this).mounted = false;
-			$.get(this).unsubscribeCtx();
 			this.onDestroy();
 		} catch (e) {
 			this.onError(e as Error)
@@ -332,12 +343,9 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	 * updates any already tracked node with current component data including context and node level data.
 	 */
 	forceUpdate() {
-		cancelAnimationFrame($.get(this).updateFrame);
-		$.get(this).updateFrame = requestAnimationFrame(() => {
-			$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
-				t.updateNode();
-			})
-		});
+		$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
+			t.updateNode();
+		})
 	}
 	
 	adoptedCallback() {
@@ -360,5 +368,12 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	onError(error: ErrorEvent | Error) {
 		console.error(this.constructor.name, error);
 	}
+}
+
+function getLinkAndStyleTagsFromHead(tagName: string) {
+	return [
+		...Array.from(document.head.querySelectorAll(`link.${tagName}`.toLowerCase())),
+		...Array.from(document.head.querySelectorAll(`style.${tagName}`.toLowerCase()))
+	]
 }
 

@@ -9,6 +9,12 @@ declare namespace CWCO {
 		}
 	}
 	
+	export interface StylesheetObject {
+		[k: string]: Partial<CSSStyleDeclaration> | StylesheetObject | number
+	}
+	
+	export type Stylesheet = StylesheetObject | string;
+	
 	export interface DirectiveValue {
 		name: string;
 		value: string;
@@ -80,7 +86,7 @@ declare namespace CWCO {
 		readonly root: HTMLElement | ShadowRoot | null;
 		readonly mounted: boolean;
 		readonly template: string;
-		readonly stylesheet: string;
+		readonly stylesheet: Stylesheet;
 		readonly customSlot: boolean;
 		
 		readonly $context: ObjectLiteral;

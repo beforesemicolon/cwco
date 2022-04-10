@@ -1,6 +1,6 @@
 import {CWCO} from "../cwco";
 import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
-import {$} from "../core/metadata";
+import {$} from "../core/$";
 import {resolveExecutables} from "./utils/resolve-executables";
 import {isPrimitive} from "../utils/is-primitive";
 import {extractExecutableSnippetFromString} from "./utils/extract-executable-snippet-from-string";
@@ -8,6 +8,7 @@ import {evaluateStringInComponentContext} from "./utils/evaluate-string-in-compo
 import {trackNodeTree} from "./track-node-tree";
 
 export class NodeTrack {
+	#compiled = false;
 	childNodeTracks = new Set<NodeTrack>();
 	anchor: HTMLElement | Node | Comment | Array<Element>;
 	anchorNodeTrack: NodeTrack | null = null;
@@ -40,6 +41,10 @@ export class NodeTrack {
 					: this.anchor
 			)?.$context) || {};
 	}
+	
+	get compiled() {
+		return this.#compiled;
+	}
 
 	updateNode(force = false) {
 		// if it is a text node
@@ -60,9 +65,6 @@ export class NodeTrack {
 					this.anchor = dirNode;
 
 					if (dirNode !== this.node) {
-						this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
-							t.updateNode();
-						})
 						return;
 					}
 				}
@@ -80,7 +82,7 @@ export class NodeTrack {
 			// be force updated if force is True since
 			// there is nothing that will trigger update inside the
 			// component like attribute tracks would
-			if (empty && force && this.node.nodeName.includes('-')) {
+			if (empty && force && this.node.nodeName.includes('-') && typeof (this.node as CWCO.WebComponent).forceUpdate == 'function') {
 				(this.node as CWCO.WebComponent).forceUpdate();
 			}
 
@@ -88,6 +90,8 @@ export class NodeTrack {
 				t.updateNode(force);
 			})
 		}
+		
+		this.#compiled = true;
 	}
 
 	private _removeNodeDirectiveAttribute(n: Node | HTMLElement) {
@@ -210,6 +214,16 @@ export class NodeTrack {
 		} else {
 			this._removeNodeDirectiveAttribute(dirNode);
 			trackNodeTree(dirNode as Node, this.anchorNodeTrack as NodeTrack, this.component)
+		}
+		
+		this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
+			t.updateNode();
+		})
+
+		if (dirNode !== this.node) {
+			this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
+				t.updateNode();
+			})
 		}
 
 		let dirIsArray = Array.isArray(dirNode);
