@@ -49,9 +49,9 @@ describe('JSONToCSS', () => {
 			'@media screen and (max-width: 760px)': {
 				button: {
 					opacity: "[disabled ? 0 : 1]",
-					'& :hover': {
+					'&:hover': {
 						backgroundColor: '#000',
-						'& :active': {
+						'&:active': {
 							backgroundColor: '#666',
 						}
 					},
@@ -72,9 +72,9 @@ describe('JSONToCSS', () => {
 				'@media screen and (max-width: 760px)': {
 					button: {
 						opacity: "[disabled ? 0 : 1]",
-						'& :hover': {
+						'&:hover': {
 							backgroundColor: '#000',
-							'& :active': {
+							'&:active': {
 								backgroundColor: '#666',
 							}
 						},
@@ -123,13 +123,13 @@ describe('JSONToCSS', () => {
 				backgroundColor: '[bg]',
 				button: {
 					opacity: "[disabled ? 0 : 1]",
-					'& :hover': {
+					'&:hover': {
 						backgroundColor: '#000',
-						'& :active': {
+						'&:active': {
 							backgroundColor: '#666',
 						}
 					},
-					'&.loading': {
+					'& + p': {
 						padding: '12px'
 					},
 					span: {
@@ -144,8 +144,22 @@ describe('JSONToCSS', () => {
 			':host button {opacity: [disabled ? 0 : 1];} ' +
 			':host button:hover {background-color: #000;} ' +
 			':host button:hover:active {background-color: #666;} ' +
-			':host button.loading {padding: 12px;} ' +
+			':host button + p {padding: 12px;} ' +
 			':host button span {display: inline-block;} ' +
 			'*, *::before, *::after {box-sizing: border-box;}')
+	});
+	
+	it('should handle nested selector names', () => {
+		expect(JSONToCSS({
+			'.box': {
+				display: 'inline-block',
+				'&__small': {
+					width: '50px',
+				},
+				'&__large': {
+					width: '150px',
+				}
+			}
+		})).toBe('.box {display: inline-block;} .box__small {width: 50px;} .box__large {width: 150px;}')
 	});
 })
