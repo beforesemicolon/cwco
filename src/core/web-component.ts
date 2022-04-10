@@ -149,7 +149,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	/**
 	 * style for the component whether inside the style tag, as object or straight CSS string
 	 */
-	get stylesheet(): string {
+	get stylesheet() {
 		return '';
 	};
 	
