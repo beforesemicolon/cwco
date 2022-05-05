@@ -10,13 +10,14 @@ export function setupComponentPropertiesForAutoUpdate(comp: CWCO.WebComponent, o
 	for (let prop of Object.getOwnPropertyNames(comp)) {
 		// should not watch function properties
 		if (typeof comp[prop] === 'function') {
-			break;
+			continue;
 		}
 		
-		const attr = turnCamelToKebabCasing(prop);
-
-		// ignore private properties and $ properties as well as attribute properties
-		if (!directives.has(prop) && !/\$|_/.test(prop[0]) && !(comp.constructor as CWCO.WebComponentConstructor).observedAttributes.includes(attr)) {
+		if (
+			!directives.has(prop) && // cannot be a directive
+			!comp.$properties.includes(prop) && // cannot be default properties of the component
+			!(comp.constructor as CWCO.WebComponentConstructor).observedAttributes.includes(turnCamelToKebabCasing(prop)) // cannot be one of the attributes
+		) {
 			// @ts-ignore
 			let value = comp[prop];
 			
@@ -32,15 +33,19 @@ export function setupComponentPropertiesForAutoUpdate(comp: CWCO.WebComponent, o
 				},
 				set(newValue) {
 					const oldValue = value;
-
-					if (!isPrimitive(newValue)) {
-						value = proxify(prop, newValue, () => {
-							onUpdate(prop, oldValue, newValue);
-						});
-						onUpdate(prop, oldValue, value);
-					} else if(oldValue !== newValue) {
-						value = newValue;
-						onUpdate(prop, oldValue, value);
+					
+					// in case a property becomes a function later
+					// we don't want to handle it as a property
+					if (typeof newValue !== 'function') {
+						if (!isPrimitive(newValue)) {
+							value = proxify(prop, newValue, () => {
+								onUpdate(prop, oldValue, newValue);
+							});
+							onUpdate(prop, oldValue, value);
+						} else if(oldValue !== newValue) {
+							value = newValue;
+							onUpdate(prop, oldValue, value);
+						}
 					}
 				}
 			})

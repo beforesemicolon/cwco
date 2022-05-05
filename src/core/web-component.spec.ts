@@ -881,7 +881,7 @@ describe('WebComponent', () => {
 
 			s.data = () => 12
 
-			expect(updateSpy).toHaveBeenCalledWith(expect.any(Function));
+			expect(updateSpy).not.toHaveBeenCalled();
 			updateSpy.mockClear()
 		});
 	})
@@ -1975,7 +1975,77 @@ describe('WebComponent', () => {
 
 		jest.resetAllMocks()
 	});
-
+	
+	describe('should ignore function properties', () => {
+		it('when defined at start', () => {
+			const onUpdate = jest.fn();
+			
+			class FnCompA extends WebComponent {
+				fn = () => {};
+				numb = 12;
+				
+				onUpdate(name: string, oldValue: unknown, newValue: unknown) {
+					onUpdate(name, oldValue, newValue);
+				}
+			}
+			
+			FnCompA.register();
+			
+			const comp = new FnCompA();
+			
+			document.body.appendChild(comp);
+			
+			expect(comp.$properties).toEqual([
+				"$context",
+				"$refs",
+				"templateId",
+				"_childNodes",
+				"$properties",
+				"numb"
+			]);
+			
+			// @ts-ignore
+			comp.fn = 12;
+			
+			expect(onUpdate).not.toHaveBeenCalled()
+			
+		});
+		
+		it('when defined later', () => {
+			const onUpdate = jest.fn();
+			
+			class FnCompB extends WebComponent {
+				// @ts-ignore
+				fn: undefined;
+				numb = 12;
+				
+				onUpdate(name: string, oldValue: unknown, newValue: unknown) {
+					onUpdate(name, oldValue, newValue);
+				}
+			}
+			
+			FnCompB.register();
+			
+			const comp = new FnCompB();
+			
+			document.body.appendChild(comp);
+			
+			expect(comp.$properties).toEqual([
+				"$context",
+				"$refs",
+				"templateId",
+				"_childNodes",
+				"$properties",
+				"numb"
+			]);
+			
+			// @ts-ignore
+			comp.fn = () => {};
+			
+			expect(onUpdate).not.toHaveBeenCalled()
+		});
+	});
+	
 	describe('should deeply propagate changes', () => {
 		const updateSpy = jest.fn();
 

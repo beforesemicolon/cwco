@@ -23,7 +23,7 @@ import {JSONToCSS} from "./utils/json-to-css";
  */
 export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	readonly $refs: CWCO.Refs = {};
-	$properties: Array<string> = ['$context', '$refs'];
+	$properties: Array<string> = ['$context', '$refs', 'templateId', '_childNodes', '$properties'];
 	/**
 	 * the id of the template tag placed in the body of the document which contains the template content
 	 */

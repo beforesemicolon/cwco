@@ -1,7 +1,8 @@
 import {setupComponentPropertiesForAutoUpdate} from './setup-component-properties-for-auto-update';
+import {WebComponent} from "../web-component";
 
 describe('setupComponentPropertiesForAutoUpdate', () => {
-	class Comp {
+	class PropComp extends WebComponent {
 		static observedAttributes = ['sample-test'];
 
 		sampleTest = 12;
@@ -14,21 +15,14 @@ describe('setupComponentPropertiesForAutoUpdate', () => {
 
 		set write(val: any) {}
 	}
+	
+	PropComp.register()
 
 	it('should change only properties to getter and setter as long as they are not observed attributes', () => {
-		const comp = new Comp();
+		const comp = new PropComp();
 		const onUpdate = jest.fn();
 
 		setupComponentPropertiesForAutoUpdate(comp as any, onUpdate)
-
-		expect(comp).toEqual({
-			"sampleTest": 12,
-			"testSample": "",
-			"x": [
-				12,
-				45
-			]
-		});
 
 		comp.sampleTest = 30;
 
