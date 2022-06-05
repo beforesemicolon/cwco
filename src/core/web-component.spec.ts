@@ -1785,6 +1785,31 @@ describe('WebComponent', () => {
 					'<div name="C"><small-r value="c"></small-r></div>' +
 					'<div name="E"><!-- if: false --></div>')
 			})
+			
+			it('should render comment when list is updated empty twice on mount', () => {
+				class RepeatG extends WebComponent {
+					list: any = [];
+					
+					onMount() {
+						this.list = [];
+					}
+					
+					get template() {
+						return '<li repeat="list">{$item}</li>'
+					}
+				}
+				
+				RepeatG.register();
+				const s = new RepeatG();
+				
+				document.body.appendChild(s);
+				
+				expect(s.root?.innerHTML).toBe('<!--<li repeat="list">{$item}</li>-->');
+				
+				s.list = ['one', 'two'];
+
+				expect(s.root?.innerHTML).toBe('<li>one</li><li>two</li>')
+			});
 		});
 
 		describe('should allow mix of directives', () => {
