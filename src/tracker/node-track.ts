@@ -59,11 +59,18 @@ export class NodeTrack {
 
 			for (let t of this.tracks.directive) {
 				const dirNode = this._updateNodeDirective(t);
-
+				
 				if (dirNode) {
 					this._swapNodeAndDirNode(dirNode);
-					this.anchor = dirNode;
-
+					// the anchor cannot be an empty array otherwise
+					// on the next update it won't be able to be replaced
+					this.anchor = !Array.isArray(dirNode) || dirNode.length
+						? dirNode
+						: this.anchorNodeTrack?.node;
+					
+					// if the node being displayed is not the original node, meaning
+					// it was replaced by a new node(s), we don't need to continue
+					// update for the current node off the view since it's not visible
 					if (dirNode !== this.node) {
 						return;
 					}
@@ -215,10 +222,6 @@ export class NodeTrack {
 			this._removeNodeDirectiveAttribute(dirNode);
 			trackNodeTree(dirNode as Node, this.anchorNodeTrack as NodeTrack, this.component)
 		}
-		
-		this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
-			t.updateNode();
-		})
 
 		if (dirNode !== this.node) {
 			this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
@@ -240,9 +243,9 @@ export class NodeTrack {
 		}
 
 		const anchorIsArray = Array.isArray(this.anchor);
-		// in case the anchor node is currently empty, it means it had a anchor
+		// in case the anchor node is currently empty, it means it had an anchor
 		// node comment render instead as the above if statement make sure of.
-		// in that regard we need to use so we can replace whats it is currently
+		// in that regard we need to use, so we can replace what's it is currently
 		// on the dom as an anchor
 		const anchorEl = anchorIsArray && !(this.anchor as Array<Element>).length
 			? (this.anchorNodeTrack as NodeTrack).node as Comment
