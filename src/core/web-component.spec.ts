@@ -929,6 +929,42 @@ describe('WebComponent', () => {
 			expect(updateSpy).not.toHaveBeenCalled();
 
 		});
+		
+		it('should detect data changes inside event handlers from repeats', () => {
+			const clickHandlerSpy = jest.fn();
+			
+			class EventB extends WebComponent {
+				labels = ['one', 'two'];
+				
+				get template() {
+					return '<button repeat="labels" onclick="handleClick($item)">click {$item}</button>'
+				}
+				
+				handleClick = (numb: number) => {
+					clickHandlerSpy(numb);
+				}
+			}
+			
+			EventB.register();
+			const s = new EventB();
+			
+			document.body.appendChild(s);
+			
+			s.root?.querySelector('button')?.click();
+			
+			expect(s.root?.querySelector('button')?.outerHTML).toBe('<button>click one</button>')
+			expect(clickHandlerSpy).toHaveBeenCalledWith('one');
+			
+			clickHandlerSpy.mockClear()
+			
+			s.labels = ['1', '2'];
+			
+			s.root?.querySelector('button')?.click();
+			
+			expect(s.root?.querySelector('button')?.outerHTML).toBe('<button>click 1</button>')
+			expect(clickHandlerSpy).toHaveBeenCalledWith('1');
+			
+		});
 	});
 
 	describe('context', () => {

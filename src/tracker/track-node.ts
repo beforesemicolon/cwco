@@ -87,7 +87,7 @@ export const trackNode = (node: Node | HTMLElement, component: CWCO.WebComponent
 			(node as HTMLElement).removeAttribute(attribute.name);
 
 			if (!fn) {
-				node.addEventListener(eventName, getEventHandlerFunction(component, $.get(node).$context, attribute));
+				node.addEventListener(eventName, getEventHandlerFunction(component, node, attribute));
 			}
 		});
 
