@@ -73,6 +73,8 @@ declare namespace CWCO {
 		property: Track[];
 	}
 	
+	export type MountUnSubscriber = () => void;
+	
 	export type ObjectLiteral = {[key: string]: any};
 	
 	export type ObserverCallback = (ctx: ObjectLiteral) => void;
@@ -96,7 +98,7 @@ declare namespace CWCO {
 		
 		updateContext: (ctx: ObjectLiteral) => void;
 		
-		onMount: () => void;
+		onMount: () => MountUnSubscriber | void;
 		onDestroy: () => void;
 		onAdoption: () => void;
 		onUpdate: (name: string, oldValue: string, newValue: string) => void;

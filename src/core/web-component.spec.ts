@@ -429,6 +429,7 @@ describe('WebComponent', () => {
 
 	describe('liveCycles', () => {
 		const mountFn = jest.fn();
+		const mountUnSubFn = jest.fn();
 		const destroyFn = jest.fn();
 		const updateFn = jest.fn();
 		const adoptionFn = jest.fn();
@@ -443,6 +444,8 @@ describe('WebComponent', () => {
 
 			onMount() {
 				mountFn();
+				
+				return mountUnSubFn;
 			}
 
 			onDestroy() {
@@ -478,7 +481,19 @@ describe('WebComponent', () => {
 			adoptionFn.mockClear();
 			errorFn.mockClear();
 		})
-
+		
+		it('should mount unsubscribe on destroy', () => {
+			document.body.appendChild(k);
+			
+			expect(mountFn).toHaveBeenCalledTimes(1);
+			
+			k.remove();
+			
+			expect(destroyFn).toHaveBeenCalledTimes(1);
+			expect(mountUnSubFn).toHaveBeenCalledTimes(1);
+			
+		});
+		
 		it('should use property values set before mounted if same attribute is not set', () => {
 			k.sample = 'new test value';
 

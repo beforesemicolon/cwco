@@ -48,6 +48,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 			...map,
 			[attr]: turnKebabToCamelCasing(attr)
 		}), {} as CWCO.ObjectLiteral);
+		meta.mountUnsubscribe = () => {};
 
 		if (mode !== 'none') {
 			$.get(this).root = this.attachShadow({mode, delegatesFocus});
@@ -284,7 +285,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				root.appendChild(contentNode);
 			}
 			
-			this.onMount();
+			$.get(this).mountUnsubscribe = this.onMount();
 		} catch (e) {
 			this.onError(e as ErrorEvent);
 		}
@@ -293,12 +294,14 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	/**
 	 * livecycle callback for when the element is attached to the DOM
 	 */
-	onMount() {
+	onMount(): CWCO.MountUnSubscriber | void {
 	}
 	
 	disconnectedCallback() {
 		try {
+			const {mountUnsubscribe} = $.get(this);
 			$.get(this).mounted = false;
+			typeof mountUnsubscribe === 'function' && mountUnsubscribe();
 			this.onDestroy();
 		} catch (e) {
 			this.onError(e as Error)
