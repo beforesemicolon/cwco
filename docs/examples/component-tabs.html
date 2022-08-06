@@ -32,28 +32,23 @@
 const {WebComponent, ContextProviderComponent} = window;
 
 class TabsContainer extends WebComponent {
-	currentTabInfo = {
-	  node: null,
-	  index: 0,
-	  width: 0,
-	  left: 0,
-	}
-	#contents = []
+  #activeTab = null;
+  #activeTabContent = null;
 
-	get template() {
-	  return `
+  get template() {
+    return `
 			<div class="tabs-header" role="tablist">
 				<slot name="tab-head"></slot>
-				<span class="current-tab-indicator"></span>
+				<span class="current-tab-indicator" ref="indicator"></span>
 			</div>
 			<div class="tabs-content-container">
 				<slot name="tab-content"></slot>
 			</div>
 		`;
-	}
+  }
 
-	get stylesheet() {
-	  return `
+  get stylesheet() {
+    return `
 			<style>
 				:host {
 					display: flex;
@@ -81,98 +76,98 @@ class TabsContainer extends WebComponent {
 				:host .current-tab-indicator {
 					display: inline-block;
 					height: 2px;
-					width: [currentTabInfo.width];
+					width: 0;
 					background: #222;
 					position: absolute;
 					bottom: 0;
-					left: [currentTabInfo.left];
+					left: 0;
 					transition: left 0.3s ease, width 0.3s ease;
 				}
 			</style>
 		`;
-	}
+  }
 
-	onMount() {
-	  const heads = this.querySelectorAll('[slot="tab-head"]');
-	  this.#contents = this.querySelectorAll('[slot="tab-content"]');
+  onMount() {
+    this.updateContext({
+      activateTab: this.activateTab.bind(this)
+    })
+    setTimeout(() => {
+      this.#activeTab = this.querySelector('tab-head[active="true"]');
 
-	  heads.forEach((el, index) => {
-	    if (el.getAttribute('active') === 'true') {
-	      this.currentTabInfo = {
-	        node: el,
-	        contentNode: this.#contents[index],
-	        index: index,
-	        width: el.offsetWidth + 'px',
-	        left: el.offsetLeft + 'px',
-	      }
-	    }
+      if (this.#activeTab) {
+        this.#activeTabContent = this.querySelector(`[id="${this.#activeTab.getAttribute('content-id')}"]`);
+        this.#activeTabContent.setAttribute('active', 'true');
+        this.updateIndicator();
+      }
+    }, 0)
+  }
 
-	    el.addEventListener('click', () => this.activateTab(el, index));
-	  })
+  updateIndicator() {
+    const {indicator} = this.$refs;
 
-	  this.#contents.forEach(el => {
-	    el.setAttribute('active', 'false');
-	  })
+    indicator.style.left = this.#activeTab.offsetLeft + 'px';
+    indicator.style.width = this.#activeTab.offsetWidth + 'px';
+  }
 
-	  const {node, index} = this.currentTabInfo;
+  activateTab(target, index) {
+    if (target.nodeName === 'TAB-HEAD') {
+      if(!this.#activeTab) {
+        this.#activeTab = target;
+      }
 
-	  if (node) {
-	    this.activateTab(node, index)
-	  } else {
-	    this.activateTab(heads[0], 0)
-	  }
-	}
+      const contentId = target.getAttribute('content-id');
+      const content = this.querySelector(`[id="${contentId}"]`);
 
-	activateTab(el, index) {
-	  if (this.currentTabInfo.node) {
-	    this.currentTabInfo.node.setAttribute('active', 'false');
-	    this.currentTabInfo.contentNode.setAttribute('active', 'false');
-	  }
+      if (content) {
+        if(!this.#activeTabContent) {
+          this.#activeTabContent = content;
+        }
 
-	  this.currentTabInfo = {
-	    node: el,
-	    contentNode: this.#contents[index],
-	    index: index,
-	    width: el.offsetWidth + 'px',
-	    left: el.offsetLeft + 'px',
-	  }
+        this.#activeTab.setAttribute('active', 'false');
+        target.setAttribute('active', 'true');
+        this.#activeTab = target;
 
-	  this.currentTabInfo.node.setAttribute('active', 'true');
-	  this.currentTabInfo.contentNode.setAttribute('active', 'true');
+        this.#activeTabContent.setAttribute('active', 'false');
+        content.setAttribute('active', 'true');
+        this.#activeTabContent = content;
 
-	  this.dispatchEvent(new CustomEvent('tabchange', {
-	    detail: {
-	      index: this.currentTabInfo.index,
-	    }
-	  }));
-	}
+        this.updateIndicator();
+
+        this.dispatchEvent(new CustomEvent('tabchange', {
+          detail: {
+            index
+          }
+        }))
+      }
+    }
+  }
 }
 
 class TabHead extends WebComponent {
-	static observedAttributes = [
-	  'active',
-	  'id',
-	  'content-id'
-	];
+  static observedAttributes = [
+    'active',
+    'id',
+    'content-id'
+  ];
 
-	constructor() {
-	  super();
+  onMount() {
+    this.setAttribute('slot', 'tab-head');
+    this.$context.activateTab(this, this.$context.$key);
+  }
 
-	  this.setAttribute('slot', 'tab-head');
-	}
-
-	get template() {
-	  return `<button
+  get template() {
+    return `<button
 			class="tab-head"
 			role="tab"
 			aria-selected="{active}"
 			aria-controls="{contentId}"
 			attr.tabindex="-1, !active"
+			onclick="this.$context.activateTab(this, this.$context.$key)"
 			><slot></slot></button>`
-	}
+  }
 
-	get stylesheet() {
-	  return `
+  get stylesheet() {
+    return `
 			<style>
 				:host {
 					display: inline-block;
@@ -202,33 +197,31 @@ class TabHead extends WebComponent {
 				}
 			</style>
 		`;
-	}
+  }
 }
 
 class TabContent extends WebComponent {
-	static observedAttributes = [
-	  'active',
-	  'id',
-	  'tab-id',
-	];
+  static observedAttributes = [
+    'active',
+    'id',
+    'tab-id',
+  ];
 
-	constructor() {
-	  super();
+  onMount() {
+    this.setAttribute('slot', 'tab-content');
+  }
 
-	  this.setAttribute('slot', 'tab-content');
-	}
-
-	get template() {
-	  return `<div
+  get template() {
+    return `<div
 			class="tab-content"
 			tabindex="0"
 			role="tabpanel"
 			id="{id}"
 			aria-labelledby="{tabId}"><slot></slot></div>`
-	}
+  }
 
-	get stylesheet() {
-	  return `
+  get stylesheet() {
+    return `
 			<style>
 				:host {
 					display: none;
@@ -247,12 +240,12 @@ class TabContent extends WebComponent {
 				}
 			</style>
 		`;
-	}
+  }
 }
 
-TabHead.register();
-TabContent.register();
-TabsContainer.register();
+TabHead.bootstrap();
+TabContent.bootstrap();
+TabsContainer.bootstrap();
 
 </script>
 </body>

@@ -3,7 +3,7 @@ import {WebComponent} from "../core/web-component";
 
 describe('Ref Directive', () => {
 	class TestComp extends WebComponent {}
-	TestComp.register();
+	TestComp.bootstrap();
 
 	const dir = new Ref(new TestComp());
 

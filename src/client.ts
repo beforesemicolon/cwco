@@ -1,4 +1,5 @@
-// cwco, copyright (c) by Elson Correia / Before Semicolon
+// cwco, copyright (c) by Before Semicolon
+// author: Elson Correia
 // Distributed under an MIT license: https://github.com/beforesemicolon/cwco/blob/master/LICENSE
 import {WebComponent} from './core/web-component';
 import {Directive} from './core/directive';

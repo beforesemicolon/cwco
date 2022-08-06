@@ -4,6 +4,7 @@ import {slotTag} from "../tags/slot.tag";
 import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
 import {NodeTrack} from "./node-track";
 import {trackNode} from "./track-node";
+import {registry} from "../core/registry";
 
 export const trackNodeTree = (node: Node | CWCO.WebComponent | HTMLElement, ancestorNodeTrack: NodeTrack, component: CWCO.WebComponent) => {
 	const {nodeName, nodeValue, childNodes, nodeType} = node;
@@ -45,6 +46,13 @@ export const trackNodeTree = (node: Node | CWCO.WebComponent | HTMLElement, ance
 			$.get(node).track = nodeTrack;
 			ancestorNodeTrack.childNodeTracks.add(nodeTrack);
 			ancestorNodeTrack = nodeTrack; // continue collecting for this node track
+		}
+
+		const lowerNodeName = nodeName.toLowerCase();
+
+		if (registry.has(lowerNodeName)) {
+			customElements.define(lowerNodeName, registry.get(lowerNodeName));
+			registry.delete(lowerNodeName);
 		}
 
 		// no need to continue for inside these tags either because:

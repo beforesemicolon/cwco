@@ -28,7 +28,7 @@ class SearchField extends WebComponent {
 			<label aria-label="search field">
 				<input
 					type="text"
-					value="{value}"
+					bind.value="{value}"
 					attr.placeholder="{placeholder}, placeholder"
 					attr.disabled="disabled"
 					attr.readonly="readonly"
@@ -128,7 +128,7 @@ class SearchField extends WebComponent {
 	}
 }
 
-SearchField.register();
+SearchField.bootstrap();
 
 </script>
 </body>

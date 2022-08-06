@@ -1,6 +1,6 @@
 {
   "name": "cwco",
-  "version": "1.7.0",
+  "version": "1.8.0-beta",
   "description": "Powerful and Fast Web Component Library with a Simple API",
   "main": "dist/index.js",
   "scripts": {

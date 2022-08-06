@@ -9,7 +9,7 @@ describe('ContextProviderComponent', () => {
 				static mode = ShadowRootModeExtended.OPEN;
 			}
 
-			SlotC.register();
+			SlotC.bootstrap();
 
 			document.body.innerHTML = '<slot-c><p>one</p><p>two</p></slot-c>';
 
@@ -21,7 +21,7 @@ describe('ContextProviderComponent', () => {
 		it('should render plain slot content WITHOUT shadow root', () => {
 			class SlotD extends ContextProviderComponent {}
 
-			SlotD.register();
+			SlotD.bootstrap();
 
 			document.body.innerHTML = '<slot-d><p>one</p><p>two</p></slot-d>';
 
@@ -39,7 +39,7 @@ describe('ContextProviderComponent', () => {
 				}
 			}
 
-			SlotE.register();
+			SlotE.bootstrap();
 
 			document.body.innerHTML = '<slot-e><p>one</p><p>two</p></slot-e>';
 
@@ -61,7 +61,7 @@ describe('ContextProviderComponent', () => {
 				}
 			}
 
-			SlotF.register();
+			SlotF.bootstrap();
 
 			document.body.innerHTML = '<slot-f><p>one</p><p>two</p></slot-f>';
 
@@ -94,8 +94,8 @@ describe('ContextProviderComponent', () => {
 			value = 12;
 		}
 
-		ZComp.register();
-		RComp.register();
+		ZComp.bootstrap();
+		RComp.bootstrap();
 
 		document.body.innerHTML = `<r-comp><z-comp foo="{bar}" bar="{value}"></z-comp></r-comp>`;
 
@@ -179,7 +179,7 @@ describe('ContextProviderComponent', () => {
 				}
 			}
 
-			StyleA.register();
+			StyleA.bootstrap();
 			const s = new StyleA();
 
 			document.body.appendChild(s);
@@ -219,7 +219,7 @@ describe('ContextProviderComponent', () => {
 				}
 			}
 
-			StyleB.register();
+			StyleB.bootstrap();
 			const s = new StyleB();
 
 			document.body.appendChild(s);
@@ -262,7 +262,7 @@ describe('ContextProviderComponent', () => {
 				}
 			}
 
-			StyleC.register();
+			StyleC.bootstrap();
 			const s = new StyleC();
 
 			document.body.appendChild(s);
@@ -287,8 +287,8 @@ describe('ContextProviderComponent', () => {
 				}
 			}
 			
-			StyleD.register();
-			
+			StyleD.bootstrap();
+
 			document.body.innerHTML = `
 				<style-d></style-d>
 				<style-d></style-d>
@@ -317,8 +317,8 @@ describe('ContextProviderComponent', () => {
 				}
 			}
 			
-			StyleE.register();
-			
+			StyleE.bootstrap();
+
 			document.body.innerHTML = `
 				<style-e></style-e>
 				<style-e></style-e>

@@ -5,7 +5,7 @@ import {trackNodeTree} from "./track-node-tree";
 
 describe('trackNodeTree', () => {
 	class CompBase extends WebComponent {}
-	CompBase.register();
+	CompBase.bootstrap();
 	const comp = new CompBase();
 
 	it('should track parsed html', () => {

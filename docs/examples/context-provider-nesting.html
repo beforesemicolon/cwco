@@ -37,11 +37,8 @@ class InnerBox extends ContextProviderComponent {
 	}
 }
 
-// when registering context providers, order matters
-// and the one meant to wrap the other should
-// declared first
-ParentBox.register();
 InnerBox.register();
+ParentBox.bootstrap();
 
 </script>
 </body>

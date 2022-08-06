@@ -1,4 +1,5 @@
-// cwco, copyright (c) by Elson Correia / Before Semicolon
+// cwco, copyright (c) by Before Semicolon
+// author: Elson Correia
 // Distributed under an MIT license: https://github.com/beforesemicolon/cwco/blob/master/LICENSE
 export {WebComponent} from './core/web-component';
 export {ContextProviderComponent} from './core/context-provider-component';

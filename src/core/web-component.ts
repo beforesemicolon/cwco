@@ -16,6 +16,7 @@ import {CWCO} from "../cwco";
 import {NodeTrack} from "../tracker/node-track";
 import {trackNodeTree} from "../tracker/track-node-tree";
 import {JSONToCSS} from "./utils/json-to-css";
+import {registry} from "./registry";
 
 /**
  * a extension on the native web component API to simplify and automate most of the pain points
@@ -104,22 +105,34 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	 */
 	static register(tagName?: string | undefined) {
 		if (this.name !== 'WebComponent') {
+
 			tagName = typeof tagName === 'string' && tagName
 				? tagName
 				: typeof this.tagName === 'string' && this.tagName
 					? this.tagName
 					: turnCamelToKebabCasing(this.name);
+
+			if (!tagName.includes('-')) {
+			    throw new Error('Name argument is not a valid custom element name.')
+			}
 			
 			this.tagName = tagName;
-			
-			if (!customElements.get(tagName)) {
-				customElements.define(tagName, this);
-			}
+
+			registry.set(this.tagName, this);
 			
 			return;
 		}
 		
 		console.warn("Can't 'register' 'WebComponent' class itself")
+	}
+
+	static bootstrap(tagName?: string | undefined) {
+		this.register(tagName);
+		if (!customElements.get(this.tagName)) {
+			// @ts-ignore
+			customElements.define(this.tagName, this);
+			registry.delete(this.tagName)
+		}
 	}
 	
 	/**
@@ -138,7 +151,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	 * returns whether the component is registered or not
 	 */
 	static get isRegistered() {
-		return customElements.get(this.tagName) !== undefined;
+		return registry.has(this.tagName);
 	}
 	
 	/**
@@ -191,9 +204,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	updateContext(ctx: CWCO.ObjectLiteral) {
 		const {oldCtx, newCtx} = $.get(this).updateContext(ctx);
 
-		$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
-			t.updateNode(true);
-		})
+		this.forceUpdate();
 
 		this.onUpdate('$context', oldCtx, newCtx);
 	}
@@ -260,7 +271,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				const contentNode = parse(resolveHtmlEntities(style + temp));
 
 				this._childNodes = Array.from(this.childNodes);
-				
+
 				if (this.customSlot) {
 					this.innerHTML = '';
 				}
@@ -347,7 +358,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	 */
 	forceUpdate() {
 		$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
-			t.updateNode();
+			t.updateNode(true);
 		})
 	}
 	

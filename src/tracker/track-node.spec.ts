@@ -6,7 +6,7 @@ import {Track} from "./track";
 
 describe('trackNode', () => {
 	class CompBase extends WebComponent {}
-	CompBase.register();
+	CompBase.bootstrap();
 	const comp = new CompBase();
 
 	it('should track text', () => {

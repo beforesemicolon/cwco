@@ -53,10 +53,6 @@ export class NodeTrack {
 				this._updateNodeProperty(t)
 			}
 		} else {
-			const empty = !this.tracks.directive.length &&
-				!this.tracks.attribute.length &&
-				!this.tracks.property.length;
-
 			for (let t of this.tracks.directive) {
 				const dirNode = this._updateNodeDirective(t);
 				
@@ -85,11 +81,10 @@ export class NodeTrack {
 				this._updateNodeProperty(t)
 			}
 
-			// for empty web component with no tracks needs to
-			// be force updated if force is True since
+			// force update if force is True since
 			// there is nothing that will trigger update inside the
 			// component like attribute tracks would
-			if (empty && force && this.node.nodeName.includes('-') && typeof (this.node as CWCO.WebComponent).forceUpdate == 'function') {
+			if (force && this.node.nodeName.includes('-') && typeof (this.node as CWCO.WebComponent).forceUpdate == 'function') {
 				(this.node as CWCO.WebComponent).forceUpdate();
 			}
 
