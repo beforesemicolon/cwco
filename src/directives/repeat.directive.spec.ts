@@ -3,7 +3,7 @@ import {WebComponent} from "../core/web-component";
 
 describe('Repeat Directive', () => {
 	class TestComp extends WebComponent {}
-	TestComp.bootstrap();
+	TestComp.register();
 
 	const dir = new Repeat(new TestComp());
 	// @ts-ignore

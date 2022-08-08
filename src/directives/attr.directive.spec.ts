@@ -3,7 +3,7 @@ import {WebComponent} from "../core/web-component";
 
 describe('Attr Directive', () => {
 	class TestComp extends WebComponent {}
-	TestComp.bootstrap();
+	TestComp.register();
 
 	const dir = new Attr(new TestComp());
 

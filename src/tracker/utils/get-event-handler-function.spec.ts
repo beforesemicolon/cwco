@@ -13,7 +13,7 @@ describe('getEventHandlerFunction', () => {
 		}
 	}
 
-	EventApp.bootstrap()
+	EventApp.register()
 
 	const app = new EventApp();
 	const node = document.createElement('div');
@@ -40,7 +40,7 @@ describe('getEventHandlerFunction', () => {
 
 			clicked = () => {}
 		}
-		MyButton.bootstrap();
+		MyButton.register();
 		const btn = new MyButton();
 
 		it('if function exists', () => {

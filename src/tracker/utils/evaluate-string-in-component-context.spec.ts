@@ -11,7 +11,7 @@ describe('evaluateStringInComponentContext', () => {
 		set = new Set([2, 6]);
 	}
 
-	EvalApp.bootstrap()
+	EvalApp.register()
 
 	const app = new EvalApp();
 

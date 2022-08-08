@@ -99,8 +99,10 @@ class SecondaryButton extends Button {
 
 // only register the derived component and NEVER
 // the abstract component
-PrimaryButton.bootstrap()
-SecondaryButton.bootstrap()
+WebComponent.registerAll([
+  PrimaryButton,
+  SecondaryButton
+])
 
 </script>
 </body>

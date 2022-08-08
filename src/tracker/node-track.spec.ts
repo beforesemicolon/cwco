@@ -1,11 +1,13 @@
+import {$} from "../core/$";
 import {WebComponent} from "../core/web-component";
 import {NodeTrack} from "./node-track";
 import {trackNode} from "./track-node";
 import {trackNodeTree} from "./track-node-tree";
+import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
 
 describe('NodeTrack', () => {
 	class CompBase extends WebComponent {}
-	CompBase.bootstrap();
+	CompBase.register();
 	let comp: CompBase
 
 	beforeEach(() => {

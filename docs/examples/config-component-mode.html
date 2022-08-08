@@ -74,9 +74,9 @@ class NoneMode extends Mode {
 	}
 }
 
-DefaultMode.bootstrap();
-ClosedMode.bootstrap();
-NoneMode.bootstrap();
+DefaultMode.register();
+ClosedMode.register();
+NoneMode.register();
 
 const openMode = new DefaultMode();
 const closedMode = new ClosedMode();

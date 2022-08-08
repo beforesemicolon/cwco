@@ -49,9 +49,6 @@ class PrimaryButton extends ActionButton {
 		/**
 		 * Start by getting the parent class stylesheet
 		 * and then declare your style soon after
-		 *
-		 * if the stylesheet is an object use the javascript
-		 * spread operator to spread "super.stylesheet" accordingly
 		 */
 		return `
 			${super.stylesheet}
@@ -65,7 +62,7 @@ class PrimaryButton extends ActionButton {
 	}
 }
 
-PrimaryButton.bootstrap();
+PrimaryButton.register();
 </script>
 </body>
 </html>

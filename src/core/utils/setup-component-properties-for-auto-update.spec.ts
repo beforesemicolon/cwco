@@ -16,7 +16,7 @@ describe('setupComponentPropertiesForAutoUpdate', () => {
 		set write(val: any) {}
 	}
 	
-	PropComp.bootstrap()
+	PropComp.register()
 
 	it('should change only properties to getter and setter as long as they are not observed attributes', () => {
 		const comp = new PropComp();

@@ -31,15 +31,15 @@ class SubmitButton extends WebComponent {
 }
 
 /**
-* The "register" and "bootstrap" methods will use the class name to generate the tag name
+* To register method will use the class name to generate the tag name
 * unless you define the "tagName" inside the component
 */
-ActionButton.bootstrap(); // do-button
+ActionButton.register(); // do-button
 
 /**
  * You may also specify the tag name at when you call the register method
  */
-SubmitButton.bootstrap('send-button'); // send-button
+SubmitButton.register('send-button'); // send-button
 
 </script>
 </body>

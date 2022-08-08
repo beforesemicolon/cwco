@@ -3,7 +3,7 @@ import {WebComponent} from "../core/web-component";
 
 describe('If Directive', () => {
 	class TestComp extends WebComponent {}
-	TestComp.bootstrap();
+	TestComp.register();
 
 	const dir = new If(new TestComp());
 	const element = document.createElement('div');

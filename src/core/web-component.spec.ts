@@ -22,7 +22,7 @@ describe('WebComponent', () => {
 		class AComp extends WebComponent {
 		}
 
-		AComp.bootstrap();
+		AComp.register();
 
 		beforeEach(() => {
 			AComp.mode = ShadowRootModeExtended.OPEN;
@@ -108,7 +108,7 @@ describe('WebComponent', () => {
 			class AStyle extends WebComponent {
 			}
 
-			AStyle.bootstrap();
+			AStyle.register();
 
 			const z = new AStyle();
 
@@ -122,7 +122,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BStyle.bootstrap();
+			BStyle.register();
 
 			const f = new BStyle();
 
@@ -138,7 +138,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			CStyle.bootstrap();
+			CStyle.register();
 
 			const g = new CStyle();
 
@@ -154,7 +154,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			DStyle.bootstrap();
+			DStyle.register();
 
 			const h = new DStyle();
 
@@ -172,7 +172,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			EStyle.bootstrap();
+			EStyle.register();
 
 			const i = new EStyle();
 
@@ -189,7 +189,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			FStyle.bootstrap();
+			FStyle.register();
 
 			const j = new FStyle();
 
@@ -205,7 +205,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			GStyle.bootstrap();
+			GStyle.register();
 
 			const k = new GStyle();
 
@@ -237,7 +237,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			HStyle.bootstrap();
+			HStyle.register();
 
 			const k = new HStyle();
 
@@ -271,8 +271,8 @@ describe('WebComponent', () => {
 				}
 			}
 			
-			IStyle.bootstrap();
-
+			IStyle.register();
+			
 			const i = new IStyle();
 			
 			document.body.appendChild(i);
@@ -292,7 +292,7 @@ describe('WebComponent', () => {
 			class ATemp extends WebComponent {
 			}
 
-			ATemp.bootstrap();
+			ATemp.register();
 
 			const a = new ATemp();
 
@@ -308,7 +308,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BTemp.bootstrap();
+			BTemp.register();
 
 			const b = new BTemp();
 
@@ -326,7 +326,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			CTemp.bootstrap();
+			CTemp.register();
 
 			const c = new CTemp();
 
@@ -340,7 +340,7 @@ describe('WebComponent', () => {
 				templateId = "sample";
 			}
 
-			DTemp.bootstrap();
+			DTemp.register();
 
 			document.body.innerHTML = `
 				<template id="sample"><div>test</div></template>
@@ -360,7 +360,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			ETemp.bootstrap();
+			ETemp.register();
 			const e = new ETemp();
 
 			document.body.appendChild(e);
@@ -387,8 +387,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			FTemp.bootstrap();
-			GTemp.bootstrap();
+			FTemp.register();
+			GTemp.register();
 
 			const g = new GTemp();
 
@@ -417,7 +417,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			HTemp.bootstrap();
+			HTemp.register();
 
 			const h = new HTemp();
 
@@ -465,7 +465,7 @@ describe('WebComponent', () => {
 			}
 		}
 
-		MComp.bootstrap();
+		MComp.register();
 
 		let k: any;
 
@@ -612,8 +612,8 @@ describe('WebComponent', () => {
 				}
 			}
 			
-			UComp.bootstrap();
-
+			UComp.register();
+			
 			const u = new UComp();
 			
 			document.body.appendChild(u);
@@ -639,7 +639,7 @@ describe('WebComponent', () => {
 			}
 		}
 
-		NComp.bootstrap();
+		NComp.register();
 
 		beforeEach(() => {
 			n?.remove();
@@ -708,7 +708,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindingA.bootstrap();
+			BindingA.register();
 			const s = new BindingA();
 
 			document.body.appendChild(s);
@@ -725,7 +725,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindingB.bootstrap();
+			BindingB.register();
 			const s = new BindingB();
 
 			document.body.appendChild(s);
@@ -743,7 +743,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindingC.bootstrap();
+			BindingC.register();
 			const s = new BindingC();
 
 			document.body.appendChild(s);
@@ -760,7 +760,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindingD.bootstrap();
+			BindingD.register();
 			const s = new BindingD();
 
 			document.body.appendChild(s);
@@ -777,7 +777,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindingE.bootstrap();
+			BindingE.register();
 			const s = new BindingE();
 
 			document.body.appendChild(s);
@@ -796,7 +796,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindingF.bootstrap();
+			BindingF.register();
 			const s = new BindingF();
 
 			document.body.appendChild(s);
@@ -836,7 +836,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindingG.bootstrap();
+			BindingG.register();
 			const s = new BindingG();
 
 			document.body.appendChild(s);
@@ -865,8 +865,8 @@ describe('WebComponent', () => {
 				}
 			}
 
-			BindingH.bootstrap();
-			BindingBox.bootstrap();
+			BindingH.register();
+			BindingBox.register();
 			const s = new BindingH();
 
 			document.body.appendChild(s);
@@ -924,7 +924,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			EventA.bootstrap();
+			EventA.register();
 			const s = new EventA();
 
 			document.body.appendChild(s);
@@ -960,7 +960,7 @@ describe('WebComponent', () => {
 				}
 			}
 			
-			EventB.bootstrap();
+			EventB.register();
 			const s = new EventB();
 			
 			document.body.appendChild(s);
@@ -998,7 +998,6 @@ describe('WebComponent', () => {
 			}
 			
 			WebComponent.registerAll([TargetComp, AppComp]);
-			AppComp.bootstrap()
 			const app = new AppComp();
 			
 			document.body.appendChild(app);
@@ -1047,9 +1046,9 @@ describe('WebComponent', () => {
 				}
 			}
 			
-			CtxApp.bootstrap();
-			CtxComp.bootstrap();
-
+			CtxApp.register();
+			CtxComp.register();
+			
 			const app = new CtxApp();
 			
 			document.body.appendChild(app);
@@ -1072,7 +1071,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			SlotA.bootstrap();
+			SlotA.register();
 
 			document.body.innerHTML = '<slot-a><p>one</p><p>two</p></slot-a>';
 
@@ -1091,7 +1090,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			SlotB.bootstrap();
+			SlotB.register();
 
 			document.body.innerHTML = '<slot-b><p slot="content">one</p><p>two</p></slot-b>';
 
@@ -1112,7 +1111,7 @@ describe('WebComponent', () => {
 				}
 			}
 
-			SlotC.bootstrap();
+			SlotC.register();
 
 			document.body.innerHTML = '<slot-c></slot-c>';
 
@@ -1131,8 +1130,8 @@ describe('WebComponent', () => {
 				}
 			}
 			
-			SlotD.bootstrap()
-
+			SlotD.register()
+			
 			document.body.innerHTML = '<slot-d>\n{one}\n</slot-d>';
 			
 			setTimeout(() => {
@@ -1156,7 +1155,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				RefA.bootstrap();
+				RefA.register();
 				const s = new RefA();
 
 				document.body.appendChild(s);
@@ -1172,7 +1171,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				RefB.bootstrap();
+				RefB.register();
 				const s = new RefB();
 
 				document.body.appendChild(s);
@@ -1193,7 +1192,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				RefC.bootstrap();
+				RefC.register();
 				const s = new RefC();
 
 				document.body.appendChild(s);
@@ -1206,7 +1205,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				RefD.bootstrap();
+				RefD.register();
 				const s = new RefD();
 
 				document.body.appendChild(s);
@@ -1227,7 +1226,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				BindA.bootstrap();
+				BindA.register();
 				const s = new BindA();
 
 				document.body.appendChild(s);
@@ -1256,7 +1255,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				AttrA.bootstrap();
+				AttrA.register();
 				const s = new AttrA();
 
 				document.body.appendChild(s);
@@ -1284,7 +1283,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				AttrB.bootstrap();
+				AttrB.register();
 				const s = new AttrB();
 
 				document.body.appendChild(s);
@@ -1311,7 +1310,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				AttrC.bootstrap();
+				AttrC.register();
 				const s = new AttrC();
 
 				document.body.appendChild(s);
@@ -1336,7 +1335,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				AttrD.bootstrap();
+				AttrD.register();
 				document.body.innerHTML = '<attr-d></attr-d>';
 
 				const s = document.body.children[0] as WebComponent;
@@ -1368,7 +1367,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				AttrE.bootstrap();
+				AttrE.register();
 				const s = new AttrE();
 
 				document.body.appendChild(s);
@@ -1395,7 +1394,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				IfA.bootstrap();
+				IfA.register();
 				const s = new IfA();
 
 				document.body.appendChild(s);
@@ -1420,7 +1419,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				IfD.bootstrap();
+				IfD.register();
 				const s = new IfD();
 
 				document.body.appendChild(s);
@@ -1446,7 +1445,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				IfB.bootstrap();
+				IfB.register();
 				const s = new IfB();
 
 				document.body.appendChild(s);
@@ -1472,7 +1471,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				IfE.bootstrap();
+				IfE.register();
 				const s = new IfE();
 
 				document.body.appendChild(s);
@@ -1501,7 +1500,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				IfC.bootstrap();
+				IfC.register();
 				const s = new IfC();
 
 				document.body.appendChild(s);
@@ -1526,7 +1525,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				RepeatA.bootstrap();
+				RepeatA.register();
 				const s = new RepeatA();
 
 				document.body.appendChild(s);
@@ -1585,7 +1584,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				RepeatB.bootstrap();
+				RepeatB.register();
 				const s = new RepeatB();
 
 				document.body.appendChild(s);
@@ -1618,7 +1617,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				RepeatC.bootstrap();
+				RepeatC.register();
 				const s = new RepeatC();
 
 				document.body.appendChild(s);
@@ -1650,7 +1649,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				NumberList.bootstrap();
+				NumberList.register();
 
 				const btn = new NumberList();
 
@@ -1705,7 +1704,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				RepeatD.bootstrap();
+				RepeatD.register();
 				const s = new RepeatD();
 
 				document.body.appendChild(s);
@@ -1765,7 +1764,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				RepeatE.bootstrap();
+				RepeatE.register();
 				const s = new RepeatE();
 
 				document.body.appendChild(s);
@@ -1809,9 +1808,9 @@ describe('WebComponent', () => {
 					}
 				}
 
-				SmallR.bootstrap();
-				RepeatF.bootstrap();
-				ContainerP.bootstrap();
+				SmallR.register();
+				RepeatF.register();
+				ContainerP.register();
 
 				const p = new ContainerP();
 
@@ -1851,7 +1850,7 @@ describe('WebComponent', () => {
 					}
 				}
 				
-				RepeatG.bootstrap();
+				RepeatG.register();
 				const s = new RepeatG();
 				
 				document.body.appendChild(s);
@@ -1875,7 +1874,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				MixA.bootstrap();
+				MixA.register();
 				const s = new MixA();
 
 				document.body.appendChild(s);
@@ -1908,7 +1907,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				MixB.bootstrap();
+				MixB.register();
 				const s = new MixB();
 
 				document.body.appendChild(s);
@@ -1933,7 +1932,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				MixC.bootstrap();
+				MixC.register();
 				const s = new MixC();
 
 				document.body.appendChild(s);
@@ -1954,7 +1953,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				MixD.bootstrap();
+				MixD.register();
 				const s = new MixD();
 
 				document.body.appendChild(s);
@@ -1972,7 +1971,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				MixE.bootstrap();
+				MixE.register();
 				const s = new MixE();
 
 				document.body.appendChild(s);
@@ -1987,7 +1986,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				MixF.bootstrap();
+				MixF.register();
 				const s = new MixF();
 
 				document.body.appendChild(s);
@@ -2003,7 +2002,7 @@ describe('WebComponent', () => {
 					}
 				}
 
-				MixG.bootstrap();
+				MixG.register();
 				const s = new MixG();
 
 				document.body.appendChild(s);
@@ -2035,7 +2034,7 @@ describe('WebComponent', () => {
 			}
 		}
 
-		LeakA.bootstrap();
+		LeakA.register();
 
 		const l = new LeakA();
 
@@ -2066,8 +2065,8 @@ describe('WebComponent', () => {
 				}
 			}
 			
-			FnCompA.bootstrap();
-
+			FnCompA.register();
+			
 			const comp = new FnCompA();
 			
 			document.body.appendChild(comp);
@@ -2101,8 +2100,8 @@ describe('WebComponent', () => {
 				}
 			}
 			
-			FnCompB.bootstrap();
-
+			FnCompB.register();
+			
 			const comp = new FnCompB();
 			
 			document.body.appendChild(comp);
@@ -2153,8 +2152,8 @@ describe('WebComponent', () => {
 			}
 		}
 
-		ParentComp.bootstrap();
-		ChildComp.bootstrap();
+		ParentComp.register();
+		ChildComp.register();
 
 		let top: ParentComp;
 		let child: ChildComp;

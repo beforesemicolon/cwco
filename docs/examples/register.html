@@ -30,23 +30,9 @@ class SubmitButton extends WebComponent {
 /**
  * To register a component you can simply call the "register" method
  * on the class which will use the class name to generate the HTML tag names
- *
  */
 ActionButton.register(); // action-button
 SubmitButton.register(); // submit-button
-
-/**
- * the register only tells CWCO about your component but
- * not the browser
- *
- * To tell the browser about the tag you must bootstrap your component
- *
- * if you call "bootstrap" you don't need to call "register"
- *
- * Calling bootstrap will register and bootstrap all inner children deeply
- */
-ActionButton.bootstrap(); // action-button
-SubmitButton.bootstrap(); // submit-button
 
 </script>
 </body>
