@@ -1,5 +1,6 @@
 import {WebComponent} from './web-component';
 import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
+import {ContextProviderComponent} from "./context-provider-component";
 
 describe('WebComponent', () => {
 
@@ -16,6 +17,7 @@ describe('WebComponent', () => {
 			// @ts-ignore
 			window.requestAnimationFrame.mockRestore();
 		}
+		jest.useRealTimers()
 	});
 
 	describe('constructor and configuration', () => {
@@ -1058,8 +1060,56 @@ describe('WebComponent', () => {
 			expect(comp.shadowRoot?.innerHTML).toBe('1')
 		});
 
-		it('should ', () => {
-		
+		it('should propagate context deeply', () => {
+			jest.useFakeTimers();
+
+			class CtxDeep extends WebComponent {
+				get template() {
+					return '<p class="{$context.sample}-ls">{$context.sample}</p>'
+				}
+			}
+
+			CtxDeep.register();
+
+			class CtxMid extends WebComponent {
+				get template() {
+					return '<ctx-deep></ctx-deep>'
+				}
+			}
+
+			CtxMid.register();
+
+			class CtxAppA extends ContextProviderComponent {
+				static initialContext = {
+					sample: 0
+				}
+
+				onMount() {
+					setTimeout(() => {
+						this.updateContext({
+							sample: 100
+						})
+					}, 2000)
+				}
+			}
+
+			CtxAppA.register();
+
+			document.body.innerHTML = `
+				<ctx-app-a>
+					<ctx-mid></ctx-mid>
+				</ctx-app-a>
+			`;
+
+			const comp = document.body.children[0] as WebComponent;
+			const btn = comp.children[0] as WebComponent;
+			const icon = btn.root?.children[0] as WebComponent;
+
+			expect(icon.root?.innerHTML).toBe('<p class="0-ls">0</p>');
+
+			jest.advanceTimersByTime(2000);
+
+			expect(icon.root?.innerHTML).toBe('<p class="100-ls">100</p>');
 		});
 	});
 

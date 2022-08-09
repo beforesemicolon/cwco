@@ -90,7 +90,7 @@ export class NodeTrack {
 			// there is nothing that will trigger update inside the
 			// component like attribute tracks would
 			if (empty && force && this.node.nodeName.includes('-') && typeof (this.node as CWCO.WebComponent).forceUpdate == 'function') {
-				(this.node as CWCO.WebComponent).forceUpdate();
+				(this.node as CWCO.WebComponent).forceUpdate(force);
 			}
 
 			this.childNodeTracks.forEach(t => {

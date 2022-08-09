@@ -191,9 +191,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	updateContext(ctx: CWCO.ObjectLiteral) {
 		const {oldCtx, newCtx} = $.get(this).updateContext(ctx);
 
-		$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
-			t.updateNode(true);
-		})
+		this.forceUpdate(true);
 
 		this.onUpdate('$context', oldCtx, newCtx);
 	}
@@ -345,9 +343,9 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	/**
 	 * updates any already tracked node with current component data including context and node level data.
 	 */
-	forceUpdate() {
+	forceUpdate(deep = false) {
 		$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
-			t.updateNode();
+			t.updateNode(deep);
 		})
 	}
 	

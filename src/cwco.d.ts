@@ -103,7 +103,7 @@ declare namespace CWCO {
 		onAdoption: () => void;
 		onUpdate: (name: string, oldValue: string, newValue: string) => void;
 		onError: (error: any) => void;
-		forceUpdate: () => void;
+		forceUpdate: (deep: boolean) => void;
 		
 		[key: string]: any;
 	}
