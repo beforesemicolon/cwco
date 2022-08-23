@@ -1,5 +1,5 @@
 import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
-import {WebComponent} from "./web-component";
+import {WebComponent} from "./WebComponent";
 import {CWCO} from "../cwco";
 
 /**

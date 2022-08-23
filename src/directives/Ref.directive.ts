@@ -1,4 +1,4 @@
-import {Directive} from "../core/directive";
+import {Directive} from "../core/Directive";
 import {CWCO} from "../cwco";
 
 export class Ref extends Directive {

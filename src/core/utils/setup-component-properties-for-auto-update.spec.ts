@@ -1,5 +1,5 @@
 import {setupComponentPropertiesForAutoUpdate} from './setup-component-properties-for-auto-update';
-import {WebComponent} from "../web-component";
+import {WebComponent} from "../WebComponent";
 
 describe('setupComponentPropertiesForAutoUpdate', () => {
 	class PropComp extends WebComponent {

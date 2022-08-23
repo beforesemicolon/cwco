@@ -2,7 +2,7 @@ import {CWCO} from "../cwco";
 import {$} from "../core/$";
 import {slotTag} from "../tags/slot.tag";
 import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
-import {NodeTrack} from "./node-track";
+import {NodeTrack} from "./NodeTrack";
 import {trackNode} from "./track-node";
 
 export const trackNodeTree = (node: Node | CWCO.WebComponent | HTMLElement, ancestorNodeTrack: NodeTrack, component: CWCO.WebComponent) => {

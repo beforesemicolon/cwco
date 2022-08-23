@@ -1,5 +1,5 @@
-import {ContextProviderComponent} from "./context-provider-component";
-import {WebComponent} from "./web-component";
+import {ContextProviderComponent} from "./ContextProviderComponent";
+import {WebComponent} from "./WebComponent";
 import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
 
 describe('ContextProviderComponent', () => {

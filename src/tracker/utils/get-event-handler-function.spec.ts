@@ -1,5 +1,5 @@
 import {getEventHandlerFunction} from "./get-event-handler-function";
-import {WebComponent} from "../../core/web-component";
+import {WebComponent} from "../../core/WebComponent";
 import {$} from "../../core/$";
 
 describe('getEventHandlerFunction', () => {

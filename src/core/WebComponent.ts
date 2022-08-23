@@ -13,7 +13,7 @@ import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
 import {jsonParse} from "../utils/json-parse";
 import {resolveHtmlEntities} from "../utils/resolve-html-entities";
 import {CWCO} from "../cwco";
-import {NodeTrack} from "../tracker/node-track";
+import {NodeTrack} from "../tracker/NodeTrack";
 import {trackNodeTree} from "../tracker/track-node-tree";
 import {JSONToCSS} from "./utils/json-to-css";
 

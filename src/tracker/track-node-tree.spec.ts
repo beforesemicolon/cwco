@@ -1,6 +1,6 @@
 import {parse} from "../parser/parse";
-import {WebComponent} from "../core/web-component";
-import {NodeTrack} from "./node-track";
+import {WebComponent} from "../core/WebComponent";
+import {NodeTrack} from "./NodeTrack";
 import {trackNodeTree} from "./track-node-tree";
 
 describe('trackNodeTree', () => {

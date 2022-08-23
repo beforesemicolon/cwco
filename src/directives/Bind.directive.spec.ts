@@ -1,5 +1,5 @@
-import {Bind} from './bind.directive';
-import {WebComponent} from "../core/web-component";
+import {Bind} from './Bind.directive';
+import {WebComponent} from "../core/WebComponent";
 
 describe('Bind Directive', () => {
 	class TestComp extends WebComponent {}

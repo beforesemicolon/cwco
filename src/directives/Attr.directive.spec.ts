@@ -1,5 +1,5 @@
-import {Attr} from './attr.directive';
-import {WebComponent} from "../core/web-component";
+import {Attr} from './Attr.directive';
+import {WebComponent} from "../core/WebComponent";
 
 describe('Attr Directive', () => {
 	class TestComp extends WebComponent {}

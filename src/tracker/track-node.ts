@@ -6,7 +6,7 @@ import {parseNodeDirective} from "./utils/parse-node-directive";
 import {getEventHandlerFunction} from "./utils/get-event-handler-function";
 import {extractExecutableSnippetFromString} from "./utils/extract-executable-snippet-from-string";
 import {TrackType} from "../enums/track-type";
-import {Track} from "./track";
+import {Track} from "./Track";
 import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
 
 export const trackNode = (node: Node | HTMLElement, component: CWCO.WebComponent): CWCO.TracksMapByType => {

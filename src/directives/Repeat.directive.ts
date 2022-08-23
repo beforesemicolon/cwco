@@ -1,4 +1,4 @@
-import {Directive} from "../core/directive";
+import {Directive} from "../core/Directive";
 import {parse} from "../parser/parse";
 import {CWCO} from "../cwco";
 

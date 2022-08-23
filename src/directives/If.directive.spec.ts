@@ -1,5 +1,5 @@
-import {If} from './if.directive';
-import {WebComponent} from "../core/web-component";
+import {If} from './If.directive';
+import {WebComponent} from "../core/WebComponent";
 
 describe('If Directive', () => {
 	class TestComp extends WebComponent {}
