@@ -131,20 +131,28 @@ export class NodeTrack {
 			track.executables
 		);
 
+		const {attrPropsMap} = $.get(this.node);
+		const attrProp = attrPropsMap ? attrPropsMap[track.name] : track.name;
+
 		if (isPrimitive(newValue)) {
 			if ((this.node as HTMLElement).getAttribute(track.name) !== newValue) {
 				(this.node as HTMLElement).setAttribute(track.name, newValue);
+
+				// for non WebComponents we want to also update the property
+				// learn why => https://developer.mozilla.org/en-US/docs/Web/API/Element/setAttribute#gecko_notes
+				// for WebComponents just using the setAttribute is enough since it will trigger appropriate
+				// internal updates if the attr is observed
+				if (!this.node.nodeName.includes('-')) {
+					(this.node as CWCO.ObjectLiteral)[attrProp] = newValue;
+				}
+
 				return true;
 			}
 		} else {
-			const {attrPropsMap} = $.get(this.node);
-			const attrProp = attrPropsMap ? attrPropsMap[track.name] : track.name;
-
 			if ((this.node as HTMLElement).hasAttribute(track.name)) {
 				$.get(this.node).clearAttr = true;
 				(this.node as HTMLElement).removeAttribute(track.name);
 			}
-
 
 			(this.node as CWCO.ObjectLiteral)[attrProp] = newValue;
 			return true;

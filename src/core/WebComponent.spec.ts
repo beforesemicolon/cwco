@@ -626,77 +626,114 @@ describe('WebComponent', () => {
 		});
 	});
 
-	describe('update DOM', () => {
-		let n: any;
+	describe('DOM', () => {
+		describe('property and attr updates', () => {
+			let n: any;
 
-		class NComp extends WebComponent {
-			static observedAttributes = ['sample', 'style', 'class', 'data-x'];
-			numb = 12;
-			obj = {
-				value: 300
+			class NComp extends WebComponent {
+				static observedAttributes = ['sample', 'style', 'class', 'data-x'];
+				numb = 12;
+				obj = {
+					value: 300
+				}
+
+				get template() {
+					return '{obj.value}<strong class="{this.className}" style="{this.style.cssText}" data-x="{this.dataset.x}">{numb} {sample}</strong>'
+				}
 			}
 
-			get template() {
-				return '{obj.value}<strong class="{this.className}" style="{this.style.cssText}" data-x="{this.dataset.x}">{numb} {sample}</strong>'
-			}
-		}
+			NComp.register();
 
-		NComp.register();
+			beforeEach(() => {
+				n?.remove();
+				n = new NComp();
+				document.body.appendChild(n);
 
-		beforeEach(() => {
-			n?.remove();
-			n = new NComp();
-			document.body.appendChild(n);
+				n.numb = 12;
+				// @ts-ignore
+				n.sample = '';
+				n.obj.value = 300;
+				n.className = '';
+				n.setAttribute('style', '');
+				n.dataset.x = '';
+			})
 
-			n.numb = 12;
-			// @ts-ignore
-			n.sample = '';
-			n.obj.value = 300;
-			n.className = '';
-			n.setAttribute('style', '');
-			n.dataset.x = '';
+			it('should render', () => {
+				expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="">12 </strong>')
+			});
+
+			it('should update DOM when properties update', () => {
+				n.numb = 100;
+
+				expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="">100 </strong>')
+			});
+
+			it('should update DOM when observed attributes update', () => {
+				// @ts-ignore
+				n.sample = 'items';
+
+				expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="">12 items</strong>')
+			});
+
+			it('should update DOM when class gets updated', () => {
+				n.className = 'my-items';
+				n.classList.add('unique')
+
+				expect(n.root?.innerHTML).toBe('300<strong class="my-items unique" style="" data-x="">12 </strong>')
+			});
+
+			it('should update DOM when style gets updated', (done) => {
+				n.style.background = 'red';
+				n.style.display = 'block';
+
+				setTimeout(() => {
+					expect(n.root?.innerHTML).toBe('300<strong class="" style="background: red; display: block;" data-x="">12 </strong>');
+					done()
+				})
+			});
+
+			it('should update DOM when data attributes gets updated', () => {
+				n.dataset.x = 'test-value';
+
+				expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="test-value">12 </strong>');
+			});
 		})
 
-		it('should render', () => {
-			expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="">12 </strong>')
+		it('should update input field on value changes', () => {
+			class FieldComp extends WebComponent {
+				val = "";
+
+				get template() {
+					return '<input type="text" ref="input" value="{val}"/>' +
+						'<button type="button" ref="btn" onclick="clear()">clear</button>'
+				}
+
+				clear() {
+					this.val = '';
+				}
+			}
+
+			FieldComp.register();
+
+			const f = new FieldComp();
+
+			document.body.appendChild(f);
+
+			const input = f.$refs.input as HTMLInputElement;
+			const btn = f.$refs.btn as HTMLButtonElement;
+
+			expect(input.value).toBe('');
+
+			f.val = "sample";
+
+			expect(input.value).toBe('sample');
+			expect(input.getAttribute('value')).toBe('sample');
+
+			btn.click()
+
+			expect(input.value).toBe('');
+			expect(input.getAttribute('value')).toBe('');
 		});
-
-		it('should update DOM when properties update', () => {
-			n.numb = 100;
-
-			expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="">100 </strong>')
-		});
-
-		it('should update DOM when observed attributes update', () => {
-			// @ts-ignore
-			n.sample = 'items';
-
-			expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="">12 items</strong>')
-		});
-
-		it('should update DOM when class gets updated', () => {
-			n.className = 'my-items';
-			n.classList.add('unique')
-
-			expect(n.root?.innerHTML).toBe('300<strong class="my-items unique" style="" data-x="">12 </strong>')
-		});
-
-		it('should update DOM when style gets updated', (done) => {
-			n.style.background = 'red';
-			n.style.display = 'block';
-
-			setTimeout(() => {
-				expect(n.root?.innerHTML).toBe('300<strong class="" style="background: red; display: block;" data-x="">12 </strong>');
-				done()
-			})
-		});
-
-		it('should update DOM when data attributes gets updated', () => {
-			n.dataset.x = 'test-value';
-
-			expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="test-value">12 </strong>');
-		});
-		
 	})
 
 	describe('data bind', () => {
