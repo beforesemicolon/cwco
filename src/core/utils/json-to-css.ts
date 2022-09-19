@@ -18,7 +18,13 @@ function getPropertyCSS(prop: string, value: CWCO.StylesheetObject, parentProp: 
 		if (parentProp.startsWith('@')) {
 			cb(createPropertyBody(prop, value))
 		} else if(/^[^+~>]/i.test(prop)) {
-			cb(null, createPropertyBody(`${parentProp} ${prop}`, value))
+			const selector = parentProp
+				.split(',')
+				.map(pp => prop.split(',').map(p => `${pp.trim()} ${p.trim()}`).join(', '))
+				.join(', ')
+				.trim();
+
+			cb(null, createPropertyBody(selector, value))
 		}
 	} else {
 		cb(`${turnCamelToKebabCasing(prop)}: ${value};`);

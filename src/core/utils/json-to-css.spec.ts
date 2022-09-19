@@ -132,20 +132,26 @@ describe('JSONToCSS', () => {
 					'& + p': {
 						padding: '12px'
 					},
-					span: {
-						display: 'inline-block'
+					'span, b': {
+						display: 'inline-block',
+						'i, em': {
+							display: 'inline'
+						},
 					}
 				}
 			},
 			'*, *::before, *::after': {
 				boxSizing: 'border-box',
 			}
-		})).toBe(':host {display: inline-block;opacity: 0.5;background-color: [bg];} ' +
+		}))
+			.toBe(
+			':host {display: inline-block;opacity: 0.5;background-color: [bg];} ' +
 			':host button {opacity: [disabled ? 0 : 1];} ' +
 			':host button:hover {background-color: #000;} ' +
 			':host button:hover:active {background-color: #666;} ' +
 			':host button + p {padding: 12px;} ' +
-			':host button span {display: inline-block;} ' +
+			':host button span, :host button b {display: inline-block;} ' +
+			':host button span i, :host button span em, :host button b i, :host button b em {display: inline;} ' +
 			'*, *::before, *::after {box-sizing: border-box;}')
 	});
 	
