@@ -2,8 +2,11 @@
 
 ![CWCO Banner](https://github.com/beforesemicolon/cwco/blob/master/docs/Git-Banner.jpg)
 
+[![website](https://img.shields.io/badge/website-cwco.io-blue)](https://cwco.io/)
 [![npm](https://img.shields.io/npm/v/cwco)](https://www.npmjs.com/package/cwco)
-![license](https://img.shields.io/github/license/beforesemicolon/cwco)
+[![license](https://img.shields.io/github/license/beforesemicolon/cwco)](https://github.com/beforesemicolon/cwco/blob/master/LICENSE)
+[![sponsor](https://img.shields.io/github/sponsors/beforesemicolon)](https://github.com/sponsors/beforesemicolon)
+
 ![node version](https://img.shields.io/badge/min%20node%20version-14.*-brightgreen)
 ![Build](https://github.com/beforesemicolon/cwco/actions/workflows/codeql-analysis.yml/badge.svg)
 ![Build](https://github.com/beforesemicolon/cwco/actions/workflows/node.js.yml/badge.svg)
