@@ -4,6 +4,9 @@ import {WebComponent} from './core/WebComponent';
 import {Directive} from './core/Directive';
 import {ContextProviderComponent} from './core/ContextProviderComponent';
 import {html} from "./utils/html";
+import {css} from "./utils/css";
+import {raw} from "./utils/raw";
+import {isProxy} from "./utils/is-proxy";
 
 // @ts-ignore
 if (window) {
@@ -15,4 +18,10 @@ if (window) {
 	window.Directive = Directive;
 	// @ts-ignore
 	window.html = html;
+	// @ts-ignore
+	window.css = css;
+	// @ts-ignore
+	window.raw = raw;
+	// @ts-ignore
+	window.isProxy = isProxy;
 }

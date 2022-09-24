@@ -6,3 +6,6 @@ export {Directive} from './core/Directive';
 export {CWCO} from './cwco';
 export {ShadowRootModeExtended} from './enums/ShadowRootModeExtended.enum';
 export {html} from './utils/html';
+export {css} from './utils/css';
+export {raw} from './utils/raw';
+export {isProxy} from './utils/is-proxy';

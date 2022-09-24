@@ -1,6 +1,7 @@
 import {WebComponent} from './WebComponent';
 import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
 import {ContextProviderComponent} from "./ContextProviderComponent";
+import {css} from "../utils/css";
 
 describe('WebComponent', () => {
 
@@ -415,7 +416,7 @@ describe('WebComponent', () => {
 				}
 
 				get stylesheet() {
-					return html`<style> {color: #222}</style>`
+					return css`<style> {color: #222}</style>`
 				}
 			}
 
