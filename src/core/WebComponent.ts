@@ -251,7 +251,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 
 				if (stylesheet && mode !== 'none' || !getLinkAndStyleTagsFromHead(tagName).length) {
 					style = typeof stylesheet === 'object'
-						? `<style class="${tagName}">${JSONToCSS(stylesheet)}</style>`
+						? `<style class="${tagName}">${JSONToCSS(stylesheet, tagName.toLowerCase(), hasShadowRoot)}</style>`
 						: getStyleString(stylesheet, tagName.toLowerCase(), hasShadowRoot);
 				}
 

@@ -1,10 +1,17 @@
 import {CWCO} from "../../cwco";
 import {turnCamelToKebabCasing} from "../../utils/turn-camel-to-kebab-casing";
+import {replaceHost} from "./replace-host";
 
 type callback = (str: string | null, declaration?: string) => void
 
-export function JSONToCSS(obj: CWCO.ObjectLiteral) {
-	return Object.keys(obj).map(prop => createPropertyBody(prop, obj[prop])).join('').trim();
+export function JSONToCSS(obj: CWCO.ObjectLiteral, tagName: string, hasShadowRoot: boolean = true) {
+	const css = Object.keys(obj).map(prop => createPropertyBody(prop, obj[prop])).join('').trim();
+	
+	if (!hasShadowRoot) {
+	   return replaceHost(css, tagName);
+	}
+	
+	return css;
 }
 
 function getPropertyCSS(prop: string, value: CWCO.StylesheetObject, parentProp: string, cb: callback) {

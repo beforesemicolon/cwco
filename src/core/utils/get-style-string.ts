@@ -1,3 +1,5 @@
+import {replaceHost} from "./replace-host";
+
 export function getStyleString(stylesheet: string, tagName: string, hasShadowRoot: boolean = true) {
 	stylesheet = stylesheet.trim().replace(/\s{2,}/g, ' ');
 
@@ -29,13 +31,7 @@ export function getStyleString(stylesheet: string, tagName: string, hasShadowRoo
 		
 		for (let style of styles) {
 			style.classList.add(tagName);
-			style.textContent = (style.innerHTML).replace(/:(host-context|host)(?:\s*\((.*?)\))?/gmi, (_, h, s) => {
-				if (h === 'host-context') {
-					return `${(s || '').trim()} ${tagName}`;
-				}
-				
-				return `${tagName}${(s || '').trim()}`;
-			})
+			style.textContent = replaceHost(style.innerHTML, tagName);
 		}
 	}
 

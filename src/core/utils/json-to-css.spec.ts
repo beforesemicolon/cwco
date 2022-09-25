@@ -14,7 +14,7 @@ describe('JSONToCSS', () => {
 			'*, *::before, *::after': {
 				boxSizing: 'border-box',
 			}
-		})).toBe(':host {display: inline-block;opacity: 0.5;background-color: [bg];} ' +
+		}, 'comp-test', true)).toBe(':host {display: inline-block;opacity: 0.5;background-color: [bg];} ' +
 			':host button {opacity: [disabled ? 0 : 1];} ' +
 			'*, *::before, *::after {box-sizing: border-box;}')
 	});
@@ -39,8 +39,8 @@ describe('JSONToCSS', () => {
 			'*, *::before, *::after': {
 				boxSizing: 'border-box',
 			}
-		})).toBe(':host {display: block;opacity: 0.5;background-color: [bg];} ' +
-			':host button {opacity: [disabled ? 0 : 1];} ' +
+		}, 'comp-test', false)).toBe('comp-test {display: block;opacity: 0.5;background-color: [bg];} ' +
+			'comp-test button {opacity: [disabled ? 0 : 1];} ' +
 			'*, *::before, *::after {box-sizing: border-box;}')
 	});
 	
@@ -60,7 +60,7 @@ describe('JSONToCSS', () => {
 					},
 				}
 			}
-		})).toBe('@media screen and (max-width: 760px) {' +
+		}, 'comp-test', true)).toBe('@media screen and (max-width: 760px) {' +
 			'button {opacity: [disabled ? 0 : 1];} ' +
 			'button:hover {background-color: #000;} ' +
 			'button:hover:active {background-color: #666;} ' +
@@ -84,7 +84,7 @@ describe('JSONToCSS', () => {
 					}
 				}
 			}
-		})).toBe(':host {} ' +
+		}, 'comp-test', true)).toBe(':host {} ' +
 			'@media screen and (max-width: 760px) {' +
 			'button {opacity: [disabled ? 0 : 1];} ' +
 			'button:hover {background-color: #000;} ' +
@@ -109,7 +109,7 @@ describe('JSONToCSS', () => {
 				},
 				cursor: "[disabled ? 'not-allowed' : 'pointer']",
 			}
-		})).toBe("button {opacity: [disabled ? 0 : 1];background-color: #222;cursor: [disabled ? 'not-allowed' : 'pointer'];} " +
+		}, 'comp-test', true)).toBe("button {opacity: [disabled ? 0 : 1];background-color: #222;cursor: [disabled ? 'not-allowed' : 'pointer'];} " +
 			"button:hover {background-color: #000;} " +
 			"button:hover:active {background-color: #666;} " +
 			"button.loading {padding: 12px;}")
@@ -143,7 +143,7 @@ describe('JSONToCSS', () => {
 			'*, *::before, *::after': {
 				boxSizing: 'border-box',
 			}
-		}))
+		}, 'comp-test', true))
 			.toBe(
 			':host {display: inline-block;opacity: 0.5;background-color: [bg];} ' +
 			':host button {opacity: [disabled ? 0 : 1];} ' +
@@ -166,6 +166,6 @@ describe('JSONToCSS', () => {
 					width: '150px',
 				}
 			}
-		})).toBe('.box {display: inline-block;} .box__small {width: 50px;} .box__large {width: 150px;}')
+		}, 'comp-test', true)).toBe('.box {display: inline-block;} .box__small {width: 50px;} .box__large {width: 150px;}')
 	});
 })
