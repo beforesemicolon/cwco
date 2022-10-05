@@ -26,6 +26,7 @@ declare namespace CWCO {
 		parseValue: (value: string, prop: string | null) => string;
 		render: (val: any, options: directiveRenderOptions) => directiveRenderOptions['anchorNode'];
 		updateContext: (node: Node, ctx: ObjectLiteral) => void;
+		setRef: (name: string, node: Node) => void;
 		getContext: (node: Node) => void
 		[key: string]: any;
 	}
