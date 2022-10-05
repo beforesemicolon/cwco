@@ -28,11 +28,8 @@ export class Attr extends Directive {
 							if (shouldAdd) {
 								element.style.setProperty(name, styleValue);
 							} else {
-								element.setAttribute(
-									'style',
-									element.style.cssText.replace(new RegExp(`${name}\\s*:\\s*${styleValue};?`, 'g'), ''))
+								element.style.removeProperty(name);
 							}
-
 						})
 				}
 

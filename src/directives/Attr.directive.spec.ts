@@ -23,11 +23,11 @@ describe('Attr Directive', () => {
 		})
 
 		it('style', () => {
-			expect(dir.render(['style', '', true, 'color: blue; text-align: center'], {element} as any).outerHTML)
-				.toBe('<div style="color: blue; text-align: center;"></div>');
+			expect(dir.render(['style', '', true, 'background: #090; color: #fff;'], {element} as any).outerHTML)
+				.toBe('<div style="background: rgb(0, 153, 0); color: rgb(255, 255, 255);"></div>');
 
 			// remove
-			expect(dir.render(['style', '', false, 'color: blue; text-align: center'], {element} as any).outerHTML)
+			expect(dir.render(['style', '', false, 'background: #090; color: #fff;'], {element} as any).outerHTML)
 				.toBe('<div style=""></div>');
 		});
 
