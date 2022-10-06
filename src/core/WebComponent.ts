@@ -16,6 +16,7 @@ import {CWCO} from "../cwco";
 import {NodeTrack} from "../tracker/NodeTrack";
 import {trackNodeTree} from "../tracker/track-node-tree";
 import {JSONToCSS} from "./utils/json-to-css";
+import {getNodePathToDoc} from "../utils/get-node-path-to-doc";
 
 /**
  * a extension on the native web component API to simplify and automate most of the pain points
@@ -213,7 +214,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 					this.onError(e as ErrorEvent);
 				}
 			} else if(this.parsed) {
-				this.onError(new Error(`[Possibly a memory leak]: Cannot set property "${prop}" on unmounted component.`));
+				this.onError(new Error(`Cannot set property "${prop}" on unmounted component. Possibly a memory leak in [ ${getNodePathToDoc(this).join(' > ')} ]`));
 			}
 		};
 

@@ -552,7 +552,7 @@ describe('WebComponent', () => {
 			k.deep.value = 1000
 
 			expect(updateFn).toHaveBeenCalledTimes(0);
-			expect(errorFn).toHaveBeenCalledWith(new Error('[Possibly a memory leak]: Cannot set property "deep" on unmounted component.'));
+			expect(errorFn).toHaveBeenCalledWith(new Error('Cannot set property "deep" on unmounted component. Possibly a memory leak in [ M-COMP ]'));
 			expect(k.deep).toEqual({"value": 1000});
 
 			document.body.appendChild(k);
@@ -2134,7 +2134,7 @@ describe('WebComponent', () => {
 
 		jest.runOnlyPendingTimers();
 
-		expect(errorSpy).toHaveBeenCalledWith(new Error('[Possibly a memory leak]: Cannot set property "sample" on unmounted component.'));
+		expect(errorSpy).toHaveBeenCalledWith(new Error('Cannot set property "sample" on unmounted component. Possibly a memory leak in [ LEAK-A ]'));
 		expect(l.root?.innerHTML).toBe('12');
 
 		jest.resetAllMocks()
