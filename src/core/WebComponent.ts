@@ -213,9 +213,10 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				} catch(e: any) {
 					this.onError(e.message);
 				}
-			} else if(this.parsed) {
-				this.onError(`Cannot set property "${prop}" on unmounted component. Possibly a memory leak in [ ${getNodePathToDoc(this).join(' > ')} ]`);
 			}
+			// else if(this.parsed) {
+			// 	this.onError(`Cannot set property "${prop}" on unmounted component. Possibly a memory leak in [ ${getNodePathToDoc(this).join(' > ')} ]`);
+			// }
 		};
 
 		try {
