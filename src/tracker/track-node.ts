@@ -56,10 +56,10 @@ export const trackNode = (node: Node | HTMLElement, component: CWCO.WebComponent
 		// @ts-ignore
 		[...attributes].forEach((attr, i) => {
 			if (dirPattern.test(attr.name)) {
-				const {name, value, prop} = parseNodeDirective(node as HTMLElement, attr.name, convertHtmlEntities(attr.value));
+				const {name, value, prop} = parseNodeDirective(node as HTMLElement, attr.name, attr.value);
 				const dir = directiveRegistry[name];
 
-				track = new Track(name, value, TrackType.directive);
+				track = new Track(name, convertHtmlEntities(value), TrackType.directive);
 				track.prop = prop;
 				track.handler = dir;
 
@@ -94,7 +94,7 @@ export const trackNode = (node: Node | HTMLElement, component: CWCO.WebComponent
 
 		for (let attr of attrs) {
 			if (attr.value.trim()) {
-				track = getNodeTrack(attr.name, convertHtmlEntities(attr.value), TrackType.attribute)
+				track = getNodeTrack(attr.name, attr.value, TrackType.attribute)
 				if (track) {
 					tracks.attribute.push(track);
 				}

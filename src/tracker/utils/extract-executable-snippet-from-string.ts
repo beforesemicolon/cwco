@@ -1,4 +1,5 @@
 import {CWCO} from "../../cwco";
+import {convertHtmlEntities} from "../../utils/convert-html-entities";
 
 export function extractExecutableSnippetFromString(str: string, [start, end] = ['{', '}'], offset = 0) {
 	const stack = [];
@@ -31,7 +32,7 @@ export function extractExecutableSnippetFromString(str: string, [start, end] = [
 						from: startingCurlyIndex + offset,
 						to: match.index + offset,
 						match: `${start}${matchStr}${end}`,
-						executable: matchStr
+						executable: convertHtmlEntities(matchStr)
 					});
 				}
 			}

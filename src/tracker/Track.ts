@@ -1,5 +1,6 @@
 import {CWCO} from "../cwco";
 import {TrackType} from "../enums/track-type";
+import {convertHtmlEntities} from "../utils/convert-html-entities";
 
 export class Track {
 	public executables: CWCO.Executable[] = [];
