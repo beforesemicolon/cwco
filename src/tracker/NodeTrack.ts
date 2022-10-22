@@ -231,12 +231,6 @@ export class NodeTrack {
 			trackNodeTree(dirNode as Node, this.anchorNodeTrack as NodeTrack, this.component)
 		}
 
-		if (dirNode !== this.node) {
-			this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
-				t.updateNode();
-			})
-		}
-
 		let dirIsArray = Array.isArray(dirNode);
 
 		// in case we have an empty array of nodes or simply that
@@ -253,7 +247,7 @@ export class NodeTrack {
 		const anchorIsArray = Array.isArray(this.anchor);
 		// in case the anchor node is currently empty, it means it had an anchor
 		// node comment render instead as the above if statement make sure of.
-		// in that regard we need to use, so we can replace what's it is currently
+		// in that regard we need to use, so we can replace what it is currently
 		// on the dom as an anchor
 		const anchorEl = anchorIsArray && !(this.anchor as Array<Element>).length
 			? (this.anchorNodeTrack as NodeTrack).node as Comment
@@ -286,6 +280,12 @@ export class NodeTrack {
 			}
 		} else if(dirNode instanceof Node) {
 			nextEl.after(dirNode as Node);
+		}
+
+		if (dirNode !== this.node) {
+			this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
+				t.updateNode();
+			})
 		}
 
 		if (anchorIsArray) {

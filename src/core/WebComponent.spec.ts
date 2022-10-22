@@ -1688,6 +1688,55 @@ describe('WebComponent', () => {
 				expect(s.root?.innerHTML).toBe('<li class="item-0">item 1 <span>1</span><span>2</span><span>3</span></li>');
 			});
 
+			it('should handle deep nested repeats', () => {
+				class RepeatBB extends WebComponent {
+					attrs = [
+						{type: 'string', name: 'label'},
+						{type: 'boolean', name: 'disabled'},
+					]
+					typeOptions = [
+						'string',
+						'boolean'
+					]
+
+					get template() {
+						return '<div class="attr" repeat="attrs as atr">' +
+							'<label>' +
+								'<strong>{atr?.name}</strong>:' +
+								'<select name="type-options">' +
+									'<option repeat="typeOptions" value="{$item}" attr.selected="atr.type === $item">{$item}</option>' +
+								'</select>' +
+							'</label>' +
+						'</div>'
+					}
+				}
+
+				RepeatBB.register();
+				const s = new RepeatBB();
+
+				document.body.appendChild(s);
+
+				expect(s.root?.innerHTML).toBe('<div class="attr">' +
+					'<label>' +
+						'<strong>label</strong>:' +
+						'<select name="type-options">' +
+							'<option value="string" selected="">string</option>' +
+							'<option value="boolean">boolean</option>' +
+						'</select>' +
+					'</label>' +
+				'</div>' +
+				'<div class="attr">' +
+					'<label><' +
+						'strong>disabled</strong>:' +
+						'<select name="type-options">' +
+							'<option value="string">string</option>' +
+							'<option value="boolean" selected="">boolean</option>' +
+						'</select>' +
+					'</label>' +
+				'</div>');
+
+			});
+
 			it('should handle event listener for each repeated node', () => {
 				const cb = jest.fn();
 
