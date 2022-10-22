@@ -8,8 +8,8 @@ describe('getEventHandlerFunction', () => {
 	class EventApp extends WebComponent {
 		handleClick() {}
 
-		onError(error: ErrorEvent | Error) {
-			errorSpy(error)
+		onError(errorMsg: string) {
+			errorSpy(errorMsg)
 		}
 	}
 

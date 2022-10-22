@@ -463,8 +463,8 @@ describe('WebComponent', () => {
 				adoptionFn();
 			}
 
-			onError(error: ErrorEvent | Error) {
-				errorFn(error);
+			onError(errorMsg: string) {
+				errorFn(errorMsg);
 			}
 		}
 
@@ -552,7 +552,7 @@ describe('WebComponent', () => {
 			k.deep.value = 1000
 
 			expect(updateFn).toHaveBeenCalledTimes(0);
-			expect(errorFn).toHaveBeenCalledWith(new Error('Cannot set property "deep" on unmounted component. Possibly a memory leak in [ M-COMP ]'));
+			expect(errorFn).toHaveBeenCalledWith('Cannot set property "deep" on unmounted component. Possibly a memory leak in [ M-COMP ]');
 			expect(k.deep).toEqual({"value": 1000});
 
 			document.body.appendChild(k);
@@ -1274,8 +1274,8 @@ describe('WebComponent', () => {
 						return '{$refs.myRef.nodeName}<div ref="myRef"></div>'
 					}
 
-					onError(error: ErrorEvent) {
-						expect(error.message).toMatch('nodeName');
+					onError(errorMsg: string) {
+						expect(errorMsg).toMatch('nodeName');
 						done();
 					}
 				}
@@ -2113,8 +2113,8 @@ describe('WebComponent', () => {
 				}, 0)
 			}
 
-			onError(error: ErrorEvent | Error) {
-				errorSpy(error);
+			onError(errorMsg: string) {
+				errorSpy(errorMsg);
 			}
 
 			get template() {
@@ -2134,7 +2134,7 @@ describe('WebComponent', () => {
 
 		jest.runOnlyPendingTimers();
 
-		expect(errorSpy).toHaveBeenCalledWith(new Error('Cannot set property "sample" on unmounted component. Possibly a memory leak in [ LEAK-A ]'));
+		expect(errorSpy).toHaveBeenCalledWith('Cannot set property "sample" on unmounted component. Possibly a memory leak in [ LEAK-A ]');
 		expect(l.root?.innerHTML).toBe('12');
 
 		jest.resetAllMocks()

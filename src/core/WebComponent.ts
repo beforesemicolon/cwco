@@ -210,11 +210,11 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				try {
 					this.forceUpdate();
 					this.onUpdate(prop, oldValue, newValue);
-				} catch(e) {
-					this.onError(e as ErrorEvent);
+				} catch(e: any) {
+					this.onError(e.message);
 				}
 			} else if(this.parsed) {
-				this.onError(new Error(`Cannot set property "${prop}" on unmounted component. Possibly a memory leak in [ ${getNodePathToDoc(this).join(' > ')} ]`));
+				this.onError(`Cannot set property "${prop}" on unmounted component. Possibly a memory leak in [ ${getNodePathToDoc(this).join(' > ')} ]`);
 			}
 		};
 
@@ -285,8 +285,8 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 			}
 			
 			$.get(this).mountUnsubscribe = this.onMount();
-		} catch (e) {
-			this.onError(e as ErrorEvent);
+		} catch (e: any) {
+			this.onError(e.message);
 		}
 	}
 	
@@ -302,8 +302,8 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 			$.get(this).mounted = false;
 			typeof mountUnsubscribe === 'function' && mountUnsubscribe();
 			this.onDestroy();
-		} catch (e) {
-			this.onError(e as Error)
+		} catch (e: any) {
+			this.onError(e.message);
 		}
 	}
 	
@@ -329,8 +329,8 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 					this.forceUpdate();
 					this.onUpdate(name, oldValue, newValue);
 				}
-			} catch (e) {
-				this.onError(e as ErrorEvent)
+			} catch (e: any) {
+				this.onError(e.message);
 			}
 		}
 	}
@@ -353,8 +353,8 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	adoptedCallback() {
 		try {
 			this.onAdoption();
-		} catch (e) {
-			this.onError(e as Error)
+		} catch (e: any) {
+			this.onError(e.message);
 		}
 	}
 	
@@ -367,8 +367,8 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	/**
 	 * error callback for when an error occurs
 	 */
-	onError(error: ErrorEvent | Error) {
-		console.error(this.constructor.name, error);
+	onError(errorMessage: string) {
+		console.error(this.constructor.name, errorMessage);
 	}
 }
 
