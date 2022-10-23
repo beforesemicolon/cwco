@@ -197,7 +197,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	}
 	
 	connectedCallback() {
-		const {initialContext, observedAttributes, tagName, mode} = this.constructor as CWCO.WebComponentConstructor;
+		const {initialContext, observedAttributes, tagName, mode, name} = this.constructor as CWCO.WebComponentConstructor;
 		const {parsed, selfTrack, root, attrPropsMap} = $.get(this);
 
 		if (Object.keys(initialContext).length) {
@@ -247,7 +247,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 					temp = t?.nodeName === 'TEMPLATE' ? t.innerHTML : temp;
 				}
 
-				if (stylesheet && mode !== 'none' || !getLinkAndStyleTagsFromHead(tagName).length) {
+				if (stylesheet && (mode !== 'none' || (this.customSlot && !getLinkAndStyleTagsFromHead(tagName).length))) {
 					style = typeof stylesheet === 'object'
 						? `<style class="${tagName}">${JSONToCSS(stylesheet, tagName.toLowerCase(), hasShadowRoot)}</style>`
 						: getStyleString(stylesheet, tagName.toLowerCase(), hasShadowRoot);
@@ -267,7 +267,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 					t.updateNode();
 				})
 
-				if (mode === 'none') {
+				if (this.customSlot && mode === 'none') {
 					[
 						...Array.from(contentNode.querySelectorAll('link')),
 						...Array.from(contentNode.querySelectorAll('style')),

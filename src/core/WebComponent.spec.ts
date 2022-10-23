@@ -166,7 +166,7 @@ describe('WebComponent', () => {
 			expect(h.root?.innerHTML).toBe('')
 		});
 
-		it('should put style in the head tag if mode is none', () => {
+		it('should not include the style if mode is NONE', () => {
 			class EStyle extends WebComponent {
 				static mode = ShadowRootModeExtended.NONE;
 
@@ -182,7 +182,6 @@ describe('WebComponent', () => {
 			document.body.appendChild(i);
 
 			expect(i.root?.innerHTML).toBe('')
-			expect(document.head.innerHTML).toBe('<link rel="stylesheet " href="app.css" class="e-style"><style class="e-style"> e-style {display: inline-block;}</style><style class="e-style">e-style {display: inline-block;}</style>')
 		});
 
 		it('should handle link stylesheet', () => {
