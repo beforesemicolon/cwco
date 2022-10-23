@@ -40,7 +40,6 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 		const meta = $.get(this);
 
 		meta.root = this;
-		meta.mounted = false;
 		meta.parsed = false;
 		meta.clearAttr = false;
 		meta.selfTrack = selfTrack;
@@ -178,7 +177,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	 * @returns {boolean}
 	 */
 	get mounted() {
-		return $.get(this)?.mounted ?? false;
+		return this.isConnected;
 	}
 	
 	get parsed() {
@@ -219,8 +218,6 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 		};
 
 		try {
-
-			$.get(this).mounted = true;
 
 			/*
 			only need to parse the element the very first time it gets mounted
@@ -299,7 +296,6 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	disconnectedCallback() {
 		try {
 			const {mountUnsubscribe} = $.get(this);
-			$.get(this).mounted = false;
 			typeof mountUnsubscribe === 'function' && mountUnsubscribe();
 			this.onDestroy();
 		} catch (e: any) {
