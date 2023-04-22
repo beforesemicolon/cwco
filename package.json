@@ -10,7 +10,7 @@
     "build:browser-local": "esbuild src/client.ts --bundle --target=es2020 --outfile=dist/cwco.min.js",
     "build": "tsc --noEmit && rm -rf dist && npm run build:browser && tsc && cp src/cwco.d.ts dist",
     "build:local": "tsc --noEmit && rm -rf dist && npm run build:browser-local && tsc && cp src/cwco.d.ts dist",
-    "local": "nodemon --watch src -e ts --exec npm run build:local"
+    "local": "nodemon --watch src -e ts --exec 'npm run build:local && npm pack'"
   },
   "keywords": [
     "web-component",

@@ -1,4 +1,4 @@
-import {Directive} from "../core/directive";
+import {Directive} from "../core/Directive";
 import {turnKebabToCamelCasing} from "../utils/turn-kebab-to-camel-casing";
 import {turnCamelToKebabCasing} from "../utils/turn-camel-to-kebab-casing";
 import booleanAttr from "../core/boolean-attributes.json";
@@ -28,11 +28,8 @@ export class Attr extends Directive {
 							if (shouldAdd) {
 								element.style.setProperty(name, styleValue);
 							} else {
-								element.setAttribute(
-									'style',
-									element.style.cssText.replace(new RegExp(`${name}\\s*:\\s*${styleValue};?`, 'g'), ''))
+								element.style.removeProperty(name);
 							}
-
 						})
 				}
 

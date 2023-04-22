@@ -59,11 +59,18 @@ export class NodeTrack {
 
 			for (let t of this.tracks.directive) {
 				const dirNode = this._updateNodeDirective(t);
-
+				
 				if (dirNode) {
 					this._swapNodeAndDirNode(dirNode);
-					this.anchor = dirNode;
-
+					// the anchor cannot be an empty array otherwise
+					// on the next update it won't be able to be replaced
+					this.anchor = !Array.isArray(dirNode) || dirNode.length
+						? dirNode
+						: this.anchorNodeTrack?.node;
+					
+					// if the node being displayed is not the original node, meaning
+					// it was replaced by a new node(s), we don't need to continue
+					// update for the current node off the view since it's not visible
 					if (dirNode !== this.node) {
 						return;
 					}
@@ -83,7 +90,7 @@ export class NodeTrack {
 			// there is nothing that will trigger update inside the
 			// component like attribute tracks would
 			if (empty && force && this.node.nodeName.includes('-') && typeof (this.node as CWCO.WebComponent).forceUpdate == 'function') {
-				(this.node as CWCO.WebComponent).forceUpdate();
+				(this.node as CWCO.WebComponent).forceUpdate(force);
 			}
 
 			this.childNodeTracks.forEach(t => {
@@ -124,20 +131,28 @@ export class NodeTrack {
 			track.executables
 		);
 
+		const {attrPropsMap} = $.get(this.node);
+		const attrProp = attrPropsMap ? attrPropsMap[track.name] : track.name;
+
 		if (isPrimitive(newValue)) {
 			if ((this.node as HTMLElement).getAttribute(track.name) !== newValue) {
 				(this.node as HTMLElement).setAttribute(track.name, newValue);
+
+				// for non WebComponents we want to also update the property
+				// learn why => https://developer.mozilla.org/en-US/docs/Web/API/Element/setAttribute#gecko_notes
+				// for WebComponents just using the setAttribute is enough since it will trigger appropriate
+				// internal updates if the attr is observed
+				if (!this.node.nodeName.includes('-')) {
+					(this.node as CWCO.ObjectLiteral)[attrProp] = newValue;
+				}
+
 				return true;
 			}
 		} else {
-			const {attrPropsMap} = $.get(this.node);
-			const attrProp = attrPropsMap ? attrPropsMap[track.name] : track.name;
-
 			if ((this.node as HTMLElement).hasAttribute(track.name)) {
 				$.get(this.node).clearAttr = true;
 				(this.node as HTMLElement).removeAttribute(track.name);
 			}
-
 
 			(this.node as CWCO.ObjectLiteral)[attrProp] = newValue;
 			return true;
@@ -215,16 +230,6 @@ export class NodeTrack {
 			this._removeNodeDirectiveAttribute(dirNode);
 			trackNodeTree(dirNode as Node, this.anchorNodeTrack as NodeTrack, this.component)
 		}
-		
-		this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
-			t.updateNode();
-		})
-
-		if (dirNode !== this.node) {
-			this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
-				t.updateNode();
-			})
-		}
 
 		let dirIsArray = Array.isArray(dirNode);
 
@@ -240,9 +245,9 @@ export class NodeTrack {
 		}
 
 		const anchorIsArray = Array.isArray(this.anchor);
-		// in case the anchor node is currently empty, it means it had a anchor
+		// in case the anchor node is currently empty, it means it had an anchor
 		// node comment render instead as the above if statement make sure of.
-		// in that regard we need to use so we can replace whats it is currently
+		// in that regard we need to use, so we can replace what it is currently
 		// on the dom as an anchor
 		const anchorEl = anchorIsArray && !(this.anchor as Array<Element>).length
 			? (this.anchorNodeTrack as NodeTrack).node as Comment
@@ -275,6 +280,12 @@ export class NodeTrack {
 			}
 		} else if(dirNode instanceof Node) {
 			nextEl.after(dirNode as Node);
+		}
+
+		if (dirNode !== this.node) {
+			this.anchorNodeTrack?.childNodeTracks.forEach((t: NodeTrack) => {
+				t.updateNode();
+			})
 		}
 
 		if (anchorIsArray) {

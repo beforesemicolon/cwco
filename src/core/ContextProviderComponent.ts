@@ -1,5 +1,5 @@
 import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
-import {WebComponent} from "./web-component";
+import {WebComponent} from "./WebComponent";
 import {CWCO} from "../cwco";
 
 /**
@@ -16,7 +16,7 @@ export class ContextProviderComponent extends WebComponent implements CWCO.WebCo
 		return '<slot></slot>';
 	}
 
-	get stylesheet() {
+	get stylesheet(): CWCO.Stylesheet {
 		return ':host { display: block; }';
 	}
 }

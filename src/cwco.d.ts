@@ -26,6 +26,7 @@ declare namespace CWCO {
 		parseValue: (value: string, prop: string | null) => string;
 		render: (val: any, options: directiveRenderOptions) => directiveRenderOptions['anchorNode'];
 		updateContext: (node: Node, ctx: ObjectLiteral) => void;
+		setRef: (name: string, node: Node) => void;
 		getContext: (node: Node) => void
 		[key: string]: any;
 	}
@@ -73,6 +74,8 @@ declare namespace CWCO {
 		property: Track[];
 	}
 	
+	export type MountUnSubscriber = () => void;
+	
 	export type ObjectLiteral = {[key: string]: any};
 	
 	export type ObserverCallback = (ctx: ObjectLiteral) => void;
@@ -96,12 +99,12 @@ declare namespace CWCO {
 		
 		updateContext: (ctx: ObjectLiteral) => void;
 		
-		onMount: () => void;
+		onMount: () => MountUnSubscriber | void;
 		onDestroy: () => void;
 		onAdoption: () => void;
 		onUpdate: (name: string, oldValue: string, newValue: string) => void;
 		onError: (error: any) => void;
-		forceUpdate: () => void;
+		forceUpdate: (deep: boolean) => void;
 		
 		[key: string]: any;
 	}

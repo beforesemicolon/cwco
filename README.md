@@ -81,7 +81,7 @@ You can import `html` from `cwco` which is just a help for VSCode which does not
 to the HTML string you use it with.
 
 ```js
-import {html, WebComponent} from "./cwco";
+import {html, css, WebComponent} from "./cwco";
 
 class MyButton extends WebComponent {
   get template() {
@@ -89,7 +89,9 @@ class MyButton extends WebComponent {
   }
   
   get stylesheet() {
-    return html`<style>button {color: #222}</style>`
+    return css`<style>button {color: #222}</style>`
+    // or 
+    // return css`button {color: #222}`
   }
 }
 ```

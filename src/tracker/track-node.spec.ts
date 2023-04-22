@@ -1,8 +1,8 @@
 import {directiveRegistry} from "../directives/registry";
-import {WebComponent} from "../core/web-component";
+import {WebComponent} from "../core/WebComponent";
 import {trackNode} from "./track-node";
 import {TrackType} from "../enums/track-type";
-import {Track} from "./track";
+import {Track} from "./Track";
 
 describe('trackNode', () => {
 	class CompBase extends WebComponent {}

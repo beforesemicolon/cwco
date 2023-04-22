@@ -1,5 +1,7 @@
-import {WebComponent} from './web-component';
+import {WebComponent} from './WebComponent';
 import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
+import {ContextProviderComponent} from "./ContextProviderComponent";
+import {css} from "../utils/css";
 
 describe('WebComponent', () => {
 
@@ -16,6 +18,7 @@ describe('WebComponent', () => {
 			// @ts-ignore
 			window.requestAnimationFrame.mockRestore();
 		}
+		jest.useRealTimers()
 	});
 
 	describe('constructor and configuration', () => {
@@ -163,7 +166,7 @@ describe('WebComponent', () => {
 			expect(h.root?.innerHTML).toBe('')
 		});
 
-		it('should put style in the head tag if mode is none', () => {
+		it('should not include the style if mode is NONE', () => {
 			class EStyle extends WebComponent {
 				static mode = ShadowRootModeExtended.NONE;
 
@@ -179,7 +182,6 @@ describe('WebComponent', () => {
 			document.body.appendChild(i);
 
 			expect(i.root?.innerHTML).toBe('')
-			expect(document.head.innerHTML).toBe('<link rel="stylesheet " href="app.css" class="e-style"><style class="e-style"> e-style {display: inline-block;}</style><style class="e-style">e-style {display: inline-block;}</style>')
 		});
 
 		it('should handle link stylesheet', () => {
@@ -413,7 +415,7 @@ describe('WebComponent', () => {
 				}
 
 				get stylesheet() {
-					return html`<style> {color: #222}</style>`
+					return css`<style> {color: #222}</style>`
 				}
 			}
 
@@ -429,6 +431,7 @@ describe('WebComponent', () => {
 
 	describe('liveCycles', () => {
 		const mountFn = jest.fn();
+		const mountUnSubFn = jest.fn();
 		const destroyFn = jest.fn();
 		const updateFn = jest.fn();
 		const adoptionFn = jest.fn();
@@ -443,6 +446,8 @@ describe('WebComponent', () => {
 
 			onMount() {
 				mountFn();
+				
+				return mountUnSubFn;
 			}
 
 			onDestroy() {
@@ -457,8 +462,8 @@ describe('WebComponent', () => {
 				adoptionFn();
 			}
 
-			onError(error: ErrorEvent | Error) {
-				errorFn(error);
+			onError(errorMsg: string) {
+				errorFn(errorMsg);
 			}
 		}
 
@@ -478,7 +483,19 @@ describe('WebComponent', () => {
 			adoptionFn.mockClear();
 			errorFn.mockClear();
 		})
-
+		
+		it('should mount unsubscribe on destroy', () => {
+			document.body.appendChild(k);
+			
+			expect(mountFn).toHaveBeenCalledTimes(1);
+			
+			k.remove();
+			
+			expect(destroyFn).toHaveBeenCalledTimes(1);
+			expect(mountUnSubFn).toHaveBeenCalledTimes(1);
+			
+		});
+		
 		it('should use property values set before mounted if same attribute is not set', () => {
 			k.sample = 'new test value';
 
@@ -534,7 +551,7 @@ describe('WebComponent', () => {
 			k.deep.value = 1000
 
 			expect(updateFn).toHaveBeenCalledTimes(0);
-			expect(errorFn).toHaveBeenCalledWith(new Error('[Possibly a memory leak]: Cannot set property "deep" on unmounted component.'));
+			expect(errorFn).toHaveBeenCalledWith('Cannot set property "deep" on unmounted component. Possibly a memory leak in [ M-COMP ]');
 			expect(k.deep).toEqual({"value": 1000});
 
 			document.body.appendChild(k);
@@ -609,77 +626,114 @@ describe('WebComponent', () => {
 		});
 	});
 
-	describe('update DOM', () => {
-		let n: any;
+	describe('DOM', () => {
+		describe('property and attr updates', () => {
+			let n: any;
 
-		class NComp extends WebComponent {
-			static observedAttributes = ['sample', 'style', 'class', 'data-x'];
-			numb = 12;
-			obj = {
-				value: 300
+			class NComp extends WebComponent {
+				static observedAttributes = ['sample', 'style', 'class', 'data-x'];
+				numb = 12;
+				obj = {
+					value: 300
+				}
+
+				get template() {
+					return '{obj.value}<strong class="{this.className}" style="{this.style.cssText}" data-x="{this.dataset.x}">{numb} {sample}</strong>'
+				}
 			}
 
-			get template() {
-				return '{obj.value}<strong class="{this.className}" style="{this.style.cssText}" data-x="{this.dataset.x}">{numb} {sample}</strong>'
-			}
-		}
+			NComp.register();
 
-		NComp.register();
+			beforeEach(() => {
+				n?.remove();
+				n = new NComp();
+				document.body.appendChild(n);
 
-		beforeEach(() => {
-			n?.remove();
-			n = new NComp();
-			document.body.appendChild(n);
+				n.numb = 12;
+				// @ts-ignore
+				n.sample = '';
+				n.obj.value = 300;
+				n.className = '';
+				n.setAttribute('style', '');
+				n.dataset.x = '';
+			})
 
-			n.numb = 12;
-			// @ts-ignore
-			n.sample = '';
-			n.obj.value = 300;
-			n.className = '';
-			n.setAttribute('style', '');
-			n.dataset.x = '';
+			it('should render', () => {
+				expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="">12 </strong>')
+			});
+
+			it('should update DOM when properties update', () => {
+				n.numb = 100;
+
+				expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="">100 </strong>')
+			});
+
+			it('should update DOM when observed attributes update', () => {
+				// @ts-ignore
+				n.sample = 'items';
+
+				expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="">12 items</strong>')
+			});
+
+			it('should update DOM when class gets updated', () => {
+				n.className = 'my-items';
+				n.classList.add('unique')
+
+				expect(n.root?.innerHTML).toBe('300<strong class="my-items unique" style="" data-x="">12 </strong>')
+			});
+
+			it('should update DOM when style gets updated', (done) => {
+				n.style.background = 'red';
+				n.style.display = 'block';
+
+				setTimeout(() => {
+					expect(n.root?.innerHTML).toBe('300<strong class="" style="background: red; display: block;" data-x="">12 </strong>');
+					done()
+				})
+			});
+
+			it('should update DOM when data attributes gets updated', () => {
+				n.dataset.x = 'test-value';
+
+				expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="test-value">12 </strong>');
+			});
 		})
 
-		it('should render', () => {
-			expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="">12 </strong>')
+		it('should update input field on value changes', () => {
+			class FieldComp extends WebComponent {
+				val = "";
+
+				get template() {
+					return '<input type="text" ref="input" value="{val}"/>' +
+						'<button type="button" ref="btn" onclick="clear()">clear</button>'
+				}
+
+				clear() {
+					this.val = '';
+				}
+			}
+
+			FieldComp.register();
+
+			const f = new FieldComp();
+
+			document.body.appendChild(f);
+
+			const input = f.$refs.input as HTMLInputElement;
+			const btn = f.$refs.btn as HTMLButtonElement;
+
+			expect(input.value).toBe('');
+
+			f.val = "sample";
+
+			expect(input.value).toBe('sample');
+			expect(input.getAttribute('value')).toBe('sample');
+
+			btn.click()
+
+			expect(input.value).toBe('');
+			expect(input.getAttribute('value')).toBe('');
 		});
-
-		it('should update DOM when properties update', () => {
-			n.numb = 100;
-
-			expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="">100 </strong>')
-		});
-
-		it('should update DOM when observed attributes update', () => {
-			// @ts-ignore
-			n.sample = 'items';
-
-			expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="">12 items</strong>')
-		});
-
-		it('should update DOM when class gets updated', () => {
-			n.className = 'my-items';
-			n.classList.add('unique')
-
-			expect(n.root?.innerHTML).toBe('300<strong class="my-items unique" style="" data-x="">12 </strong>')
-		});
-
-		it('should update DOM when style gets updated', (done) => {
-			n.style.background = 'red';
-			n.style.display = 'block';
-
-			setTimeout(() => {
-				expect(n.root?.innerHTML).toBe('300<strong class="" style="background: red; display: block;" data-x="">12 </strong>');
-				done()
-			})
-		});
-
-		it('should update DOM when data attributes gets updated', () => {
-			n.dataset.x = 'test-value';
-
-			expect(n.root?.innerHTML).toBe('300<strong class="" style="" data-x="test-value">12 </strong>');
-		});
-		
 	})
 
 	describe('data bind', () => {
@@ -881,7 +935,7 @@ describe('WebComponent', () => {
 
 			s.data = () => 12
 
-			expect(updateSpy).toHaveBeenCalledWith(expect.any(Function));
+			expect(updateSpy).not.toHaveBeenCalled();
 			updateSpy.mockClear()
 		});
 	})
@@ -928,6 +982,42 @@ describe('WebComponent', () => {
 			
 			expect(updateSpy).not.toHaveBeenCalled();
 
+		});
+		
+		it('should detect data changes inside event handlers from repeats', () => {
+			const clickHandlerSpy = jest.fn();
+			
+			class EventB extends WebComponent {
+				labels = ['one', 'two'];
+				
+				get template() {
+					return '<button repeat="labels" onclick="handleClick($item)">click {$item}</button>'
+				}
+				
+				handleClick = (numb: number) => {
+					clickHandlerSpy(numb);
+				}
+			}
+			
+			EventB.register();
+			const s = new EventB();
+			
+			document.body.appendChild(s);
+			
+			s.root?.querySelector('button')?.click();
+			
+			expect(s.root?.querySelector('button')?.outerHTML).toBe('<button>click one</button>')
+			expect(clickHandlerSpy).toHaveBeenCalledWith('one');
+			
+			clickHandlerSpy.mockClear()
+			
+			s.labels = ['1', '2'];
+			
+			s.root?.querySelector('button')?.click();
+			
+			expect(s.root?.querySelector('button')?.outerHTML).toBe('<button>click 1</button>')
+			expect(clickHandlerSpy).toHaveBeenCalledWith('1');
+			
 		});
 	});
 
@@ -1007,8 +1097,56 @@ describe('WebComponent', () => {
 			expect(comp.shadowRoot?.innerHTML).toBe('1')
 		});
 
-		it('should ', () => {
-		
+		it('should propagate context deeply', () => {
+			jest.useFakeTimers();
+
+			class CtxDeep extends WebComponent {
+				get template() {
+					return '<p class="{$context.sample}-ls">{$context.sample}</p>'
+				}
+			}
+
+			CtxDeep.register();
+
+			class CtxMid extends WebComponent {
+				get template() {
+					return '<ctx-deep></ctx-deep>'
+				}
+			}
+
+			CtxMid.register();
+
+			class CtxAppA extends ContextProviderComponent {
+				static initialContext = {
+					sample: 0
+				}
+
+				onMount() {
+					setTimeout(() => {
+						this.updateContext({
+							sample: 100
+						})
+					}, 2000)
+				}
+			}
+
+			CtxAppA.register();
+
+			document.body.innerHTML = `
+				<ctx-app-a>
+					<ctx-mid></ctx-mid>
+				</ctx-app-a>
+			`;
+
+			const comp = document.body.children[0] as WebComponent;
+			const btn = comp.children[0] as WebComponent;
+			const icon = btn.root?.children[0] as WebComponent;
+
+			expect(icon.root?.innerHTML).toBe('<p class="0-ls">0</p>');
+
+			jest.advanceTimersByTime(2000);
+
+			expect(icon.root?.innerHTML).toBe('<p class="100-ls">100</p>');
 		});
 	});
 
@@ -1135,8 +1273,8 @@ describe('WebComponent', () => {
 						return '{$refs.myRef.nodeName}<div ref="myRef"></div>'
 					}
 
-					onError(error: ErrorEvent) {
-						expect(error.message).toMatch('nodeName');
+					onError(errorMsg: string) {
+						expect(errorMsg).toMatch('nodeName');
 						done();
 					}
 				}
@@ -1549,6 +1687,55 @@ describe('WebComponent', () => {
 				expect(s.root?.innerHTML).toBe('<li class="item-0">item 1 <span>1</span><span>2</span><span>3</span></li>');
 			});
 
+			it('should handle deep nested repeats', () => {
+				class RepeatBB extends WebComponent {
+					attrs = [
+						{type: 'string', name: 'label'},
+						{type: 'boolean', name: 'disabled'},
+					]
+					typeOptions = [
+						'string',
+						'boolean'
+					]
+
+					get template() {
+						return '<div class="attr" repeat="attrs as atr">' +
+							'<label>' +
+								'<strong>{atr?.name}</strong>:' +
+								'<select name="type-options">' +
+									'<option repeat="typeOptions" value="{$item}" attr.selected="atr.type === $item">{$item}</option>' +
+								'</select>' +
+							'</label>' +
+						'</div>'
+					}
+				}
+
+				RepeatBB.register();
+				const s = new RepeatBB();
+
+				document.body.appendChild(s);
+
+				expect(s.root?.innerHTML).toBe('<div class="attr">' +
+					'<label>' +
+						'<strong>label</strong>:' +
+						'<select name="type-options">' +
+							'<option value="string" selected="">string</option>' +
+							'<option value="boolean">boolean</option>' +
+						'</select>' +
+					'</label>' +
+				'</div>' +
+				'<div class="attr">' +
+					'<label><' +
+						'strong>disabled</strong>:' +
+						'<select name="type-options">' +
+							'<option value="string">string</option>' +
+							'<option value="boolean" selected="">boolean</option>' +
+						'</select>' +
+					'</label>' +
+				'</div>');
+
+			});
+
 			it('should handle event listener for each repeated node', () => {
 				const cb = jest.fn();
 
@@ -1785,6 +1972,31 @@ describe('WebComponent', () => {
 					'<div name="C"><small-r value="c"></small-r></div>' +
 					'<div name="E"><!-- if: false --></div>')
 			})
+			
+			it('should render comment when list is updated empty twice on mount', () => {
+				class RepeatG extends WebComponent {
+					list: any = [];
+					
+					onMount() {
+						this.list = [];
+					}
+					
+					get template() {
+						return '<li repeat="list">{$item}</li>'
+					}
+				}
+				
+				RepeatG.register();
+				const s = new RepeatG();
+				
+				document.body.appendChild(s);
+				
+				expect(s.root?.innerHTML).toBe('<!--<li repeat="list">{$item}</li>-->');
+				
+				s.list = ['one', 'two'];
+
+				expect(s.root?.innerHTML).toBe('<li>one</li><li>two</li>')
+			});
 		});
 
 		describe('should allow mix of directives', () => {
@@ -1949,8 +2161,8 @@ describe('WebComponent', () => {
 				}, 0)
 			}
 
-			onError(error: ErrorEvent | Error) {
-				errorSpy(error);
+			onError(errorMsg: string) {
+				errorSpy(errorMsg);
 			}
 
 			get template() {
@@ -1970,12 +2182,82 @@ describe('WebComponent', () => {
 
 		jest.runOnlyPendingTimers();
 
-		expect(errorSpy).toHaveBeenCalledWith(new Error('[Possibly a memory leak]: Cannot set property "sample" on unmounted component.'));
+		expect(errorSpy).toHaveBeenCalledWith('Cannot set property "sample" on unmounted component. Possibly a memory leak in [ LEAK-A ]');
 		expect(l.root?.innerHTML).toBe('12');
 
 		jest.resetAllMocks()
 	});
-
+	
+	describe('should ignore function properties', () => {
+		it('when defined at start', () => {
+			const onUpdate = jest.fn();
+			
+			class FnCompA extends WebComponent {
+				fn = () => {};
+				numb = 12;
+				
+				onUpdate(name: string, oldValue: unknown, newValue: unknown) {
+					onUpdate(name, oldValue, newValue);
+				}
+			}
+			
+			FnCompA.register();
+			
+			const comp = new FnCompA();
+			
+			document.body.appendChild(comp);
+			
+			expect(comp.$properties).toEqual([
+				"$context",
+				"$refs",
+				"templateId",
+				"_childNodes",
+				"$properties",
+				"numb"
+			]);
+			
+			// @ts-ignore
+			comp.fn = 12;
+			
+			expect(onUpdate).not.toHaveBeenCalled()
+			
+		});
+		
+		it('when defined later', () => {
+			const onUpdate = jest.fn();
+			
+			class FnCompB extends WebComponent {
+				// @ts-ignore
+				fn: undefined;
+				numb = 12;
+				
+				onUpdate(name: string, oldValue: unknown, newValue: unknown) {
+					onUpdate(name, oldValue, newValue);
+				}
+			}
+			
+			FnCompB.register();
+			
+			const comp = new FnCompB();
+			
+			document.body.appendChild(comp);
+			
+			expect(comp.$properties).toEqual([
+				"$context",
+				"$refs",
+				"templateId",
+				"_childNodes",
+				"$properties",
+				"numb"
+			]);
+			
+			// @ts-ignore
+			comp.fn = () => {};
+			
+			expect(onUpdate).not.toHaveBeenCalled()
+		});
+	});
+	
 	describe('should deeply propagate changes', () => {
 		const updateSpy = jest.fn();
 

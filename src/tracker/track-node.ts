@@ -6,8 +6,9 @@ import {parseNodeDirective} from "./utils/parse-node-directive";
 import {getEventHandlerFunction} from "./utils/get-event-handler-function";
 import {extractExecutableSnippetFromString} from "./utils/extract-executable-snippet-from-string";
 import {TrackType} from "../enums/track-type";
-import {Track} from "./track";
+import {Track} from "./Track";
 import {defineNodeContextMetadata} from "./utils/define-node-context-metadata";
+import {convertHtmlEntities} from "../utils/convert-html-entities";
 
 export const trackNode = (node: Node | HTMLElement, component: CWCO.WebComponent): CWCO.TracksMapByType => {
 	const tracks: CWCO.TracksMapByType = {
@@ -58,7 +59,7 @@ export const trackNode = (node: Node | HTMLElement, component: CWCO.WebComponent
 				const {name, value, prop} = parseNodeDirective(node as HTMLElement, attr.name, attr.value);
 				const dir = directiveRegistry[name];
 
-				track = new Track(name, value, TrackType.directive);
+				track = new Track(name, convertHtmlEntities(value), TrackType.directive);
 				track.prop = prop;
 				track.handler = dir;
 
@@ -87,7 +88,7 @@ export const trackNode = (node: Node | HTMLElement, component: CWCO.WebComponent
 			(node as HTMLElement).removeAttribute(attribute.name);
 
 			if (!fn) {
-				node.addEventListener(eventName, getEventHandlerFunction(component, $.get(node).$context, attribute));
+				node.addEventListener(eventName, getEventHandlerFunction(component, node, attribute));
 			}
 		});
 

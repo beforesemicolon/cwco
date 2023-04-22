@@ -1,5 +1,5 @@
-import {Repeat} from './repeat.directive';
-import {WebComponent} from "../core/web-component";
+import {Repeat} from './Repeat.directive';
+import {WebComponent} from "../core/WebComponent";
 
 describe('Repeat Directive', () => {
 	class TestComp extends WebComponent {}

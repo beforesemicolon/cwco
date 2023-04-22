@@ -1,5 +1,6 @@
 import {CWCO} from "../../cwco";
 import {$} from "../../core/$";
+import {getParent} from "../../utils/get-parent";
 
 export function defineNodeContextMetadata(node: Node) {
 	if ($.has(node) && $.get(node)?.$context) {
@@ -26,11 +27,5 @@ export function defineNodeContextMetadata(node: Node) {
 	})
 
 	$.set(node, dt);
-}
-
-function getParent(node: Node) {
-	return node.parentNode instanceof ShadowRoot
-		? node.parentNode.host
-		: node.parentNode
 }
 

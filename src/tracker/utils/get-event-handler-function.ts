@@ -1,10 +1,9 @@
 import {CWCO} from "../../cwco";
+import {$} from "../../core/$";
 
-export function getEventHandlerFunction(component: CWCO.WebComponent, nodeData: CWCO.ObjectLiteral, attribute: Attr): CWCO.EventListenerCallback {
+export function getEventHandlerFunction(component: CWCO.WebComponent, node: Node, attribute: Attr): CWCO.EventListenerCallback {
+	let nodeData = $.get(node).$context;
 	const props = Array.from(new Set([...Object.getOwnPropertyNames(nodeData), ...component.$properties]));
-	const values = props.map(k => {
-		return nodeData[k] ?? component[k] ?? null;
-	});
 	const value = attribute.value.trim()
 	const match = value.match(/^(?:((?:this\.)?([a-z$_][a-z0-9$_\\.]*)\s*\((.*)\))|\{(.*)\})$/i);
 	let func: Function;
@@ -27,5 +26,10 @@ export function getEventHandlerFunction(component: CWCO.WebComponent, nodeData: 
 		func = new Function('$event', ...props, `"use strict";\n ${value}`);
 	}
 
-	return (event: Event) => func.call(component, event, ...values);
+	return (event: Event) => {
+		nodeData = $.get(node).$context;
+		const values = props.map(k => nodeData[k] ?? component[k] ?? null);
+		
+		func.call(component, event, ...values)
+	};
 }

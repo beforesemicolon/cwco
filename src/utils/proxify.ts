@@ -26,6 +26,10 @@ export function proxify(name: string, object: any, notify: (name: string, o: any
 				return true;
 			}
 			
+			if (n === "__raw") {
+				return object;
+			}
+			
 			let res = Reflect.get(obj, n);
 
 			if (res) {

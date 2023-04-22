@@ -12,26 +12,36 @@
 <main id="app-html"></main>
 
 <script id="app-js">
-class MountExample extends WebComponent {
-	// the onMount is call soon after the element is added
-	// to the DOM and it is great for doing initializing task
-	// like subscribing to things, fetching data, checkin DOM, etc
-	onMount() {
-		alert('MountExample component added to the DOM')
-	}
+class TimeCounter extends WebComponent {
+	time = new Date();
 	
 	get template() {
-		return "<p>You added me to the DOM</p>"
+		return '<p>{time.toLocaleString()}</p><button onclick="removeMe()">clear</button>'
 	}
+	
+	onMount() {
+		const timer = setInterval(() => {
+			this.time = new Date();
+		}, 1000);
+		
+		return () => {
+			clearInterval(timer);
+		}
+	}
+	
+	removeMe() {
+		this.remove();
+	}
+	
 }
 
-MountExample.register();
+TimeCounter.register();
 
 const btn = document.createElement('button');
-btn.textContent = "mount component";
+btn.textContent = "add timer";
 
 btn.onclick = () => {
-	document.body.appendChild(new MountExample());
+	document.body.appendChild(new TimeCounter());
 }
 
 document.body.appendChild(btn);

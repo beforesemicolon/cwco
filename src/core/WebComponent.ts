@@ -13,9 +13,10 @@ import {ShadowRootModeExtended} from "../enums/ShadowRootModeExtended.enum";
 import {jsonParse} from "../utils/json-parse";
 import {resolveHtmlEntities} from "../utils/resolve-html-entities";
 import {CWCO} from "../cwco";
-import {NodeTrack} from "../tracker/node-track";
+import {NodeTrack} from "../tracker/NodeTrack";
 import {trackNodeTree} from "../tracker/track-node-tree";
 import {JSONToCSS} from "./utils/json-to-css";
+import {getNodePathToDoc} from "../utils/get-node-path-to-doc";
 
 /**
  * a extension on the native web component API to simplify and automate most of the pain points
@@ -23,7 +24,7 @@ import {JSONToCSS} from "./utils/json-to-css";
  */
 export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	readonly $refs: CWCO.Refs = {};
-	$properties: Array<string> = ['$context', '$refs'];
+	$properties: Array<string> = ['$context', '$refs', 'templateId', '_childNodes', '$properties'];
 	/**
 	 * the id of the template tag placed in the body of the document which contains the template content
 	 */
@@ -39,7 +40,6 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 		const meta = $.get(this);
 
 		meta.root = this;
-		meta.mounted = false;
 		meta.parsed = false;
 		meta.clearAttr = false;
 		meta.selfTrack = selfTrack;
@@ -48,6 +48,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 			...map,
 			[attr]: turnKebabToCamelCasing(attr)
 		}), {} as CWCO.ObjectLiteral);
+		meta.mountUnsubscribe = () => {};
 
 		if (mode !== 'none') {
 			$.get(this).root = this.attachShadow({mode, delegatesFocus});
@@ -176,7 +177,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	 * @returns {boolean}
 	 */
 	get mounted() {
-		return $.get(this)?.mounted ?? false;
+		return this.isConnected;
 	}
 	
 	get parsed() {
@@ -190,15 +191,13 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	updateContext(ctx: CWCO.ObjectLiteral) {
 		const {oldCtx, newCtx} = $.get(this).updateContext(ctx);
 
-		$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
-			t.updateNode(true);
-		})
+		this.forceUpdate(true);
 
 		this.onUpdate('$context', oldCtx, newCtx);
 	}
 	
 	connectedCallback() {
-		const {initialContext, observedAttributes, tagName, mode} = this.constructor as CWCO.WebComponentConstructor;
+		const {initialContext, observedAttributes, tagName, mode, name} = this.constructor as CWCO.WebComponentConstructor;
 		const {parsed, selfTrack, root, attrPropsMap} = $.get(this);
 
 		if (Object.keys(initialContext).length) {
@@ -210,17 +209,15 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				try {
 					this.forceUpdate();
 					this.onUpdate(prop, oldValue, newValue);
-				} catch(e) {
-					this.onError(e as ErrorEvent);
+				} catch(e: any) {
+					this.onError(e.message);
 				}
 			} else if(this.parsed) {
-				this.onError(new Error(`[Possibly a memory leak]: Cannot set property "${prop}" on unmounted component.`));
+				this.onError(`Cannot set property "${prop}" on unmounted component. Possibly a memory leak in [ ${getNodePathToDoc(this).join(' > ')} ]`);
 			}
 		};
 
 		try {
-
-			$.get(this).mounted = true;
 
 			/*
 			only need to parse the element the very first time it gets mounted
@@ -250,9 +247,9 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 					temp = t?.nodeName === 'TEMPLATE' ? t.innerHTML : temp;
 				}
 
-				if (stylesheet && mode !== 'none' || !getLinkAndStyleTagsFromHead(tagName).length) {
+				if (stylesheet && (mode !== 'none' || (this.customSlot && !getLinkAndStyleTagsFromHead(tagName).length))) {
 					style = typeof stylesheet === 'object'
-						? `<style class="${tagName}">${JSONToCSS(stylesheet)}</style>`
+						? `<style class="${tagName}">${JSONToCSS(stylesheet, tagName.toLowerCase(), hasShadowRoot)}</style>`
 						: getStyleString(stylesheet, tagName.toLowerCase(), hasShadowRoot);
 				}
 
@@ -270,7 +267,7 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 					t.updateNode();
 				})
 
-				if (mode === 'none') {
+				if (this.customSlot && mode === 'none') {
 					[
 						...Array.from(contentNode.querySelectorAll('link')),
 						...Array.from(contentNode.querySelectorAll('style')),
@@ -284,24 +281,25 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 				root.appendChild(contentNode);
 			}
 			
-			this.onMount();
-		} catch (e) {
-			this.onError(e as ErrorEvent);
+			$.get(this).mountUnsubscribe = this.onMount();
+		} catch (e: any) {
+			this.onError(e.message);
 		}
 	}
 	
 	/**
 	 * livecycle callback for when the element is attached to the DOM
 	 */
-	onMount() {
+	onMount(): CWCO.MountUnSubscriber | void {
 	}
 	
 	disconnectedCallback() {
 		try {
-			$.get(this).mounted = false;
+			const {mountUnsubscribe} = $.get(this);
+			typeof mountUnsubscribe === 'function' && mountUnsubscribe();
 			this.onDestroy();
-		} catch (e) {
-			this.onError(e as Error)
+		} catch (e: any) {
+			this.onError(e.message);
 		}
 	}
 	
@@ -327,8 +325,8 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 					this.forceUpdate();
 					this.onUpdate(name, oldValue, newValue);
 				}
-			} catch (e) {
-				this.onError(e as ErrorEvent)
+			} catch (e: any) {
+				this.onError(e.message);
 			}
 		}
 	}
@@ -342,17 +340,17 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	/**
 	 * updates any already tracked node with current component data including context and node level data.
 	 */
-	forceUpdate() {
+	forceUpdate(deep = false) {
 		$.get(this).selfTrack.childNodeTracks.forEach((t: NodeTrack) => {
-			t.updateNode();
+			t.updateNode(deep);
 		})
 	}
 	
 	adoptedCallback() {
 		try {
 			this.onAdoption();
-		} catch (e) {
-			this.onError(e as Error)
+		} catch (e: any) {
+			this.onError(e.message);
 		}
 	}
 	
@@ -365,8 +363,8 @@ export class WebComponent extends HTMLElement implements CWCO.WebComponent {
 	/**
 	 * error callback for when an error occurs
 	 */
-	onError(error: ErrorEvent | Error) {
-		console.error(this.constructor.name, error);
+	onError(errorMessage: string) {
+		console.error(this.constructor.name, errorMessage);
 	}
 }
 
