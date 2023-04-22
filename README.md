@@ -2,7 +2,7 @@
 
 ![CWCO Banner](https://github.com/beforesemicolon/cwco/blob/master/docs/Git-Banner.jpg)
 
-[![website](https://img.shields.io/badge/website-cwco.io-blue)](https://cwco.io/)
+[![website](https://img.shields.io/badge/website-cwco.io-blue)](https://cwco.beforesemicolon.com/)
 [![npm](https://img.shields.io/npm/v/cwco)](https://www.npmjs.com/package/cwco)
 [![license](https://img.shields.io/github/license/beforesemicolon/cwco)](https://github.com/beforesemicolon/cwco/blob/master/LICENSE)
 [![sponsor](https://img.shields.io/github/sponsors/beforesemicolon)](https://github.com/sponsors/beforesemicolon)
@@ -23,7 +23,7 @@
 - ✅ Fast rendering
 - ✅ Lightweight package
 
-### Documentation ([cwco.io](https://cwco.io/))
+### Documentation ([cwco.io](https://cwco.beforesemicolon.com/))
 
 - [Getting Started](https://cwco.io/documentation/getting-started)
 - [WebComponent](https://cwco.io/documentation/web-component)
