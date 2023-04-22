@@ -2,7 +2,7 @@
 
 ![CWCO Banner](https://github.com/beforesemicolon/cwco/blob/master/docs/Git-Banner.jpg)
 
-[![website](https://img.shields.io/badge/website-cwco.io-blue)](https://cwco.beforesemicolon.com/)
+[![website](https://img.shields.io/badge/website-cwco.beforesemicolon.com-blue)](https://cwco.beforesemicolon.com/)
 [![npm](https://img.shields.io/npm/v/cwco)](https://www.npmjs.com/package/cwco)
 [![license](https://img.shields.io/github/license/beforesemicolon/cwco)](https://github.com/beforesemicolon/cwco/blob/master/LICENSE)
 [![sponsor](https://img.shields.io/github/sponsors/beforesemicolon)](https://github.com/sponsors/beforesemicolon)
@@ -23,22 +23,22 @@
 - ✅ Fast rendering
 - ✅ Lightweight package
 
-### Documentation ([cwco.io](https://cwco.beforesemicolon.com/))
+### Documentation ([cwco.beforesemicolon.com](https://cwco.beforesemicolon.com/))
 
-- [Getting Started](https://cwco.io/documentation/getting-started)
-- [WebComponent](https://cwco.io/documentation/web-component)
-- [ContextProviderComponent](https://cwco.io/documentation/context-provider-component)
-- [Configurations](https://cwco.io/documentation/configurations)
-- [Template](https://cwco.io/documentation/template)
-- [Styling](https://cwco.io/documentation/stylesheet)
-- [Events](https://cwco.io/documentation/events)
-- [Attributes](https://cwco.io/documentation/observed-attributes)
-- [Properties](https://cwco.io/documentation/properties)
-- [Context](https://cwco.io/documentation/context)
-- [Directives](https://cwco.io/documentation/if-directive)
-- [Custom Directives](https://cwco.io/documentation/custom-directive)
-- [LiveCycles](https://cwco.io/documentation/on-mount)
-- [Error Handling](https://cwco.io/documentation/on-error)
+- [Getting Started](https://cwco.beforesemicolon.com/documentation/getting-started)
+- [WebComponent](https://cwco.beforesemicolon.com/documentation/web-component)
+- [ContextProviderComponent](https://cwco.beforesemicolon.com/documentation/context-provider-component)
+- [Configurations](https://cwco.beforesemicolon.com/documentation/configurations)
+- [Template](https://cwco.beforesemicolon.com/documentation/template)
+- [Styling](https://cwco.beforesemicolon.com/documentation/stylesheet)
+- [Events](https://cwco.beforesemicolon.com/documentation/events)
+- [Attributes](https://cwco.beforesemicolon.com/documentation/observed-attributes)
+- [Properties](https://cwco.beforesemicolon.com/documentation/properties)
+- [Context](https://cwco.beforesemicolon.com/documentation/context)
+- [Directives](https://cwco.beforesemicolon.com/documentation/if-directive)
+- [Custom Directives](https://cwco.beforesemicolon.com/documentation/custom-directive)
+- [LiveCycles](https://cwco.beforesemicolon.com/documentation/on-mount)
+- [Error Handling](https://cwco.beforesemicolon.com/documentation/on-error)
 
 ### Install
 
