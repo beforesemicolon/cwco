@@ -1,7 +1,5 @@
 .idea
 dist/*
-!dist/cwco.min.js
-!dist/cwco.min.js.map
 node_modules
 **.tgz
 coverage
