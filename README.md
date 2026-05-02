@@ -1,4 +1,10 @@
-# CWCO
+# CWCO (DEPRECATED)
+
+# 🛑 STOP: Project Deprecated 🛑
+> ⚠️ **DEPRECATED:** This project is no longer maintained.
+> 
+> ⚠️ Please use **[@beforesemicolon/web-component](https://markup.beforesemicolon.com/documentation/capabilities/web-component)** instead.
+# ----------------------------------
 
 ![CWCO Banner](https://github.com/beforesemicolon/cwco/blob/master/docs/Git-Banner.jpg)
 
