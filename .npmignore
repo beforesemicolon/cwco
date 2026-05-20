@@ -10,3 +10,7 @@ examples
 jest.config.js
 .github
 **.js.map
+renovate.json
+.renovaterc.json
+.renovaterc
+renovate.json5
