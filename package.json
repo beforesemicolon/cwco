@@ -27,7 +27,7 @@
     "type": "git"
   },
   "dependencies": {
-    "jsdom": "^18.0.0"
+    "jsdom": "^29.0.0"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
