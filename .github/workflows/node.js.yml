@@ -1,33 +1,29 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
+# Build and test the library on supported Node.js LTS releases.
 name: Node.js CI
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [master, develop]
   pull_request:
-    branches: [ master, develop ]
+    branches: [master, develop]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [20.x, 22.x]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build
-    - run: npm test
-    # update the website
-    - run: curl -X POST -d {} https://api.netlify.com/build_hooks/62107be45ee3975b2c00d9fb
+      - uses: actions/checkout@v6
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      # Update the website after a successful build.
+      - run: curl -X POST -d {} https://api.netlify.com/build_hooks/62107be45ee3975b2c00d9fb
