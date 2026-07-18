@@ -32,7 +32,7 @@
   "devDependencies": {
     "@types/jest": "^27.0.3",
     "@types/jsdom": "^16.2.13",
-    "esbuild": "^0.14.18",
+    "esbuild": "^0.25.0",
     "jest": "^27.4.4",
     "jest-environment-jsdom": "^27.4.4",
     "nodemon": "^2.0.13",
